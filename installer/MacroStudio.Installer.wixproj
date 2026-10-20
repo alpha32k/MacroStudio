@@ -1,0 +1,22 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <!-- Built by build.ps1, which publishes the app first and passes its folder as AppPublishDir. -->
+  <PropertyGroup>
+    <OutputName>MacroStudio</OutputName>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <!-- One .msi per language: Turkish and English installer screens. -->
+    <Cultures>tr-TR;en-US</Cultures>
+    <DefineConstants>Version=$(Version);AppPublishDir=$(AppPublishDir)</DefineConstants>
+    <!--
+      ICE38, ICE64, ICE91 expect a per-machine install. A per-user install under %LocalAppData% keeps its files
+      there by design, with file key paths and folders that Windows removes with the package.
+      ICE69: the shortcuts and the file type point at MacroStudio.exe from other components. They are safe: the
+      desktop shortcut's feature sits under the main feature, so the program is always there when they are.
+    -->
+    <SuppressIces>ICE38;ICE64;ICE69;ICE91</SuppressIces>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" />
+    <PackageReference Include="WixToolset.Util.wixext" />
+  </ItemGroup>
+</Project>

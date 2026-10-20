@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization xmlns="http://wixtoolset.org/schemas/v4/wxl" Culture="en-US" Codepage="1254">
+  <String Id="PackageLanguage" Value="1033" />
+  <String Id="DowngradeError" Value="A newer version of Macro Studio is already installed." />
+  <String Id="LaunchAfterInstall" Value="Start Macro Studio" />
+  <String Id="FileTypeDescription" Value="Macro Studio macro" />
+  <String Id="ShortcutDescription" Value="Record repetitive office work once and play it back" />
+  <String Id="FeatureMainTitle" Value="Macro Studio" />
+  <String Id="FeatureMainDescription" Value="The program, a Start menu shortcut, and .msmacro files opening in Macro Studio." />
+  <String Id="FeatureDesktopTitle" Value="Desktop shortcut" />
+  <String Id="FeatureDesktopDescription" Value="Puts a Macro Studio shortcut on the desktop." />
+</WixLocalization>

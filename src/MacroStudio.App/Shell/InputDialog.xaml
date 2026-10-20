@@ -1,0 +1,26 @@
+<ui:FluentWindow x:Class="MacroStudio.App.Shell.InputDialog"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:l="clr-namespace:MacroStudio.App.Localization"
+                 Width="460"
+                 SizeToContent="Height"
+                 ResizeMode="NoResize"
+                 ShowInTaskbar="False"
+                 WindowStartupLocation="CenterOwner"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 WindowCornerPreference="Round">
+  <StackPanel>
+    <ui:TitleBar x:Name="DialogTitle" ShowMaximize="False" ShowMinimize="False" />
+    <StackPanel Margin="24,4,24,20">
+      <TextBlock x:Name="PromptText" Margin="0,0,0,8" Style="{StaticResource BodyTextStyle}" />
+      <ui:TextBox x:Name="AnswerBox" />
+      <ComboBox x:Name="ChoiceBox" HorizontalAlignment="Stretch" DisplayMemberPath="Label" />
+      <StackPanel Margin="0,20,0,0" HorizontalAlignment="Right" Orientation="Horizontal">
+        <ui:Button Margin="0,0,8,0" IsCancel="True" Content="{l:Loc Dialog_Cancel}" />
+        <ui:Button Appearance="Primary" IsDefault="True" Content="{l:Loc Dialog_Ok}" Click="OnOkClick" />
+      </StackPanel>
+    </StackPanel>
+  </StackPanel>
+</ui:FluentWindow>

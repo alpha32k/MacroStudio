@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization xmlns="http://wixtoolset.org/schemas/v4/wxl" Culture="tr-TR" Codepage="1254">
+  <String Id="PackageLanguage" Value="1055" />
+  <String Id="DowngradeError" Value="Macro Studio'nun daha yeni bir sürümü zaten kurulu." />
+  <String Id="LaunchAfterInstall" Value="Macro Studio'yu başlat" />
+  <String Id="FileTypeDescription" Value="Macro Studio makrosu" />
+  <String Id="ShortcutDescription" Value="Tekrarlayan ofis işlerini kaydedip oynatın" />
+  <String Id="FeatureMainTitle" Value="Macro Studio" />
+  <String Id="FeatureMainDescription" Value="Program, Başlat menüsü kısayolu ve .msmacro dosyalarının Macro Studio ile açılması." />
+  <String Id="FeatureDesktopTitle" Value="Masaüstü kısayolu" />
+  <String Id="FeatureDesktopDescription" Value="Masaüstüne bir Macro Studio kısayolu koyar." />
+</WixLocalization>

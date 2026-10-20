@@ -1,0 +1,14 @@
+<Project>
+  <!-- Every NuGet package and its version lives here. Reasons are in docs/DECISIONS.md. -->
+  <ItemGroup>
+    <PackageVersion Include="WPF-UI" Version="4.3.0" />
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
+    <PackageVersion Include="Serilog" Version="4.4.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageVersion Include="xunit.v3" Version="4.0.2" />
+    <!-- Installer only (installer/). WiX v5: MS-RL licensed, without v6's extra licence terms. -->
+    <PackageVersion Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <PackageVersion Include="WixToolset.Util.wixext" Version="5.0.2" />
+  </ItemGroup>
+</Project>

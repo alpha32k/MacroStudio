@@ -1,0 +1,221 @@
+<pages:ContentPage x:Class="MacroStudio.App.Pages.SettingsPage"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                   xmlns:l="clr-namespace:MacroStudio.App.Localization"
+                   xmlns:pages="clr-namespace:MacroStudio.App.Pages">
+
+  <pages:ContentPage.Resources>
+    <Style x:Key="SettingCardStyle" TargetType="ui:CardControl" BasedOn="{StaticResource {x:Type ui:CardControl}}">
+      <Setter Property="Margin" Value="0,0,0,4" />
+    </Style>
+    <Style x:Key="SettingComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+      <Setter Property="MinWidth" Value="220" />
+      <Setter Property="DisplayMemberPath" Value="Label" />
+    </Style>
+  </pages:ContentPage.Resources>
+
+  <StackPanel Style="{StaticResource PageContentStyle}">
+    <TextBlock Style="{StaticResource PageTitleStyle}" Text="{l:Loc Nav_Settings}" />
+
+    <!-- General -->
+    <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{l:Loc Settings_General}" />
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon LocalLanguage24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_Language}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_LanguageDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ComboBox AutomationProperties.Name="{l:Loc Settings_Language}" Style="{StaticResource SettingComboBoxStyle}" ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon DarkTheme24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_Theme}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_ThemeDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ComboBox AutomationProperties.Name="{l:Loc Settings_Theme}" Style="{StaticResource SettingComboBoxStyle}" ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Color24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_Accent}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_AccentDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ComboBox AutomationProperties.Name="{l:Loc Settings_Accent}" MinWidth="220" ItemsSource="{Binding AccentColors}" SelectedItem="{Binding SelectedAccent}">
+        <ComboBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+              <Border Width="16"
+                      Height="16"
+                      Margin="0,0,8,0"
+                      CornerRadius="4"
+                      Background="{Binding Value, Converter={StaticResource HexColorToBrush}}">
+                <Border.Style>
+                  <Style TargetType="Border">
+                    <Style.Triggers>
+                      <!-- "Windows color" has no swatch. -->
+                      <DataTrigger Binding="{Binding Value}" Value="{x:Null}">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </Border.Style>
+              </Border>
+              <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+            </StackPanel>
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
+      </ComboBox>
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Power24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_StartWithWindows}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_StartWithWindowsDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ui:ToggleSwitch AutomationProperties.Name="{l:Loc Settings_StartWithWindows}" IsChecked="{Binding StartWithWindows}" />
+    </ui:CardControl>
+
+    <!-- Notch bar -->
+    <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{l:Loc Settings_NotchBar}" />
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Eye24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_ShowNotchBar}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_ShowNotchBarDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ui:ToggleSwitch AutomationProperties.Name="{l:Loc Settings_ShowNotchBar}" IsChecked="{Binding ShowNotchBar}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Desktop24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_Monitor}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_MonitorDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ComboBox AutomationProperties.Name="{l:Loc Settings_Monitor}" Style="{StaticResource SettingComboBoxStyle}" ItemsSource="{Binding Monitors}" SelectedItem="{Binding SelectedMonitor}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon PositionToFront24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_Position}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_PositionDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ComboBox AutomationProperties.Name="{l:Loc Settings_Position}" Style="{StaticResource SettingComboBoxStyle}" ItemsSource="{Binding Positions}" SelectedItem="{Binding SelectedPosition}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Timer24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_OpenDelay}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_OpenDelayDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Width="64"
+                   Margin="0,0,8,0"
+                   VerticalAlignment="Center"
+                   TextAlignment="Right"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                   Text="{Binding OpenDelayMs, StringFormat={}{0:0} ms}" />
+        <Slider AutomationProperties.Name="{l:Loc Settings_OpenDelay}" Width="220"
+                VerticalAlignment="Center"
+                Minimum="{Binding MinOpenDelayMs, Mode=OneTime}"
+                Maximum="{Binding MaxOpenDelayMs, Mode=OneTime}"
+                TickFrequency="50"
+                IsSnapToTickEnabled="True"
+                Value="{Binding OpenDelayMs}" />
+      </StackPanel>
+    </ui:CardControl>
+
+    <!-- Recording -->
+    <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{l:Loc Settings_Recording}" />
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Timer24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_Countdown}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_CountdownDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ComboBox AutomationProperties.Name="{l:Loc Settings_Countdown}" Style="{StaticResource SettingComboBoxStyle}" ItemsSource="{Binding Countdowns}" SelectedItem="{Binding SelectedCountdown}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Copy24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_ConvertCopyPaste}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_ConvertCopyPasteDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ui:ToggleSwitch AutomationProperties.Name="{l:Loc Settings_ConvertCopyPaste}" IsChecked="{Binding ConvertCopyPaste}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Window24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_ConvertWindowSwitches}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_ConvertWindowSwitchesDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ui:ToggleSwitch AutomationProperties.Name="{l:Loc Settings_ConvertWindowSwitches}" IsChecked="{Binding ConvertWindowSwitches}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon TextT24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_MergeTyping}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_MergeTypingDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ui:ToggleSwitch AutomationProperties.Name="{l:Loc Settings_MergeTyping}" IsChecked="{Binding MergeTyping}" />
+    </ui:CardControl>
+
+    <!-- Playback -->
+    <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{l:Loc Settings_Playback}" />
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Timer24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_Countdown}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_PlaybackCountdownDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ComboBox AutomationProperties.Name="{l:Loc Settings_Countdown}" Style="{StaticResource SettingComboBoxStyle}" ItemsSource="{Binding Countdowns}" SelectedItem="{Binding SelectedPlaybackCountdown}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Cursor24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_OnUserInput}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_OnUserInputDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ComboBox AutomationProperties.Name="{l:Loc Settings_OnUserInput}" Style="{StaticResource SettingComboBoxStyle}" ItemsSource="{Binding UserInputPolicies}" SelectedItem="{Binding SelectedOnUserInput}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Window24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_WindowWait}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_WindowWaitDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ComboBox AutomationProperties.Name="{l:Loc Settings_WindowWait}" Style="{StaticResource SettingComboBoxStyle}" ItemsSource="{Binding WindowWaits}" SelectedItem="{Binding SelectedWindowWait}" />
+    </ui:CardControl>
+  </StackPanel>
+</pages:ContentPage>

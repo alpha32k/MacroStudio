@@ -1,0 +1,737 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>Macro Studio</value>
+  </data>
+  <data name="Nav_Home" xml:space="preserve">
+    <value>Ana Sayfa</value>
+  </data>
+  <data name="Nav_Macros" xml:space="preserve">
+    <value>Makrolarım</value>
+  </data>
+  <data name="Nav_Editor" xml:space="preserve">
+    <value>Düzenleyici</value>
+  </data>
+  <data name="Nav_Settings" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="Nav_About" xml:space="preserve">
+    <value>Hakkında</value>
+  </data>
+  <data name="Home_Welcome" xml:space="preserve">
+    <value>Bir işi bir kez kaydedin, Macro Studio sizin için tekrarlasın.</value>
+  </data>
+  <data name="Home_NoMacros" xml:space="preserve">
+    <value>Henüz makro yok. Ekranın üstündeki bardaki ● butonuyla veya Ctrl+Alt+R ile bir kayıt başlatın.</value>
+  </data>
+  <data name="Macros_Empty" xml:space="preserve">
+    <value>Henüz makro yok. Ana Sayfa&apos;daki &quot;Yeni kayıt&quot; veya Ctrl+Alt+R ile bir kayıt yapın ya da bir .msmacro dosyasını içe aktarın.</value>
+  </data>
+  <data name="Editor_Empty" xml:space="preserve">
+    <value>Düzenlenecek makro yok. Önce bardaki ● butonuyla veya Ctrl+Alt+R ile bir kayıt yapın.</value>
+  </data>
+  <data name="Settings_General" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Dil</value>
+  </data>
+  <data name="Settings_LanguageDescription" xml:space="preserve">
+    <value>Menülerin ve mesajların dili.</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="Settings_ThemeDescription" xml:space="preserve">
+    <value>Açık, koyu veya Windows ile aynı.</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>Windows ile aynı</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Koyu</value>
+  </data>
+  <data name="Settings_Accent" xml:space="preserve">
+    <value>Vurgu rengi</value>
+  </data>
+  <data name="Settings_AccentDescription" xml:space="preserve">
+    <value>Butonların ve vurguların rengi.</value>
+  </data>
+  <data name="Accent_Windows" xml:space="preserve">
+    <value>Windows rengi</value>
+  </data>
+  <data name="Accent_Blue" xml:space="preserve">
+    <value>Mavi</value>
+  </data>
+  <data name="Accent_Navy" xml:space="preserve">
+    <value>Lacivert</value>
+  </data>
+  <data name="Accent_Purple" xml:space="preserve">
+    <value>Mor</value>
+  </data>
+  <data name="Accent_Red" xml:space="preserve">
+    <value>Kırmızı</value>
+  </data>
+  <data name="Accent_Orange" xml:space="preserve">
+    <value>Turuncu</value>
+  </data>
+  <data name="Accent_Green" xml:space="preserve">
+    <value>Yeşil</value>
+  </data>
+  <data name="Accent_Teal" xml:space="preserve">
+    <value>Turkuaz</value>
+  </data>
+  <data name="Accent_Graphite" xml:space="preserve">
+    <value>Grafit</value>
+  </data>
+  <data name="Settings_StartWithWindows" xml:space="preserve">
+    <value>Windows ile başlat</value>
+  </data>
+  <data name="Settings_StartWithWindowsDescription" xml:space="preserve">
+    <value>Windows'a giriş yaptığınızda Macro Studio açılır.</value>
+  </data>
+  <data name="Settings_NotchBar" xml:space="preserve">
+    <value>Çentik bar</value>
+  </data>
+  <data name="Settings_ShowNotchBar" xml:space="preserve">
+    <value>Çentik barı göster</value>
+  </data>
+  <data name="Settings_ShowNotchBarDescription" xml:space="preserve">
+    <value>Kapalıyken Macro Studio'yu sistem tepsisindeki simgeden veya Ctrl+Alt+M ile açın.</value>
+  </data>
+  <data name="Settings_Monitor" xml:space="preserve">
+    <value>Monitör</value>
+  </data>
+  <data name="Settings_MonitorDescription" xml:space="preserve">
+    <value>Barın görüneceği ekran.</value>
+  </data>
+  <data name="Monitor_Primary" xml:space="preserve">
+    <value>Birincil monitör</value>
+  </data>
+  <data name="Monitor_Numbered" xml:space="preserve">
+    <value>Monitör {0} ({1} × {2})</value>
+  </data>
+  <data name="Settings_Position" xml:space="preserve">
+    <value>Konum</value>
+  </data>
+  <data name="Settings_PositionDescription" xml:space="preserve">
+    <value>Barın ekranın üst kenarındaki yeri.</value>
+  </data>
+  <data name="Position_Left" xml:space="preserve">
+    <value>Sol</value>
+  </data>
+  <data name="Position_Center" xml:space="preserve">
+    <value>Orta</value>
+  </data>
+  <data name="Position_Right" xml:space="preserve">
+    <value>Sağ</value>
+  </data>
+  <data name="Settings_OpenDelay" xml:space="preserve">
+    <value>Açılma gecikmesi</value>
+  </data>
+  <data name="Settings_OpenDelayDescription" xml:space="preserve">
+    <value>Barın açılması için farenin üzerinde ne kadar durması gerektiği.</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Sürüm</value>
+  </data>
+  <data name="About_Description" xml:space="preserve">
+    <value>Fare ve klavyeyle yaptığınız işi bir kez kaydeder, sizin için tekrarlar.</value>
+  </data>
+  <data name="About_License" xml:space="preserve">
+    <value>MIT lisansıyla ücretsiz ve açık kaynak.</value>
+  </data>
+  <data name="About_ThirdParty" xml:space="preserve">
+    <value>Üçüncü taraf bileşenler</value>
+  </data>
+  <data name="About_OpenLogs" xml:space="preserve">
+    <value>Log klasörünü aç</value>
+  </data>
+  <data name="Bar_Home" xml:space="preserve">
+    <value>Ana menü (Ctrl+Alt+M)</value>
+  </data>
+  <data name="Bar_Record" xml:space="preserve">
+    <value>Kaydet (Ctrl+Alt+R)</value>
+  </data>
+  <data name="Bar_Play" xml:space="preserve">
+    <value>Oynat (Ctrl+Alt+P)</value>
+  </data>
+  <data name="Bar_Stop" xml:space="preserve">
+    <value>Durdur</value>
+  </data>
+  <data name="Bar_Macro" xml:space="preserve">
+    <value>Makro</value>
+  </data>
+  <data name="Bar_NoMacros" xml:space="preserve">
+    <value>Makro yok</value>
+  </data>
+  <data name="Bar_Loop" xml:space="preserve">
+    <value>Tekrar</value>
+  </data>
+  <data name="Loop_UntilEmpty" xml:space="preserve">
+    <value>Boşsa dur</value>
+  </data>
+  <data name="Bar_Speed" xml:space="preserve">
+    <value>Hız</value>
+  </data>
+  <data name="Bar_Pin" xml:space="preserve">
+    <value>Barı açık sabitle</value>
+  </data>
+  <data name="Bar_Unpin" xml:space="preserve">
+    <value>Sabitlemeyi kaldır (fare çekilince bar kapanır)</value>
+  </data>
+  <data name="Menu_OpenMainWindow" xml:space="preserve">
+    <value>Macro Studio'yu aç</value>
+  </data>
+  <data name="Menu_HideBarForOneHour" xml:space="preserve">
+    <value>Barı 1 saat gizle</value>
+  </data>
+  <data name="Menu_ShowBar" xml:space="preserve">
+    <value>Barı göster</value>
+  </data>
+  <data name="Menu_Settings" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="Menu_Exit" xml:space="preserve">
+    <value>Çıkış</value>
+  </data>
+  <data name="Hotkey_InUse" xml:space="preserve">
+    <value>{0} kısayolu başka bir program tarafından kullanılıyor.</value>
+  </data>
+  <data name="Error_Unexpected" xml:space="preserve">
+    <value>Beklenmeyen bir hata oluştu. Ayrıntılar log dosyasına yazıldı.
+
+{0}</value>
+  </data>
+  <data name="Recording_CountdownTitle" xml:space="preserve">
+    <value>Kayıt başlıyor</value>
+  </data>
+  <data name="Recording_CountdownHint" xml:space="preserve">
+    <value>Başlayacağınız pencereye geçin. Ctrl+Alt+R iptal eder.</value>
+  </data>
+  <data name="Recording_HooksFailed" xml:space="preserve">
+    <value>Kayıt başlatılamadı: Windows klavyeyi ve fareyi dinlemeye izin vermedi.
+
+{0}</value>
+  </data>
+  <data name="Recording_Failed" xml:space="preserve">
+    <value>Kayıt tamamlanamadı. Ayrıntılar log dosyasına yazıldı.
+
+{0}</value>
+  </data>
+  <data name="Recording_Nothing" xml:space="preserve">
+    <value>Hiçbir şey kaydedilmedi.</value>
+  </data>
+  <data name="Recording_Saved" xml:space="preserve">
+    <value>Kaydedildi: {0}</value>
+  </data>
+  <data name="Save_Title" xml:space="preserve">
+    <value>Kaydı kaydet</value>
+  </data>
+  <data name="Save_Name" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="Save_DefaultName" xml:space="preserve">
+    <value>Makro {0}</value>
+  </data>
+  <data name="Save_StepCount" xml:space="preserve">
+    <value>{0} adım kaydedildi</value>
+  </data>
+  <data name="Save_Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="Save_Discard" xml:space="preserve">
+    <value>Kaydetmeden kapat</value>
+  </data>
+  <data name="Save_DiscardConfirm" xml:space="preserve">
+    <value>Kaydetmeden kapatılsın mı? Bu kayıt kaybolur.</value>
+  </data>
+  <data name="Save_Failed" xml:space="preserve">
+    <value>Makro kaydedilemedi.
+
+{0}</value>
+  </data>
+  <data name="Save_ExcelWheelTitle" xml:space="preserve">
+    <value>Excel'de fare tekerleği</value>
+  </data>
+  <data name="Save_ExcelWheelMessage" xml:space="preserve">
+    <value>Excel'de {0} kez fare tekerleğiyle kaydırdınız. Bir tekerlek tıkı her zaman aynı sayıda satır kaydırmaz; döngüde makro hiçbir hata vermeden yanlış satıra kayıp yanlış veriyi kopyalayabilir. Ok tuşları tam olarak bir hücre ilerler. Hücreleri de klavyeyle seçin: fareyle tıklama her turda ekranda aynı noktaya gider.</value>
+  </data>
+  <data name="Save_ConvertWheel" xml:space="preserve">
+    <value>Tekerleği ↓ tuşuna çevir</value>
+  </data>
+  <data name="Step_WithWindow" xml:space="preserve">
+    <value>{0} – {1}</value>
+  </data>
+  <data name="Click_Left" xml:space="preserve">
+    <value>Sol tık</value>
+  </data>
+  <data name="Click_Right" xml:space="preserve">
+    <value>Sağ tık</value>
+  </data>
+  <data name="Click_Middle" xml:space="preserve">
+    <value>Orta tık</value>
+  </data>
+  <data name="Click_Side" xml:space="preserve">
+    <value>Yan tuş</value>
+  </data>
+  <data name="Click_Double" xml:space="preserve">
+    <value>Çift tık</value>
+  </data>
+  <data name="Step_Drag" xml:space="preserve">
+    <value>Sürükle</value>
+  </data>
+  <data name="Step_WheelUp" xml:space="preserve">
+    <value>Tekerlek yukarı ×{0}</value>
+  </data>
+  <data name="Step_WheelDown" xml:space="preserve">
+    <value>Tekerlek aşağı ×{0}</value>
+  </data>
+  <data name="Step_WheelLeft" xml:space="preserve">
+    <value>Tekerlek sola ×{0}</value>
+  </data>
+  <data name="Step_WheelRight" xml:space="preserve">
+    <value>Tekerlek sağa ×{0}</value>
+  </data>
+  <data name="Step_Key" xml:space="preserve">
+    <value>Tuş {0}</value>
+  </data>
+  <data name="Step_KeyRepeated" xml:space="preserve">
+    <value>Tuş {0} ×{1}</value>
+  </data>
+  <data name="Step_Hotkey" xml:space="preserve">
+    <value>Kısayol {0}</value>
+  </data>
+  <data name="Step_HotkeyRepeated" xml:space="preserve">
+    <value>Kısayol {0} ×{1}</value>
+  </data>
+  <data name="Step_Type" xml:space="preserve">
+    <value>Yaz “{0}”</value>
+  </data>
+  <data name="Step_Focus" xml:space="preserve">
+    <value>Öne getir</value>
+  </data>
+  <data name="Step_Copy" xml:space="preserve">
+    <value>Kopyala (Ctrl+C)</value>
+  </data>
+  <data name="Step_Paste" xml:space="preserve">
+    <value>Yapıştır (Ctrl+V)</value>
+  </data>
+  <data name="Step_Wait" xml:space="preserve">
+    <value>Bekle {0} ms</value>
+  </data>
+  <data name="Step_Password" xml:space="preserve">
+    <value>Parola alanı – elle girin</value>
+  </data>
+  <data name="Window_ScreenPosition" xml:space="preserve">
+    <value>ekran ({0}, {1})</value>
+  </data>
+  <data name="Settings_Recording" xml:space="preserve">
+    <value>Kayıt</value>
+  </data>
+  <data name="Settings_Countdown" xml:space="preserve">
+    <value>Geri sayım</value>
+  </data>
+  <data name="Settings_CountdownDescription" xml:space="preserve">
+    <value>Kayıt başlamadan önce başlangıç pencerenize geçmeniz için verilen süre.</value>
+  </data>
+  <data name="Countdown_None" xml:space="preserve">
+    <value>Geri sayım yok</value>
+  </data>
+  <data name="Countdown_Seconds" xml:space="preserve">
+    <value>{0} saniye</value>
+  </data>
+  <data name="Settings_ConvertCopyPaste" xml:space="preserve">
+    <value>Ctrl+C ve Ctrl+V'yi kopyala/yapıştır adımı yap</value>
+  </data>
+  <data name="Settings_ConvertCopyPasteDescription" xml:space="preserve">
+    <value>Panonun dolmasını bekler ve Excel'in eklediği fazladan satır sonunu temizler.</value>
+  </data>
+  <data name="Settings_ConvertWindowSwitches" xml:space="preserve">
+    <value>Pencere geçişlerini “öne getir” adımı yap</value>
+  </data>
+  <data name="Settings_ConvertWindowSwitchesDescription" xml:space="preserve">
+    <value>Alt+Tab ve görev çubuğu tıklamaları oynatmada pencereyi adıyla bulur.</value>
+  </data>
+  <data name="Settings_MergeTyping" xml:space="preserve">
+    <value>Yazılan metni tek adım yap</value>
+  </data>
+  <data name="Settings_MergeTypingDescription" xml:space="preserve">
+    <value>Art arda yazılan harfler tek bir “yaz” adımı olur.</value>
+  </data>
+  <data name="Home_RecentMacros" xml:space="preserve">
+    <value>Son makrolar</value>
+  </data>
+  <data name="Home_OpenMacroFolder" xml:space="preserve">
+    <value>Makro klasörünü aç</value>
+  </data>
+  <data name="Playback_CountdownTitle" xml:space="preserve">
+    <value>Oynatma başlıyor</value>
+  </data>
+  <data name="Playback_CountdownHint" xml:space="preserve">
+    <value>Elinizi fareden ve klavyeden çekin. Esc makroyu durdurur.</value>
+  </data>
+  <data name="Playback_HooksFailed" xml:space="preserve">
+    <value>Makro başlatılamadı: Windows klavyeyi ve fareyi izlemeye izin vermedi.
+
+{0}</value>
+  </data>
+  <data name="Bar_Pause" xml:space="preserve">
+    <value>Duraklat (Ctrl+Alt+P)</value>
+  </data>
+  <data name="Bar_Resume" xml:space="preserve">
+    <value>Devam et (Ctrl+Alt+P)</value>
+  </data>
+  <data name="Bar_StatusPlaying" xml:space="preserve">
+    <value>Tur {0}/{1} · Adım {2}/{3}</value>
+  </data>
+  <data name="Bar_StatusPlayingOpenEnded" xml:space="preserve">
+    <value>Tur {0} · Adım {1}/{2}</value>
+  </data>
+  <data name="Bar_StatusPaused" xml:space="preserve">
+    <value>Duraklatıldı · Tur {0}/{1} · Adım {2}/{3}</value>
+  </data>
+  <data name="Bar_StatusPausedOpenEnded" xml:space="preserve">
+    <value>Duraklatıldı · Tur {0} · Adım {1}/{2}</value>
+  </data>
+  <data name="Playback_Completed" xml:space="preserve">
+    <value>Tamamlandı: {0} – {1} tur</value>
+  </data>
+  <data name="Playback_ListEnded" xml:space="preserve">
+    <value>Liste bitti: {0} – {1} satır işlendi</value>
+  </data>
+  <data name="Playback_Stopped" xml:space="preserve">
+    <value>Durduruldu: {0} – {1} tur tamamlandı</value>
+  </data>
+  <data name="Playback_PausedByUser" xml:space="preserve">
+    <value>Fareye veya klavyeye dokunduğunuz için duraklatıldı. Ctrl+Alt+P ile veya bardan devam edin; Esc durdurur.</value>
+  </data>
+  <data name="Playback_PasswordNeeded" xml:space="preserve">
+    <value>Adım {0}: parolayı kendiniz yazın, sonra Ctrl+Alt+P ile devam edin.</value>
+  </data>
+  <data name="Playback_Failed" xml:space="preserve">
+    <value>“{0}” şu adımda durdu: {1}.
+
+{2}</value>
+  </data>
+  <data name="Failure_WindowNotFound" xml:space="preserve">
+    <value>Şu pencere bulunamadı: {0}. Program açık mı?</value>
+  </data>
+  <data name="Failure_WindowNotActivated" xml:space="preserve">
+    <value>Windows şu pencerenin öne gelmesine izin vermedi: {0}.</value>
+  </data>
+  <data name="Failure_TargetIsElevated" xml:space="preserve">
+    <value>{0} yönetici olarak çalışıyor. Windows, normal programların ona yazmasına ve tıklamasına izin vermiyor. Macro Studio'yu da yönetici olarak açın ya da programı normal açın.</value>
+  </data>
+  <data name="Failure_ClipboardDidNotChange" xml:space="preserve">
+    <value>Hiçbir şey kopyalanmadı: Ctrl+C'den sonra pano değişmedi. Doğru hücre veya alan seçili miydi?</value>
+  </data>
+  <data name="Failure_ClipboardUnavailable" xml:space="preserve">
+    <value>Başka bir program panoyu kilitli tuttu.</value>
+  </data>
+  <data name="Window_Name" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Settings_Playback" xml:space="preserve">
+    <value>Oynatma</value>
+  </data>
+  <data name="Settings_PlaybackCountdownDescription" xml:space="preserve">
+    <value>Makro başlamadan önce elinizi fareden ve klavyeden çekmeniz için verilen süre.</value>
+  </data>
+  <data name="Settings_OnUserInput" xml:space="preserve">
+    <value>Fareye veya klavyeye dokunursanız</value>
+  </data>
+  <data name="Settings_OnUserInputDescription" xml:space="preserve">
+    <value>Makro çalışırken sizin fareniz ve klavyeniz onun tıklamalarına ve tuşlarına karışır.</value>
+  </data>
+  <data name="OnUserInput_Pause" xml:space="preserve">
+    <value>Duraklat</value>
+  </data>
+  <data name="OnUserInput_Stop" xml:space="preserve">
+    <value>Durdur</value>
+  </data>
+  <data name="OnUserInput_Ignore" xml:space="preserve">
+    <value>Devam et</value>
+  </data>
+  <data name="Settings_WindowWait" xml:space="preserve">
+    <value>Pencere bekleme süresi</value>
+  </data>
+  <data name="Settings_WindowWaitDescription" xml:space="preserve">
+    <value>Makro durmadan önce bir programın veya pencerenin açılması için ne kadar beklensin.</value>
+  </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Warning_UnreliableExcelWheel" xml:space="preserve">
+    <value>Excel&apos;de tekerlek kaydırması her turda aynı satıra denk gelmeyebilir. Diğer &gt; Excel tekerleğini ok tuşlarına çevir ile düzeltin.</value>
+  </data>
+  <data name="Warning_UnconvertedAltTab" xml:space="preserve">
+    <value>Alt+Tab en son kullanılan pencereye geçer; bu turdan tura değişebilir. Yerine bir &quot;Pencereye geç&quot; adımı ekleyin.</value>
+  </data>
+  <data name="Editor_Macro" xml:space="preserve">
+    <value>Makro</value>
+  </data>
+  <data name="Editor_Unsaved" xml:space="preserve">
+    <value>Kaydedilmemiş değişiklikler var</value>
+  </data>
+  <data name="Screen_Warning" xml:space="preserve">
+    <value>Bu makro {0}×{1}, %{2} ölçekli bir ekranda kaydedildi; bu ekran {3}×{4}, %{5}. Tıklamalar yanlış yere denk gelebilir, adımları bir kez deneyin.</value>
+  </data>
+  <data name="Editor_SaveChanges" xml:space="preserve">
+    <value>&quot;{0}&quot; makrosundaki değişiklikler kaydedilsin mi?</value>
+  </data>
+  <data name="Editor_SetDelay" xml:space="preserve">
+    <value>Bekleme ayarla</value>
+  </data>
+  <data name="Editor_DelayPrompt" xml:space="preserve">
+    <value>Adımdan önce beklenecek süre, örneğin 500, 500 ms veya 1,5 sn.</value>
+  </data>
+  <data name="Editor_InvalidDelay" xml:space="preserve">
+    <value>Bu bir süre değil. Örnekler: 500, 500 ms, 1,5 sn (en fazla 1 saat).</value>
+  </data>
+  <data name="Editor_NoPreviousVersion" xml:space="preserve">
+    <value>Bu makronun henüz önceki bir sürümü yok. Burada her kaydettiğinizde bir önceki sürüm saklanır.</value>
+  </data>
+  <data name="Editor_Undo" xml:space="preserve">
+    <value>Geri al (Ctrl+Z)</value>
+  </data>
+  <data name="Editor_Redo" xml:space="preserve">
+    <value>Yinele (Ctrl+Y)</value>
+  </data>
+  <data name="Editor_Delete" xml:space="preserve">
+    <value>Sil (Delete)</value>
+  </data>
+  <data name="Editor_Duplicate" xml:space="preserve">
+    <value>Çoğalt (Ctrl+D)</value>
+  </data>
+  <data name="Editor_MoveUp" xml:space="preserve">
+    <value>Yukarı taşı (Alt+↑)</value>
+  </data>
+  <data name="Editor_MoveDown" xml:space="preserve">
+    <value>Aşağı taşı (Alt+↓)</value>
+  </data>
+  <data name="Editor_ToggleEnabled" xml:space="preserve">
+    <value>Aç / kapat (kapalı adımlar oynatılmaz)</value>
+  </data>
+  <data name="Editor_AddStep" xml:space="preserve">
+    <value>Adım ekle</value>
+  </data>
+  <data name="Editor_PlayFromHere" xml:space="preserve">
+    <value>Buradan oynat</value>
+  </data>
+  <data name="Editor_TryStep" xml:space="preserve">
+    <value>Bu adımı dene</value>
+  </data>
+  <data name="Editor_More" xml:space="preserve">
+    <value>Diğer</value>
+  </data>
+  <data name="Editor_RestorePrevious" xml:space="preserve">
+    <value>Önceki sürüme dön</value>
+  </data>
+  <data name="Editor_ConvertExcelWheel" xml:space="preserve">
+    <value>Excel tekerleğini ok tuşlarına çevir</value>
+  </data>
+  <data name="Editor_ColumnEnabled" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="Editor_ColumnStep" xml:space="preserve">
+    <value>Adım</value>
+  </data>
+  <data name="Editor_ColumnDelay" xml:space="preserve">
+    <value>Bekleme (ms)</value>
+  </data>
+  <data name="Editor_ColumnNote" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="Editor_NotePlaceholder" xml:space="preserve">
+    <value>Not ekle</value>
+  </data>
+  <data name="Editor_Hint" xml:space="preserve">
+    <value>Bekleme, adımdan önceki süredir. Satırları sürükleyerek sıralayabilirsiniz. Değişiklikler ancak kaydedince dosyaya yazılır; &quot;Buradan oynat&quot; kaydedilmemiş hâli oynatır.</value>
+  </data>
+  <data name="Insert_Wait" xml:space="preserve">
+    <value>Bekleme</value>
+  </data>
+  <data name="Insert_Key" xml:space="preserve">
+    <value>Tuş</value>
+  </data>
+  <data name="Insert_KeyPrompt" xml:space="preserve">
+    <value>Basılacak tuş:</value>
+  </data>
+  <data name="Insert_Text" xml:space="preserve">
+    <value>Metin yaz</value>
+  </data>
+  <data name="Insert_TextPrompt" xml:space="preserve">
+    <value>Yazılacak metin:</value>
+  </data>
+  <data name="Insert_Copy" xml:space="preserve">
+    <value>Kopyala (Ctrl+C)</value>
+  </data>
+  <data name="Insert_Paste" xml:space="preserve">
+    <value>Yapıştır (Ctrl+V)</value>
+  </data>
+  <data name="Insert_FocusWindow" xml:space="preserve">
+    <value>Pencereye geç</value>
+  </data>
+  <data name="Insert_FocusWindowPrompt" xml:space="preserve">
+    <value>Öne getirilecek pencere:</value>
+  </data>
+  <data name="Insert_Click" xml:space="preserve">
+    <value>Tıklama (fareyle gösterin)</value>
+  </data>
+  <data name="Insert_ClickTitle" xml:space="preserve">
+    <value>Tıklanacak yeri gösterin</value>
+  </data>
+  <data name="Insert_ClickHint" xml:space="preserve">
+    <value>Fareyi tıklanacak yerin üzerine getirip bekleyin.</value>
+  </data>
+  <data name="Home_Edit" xml:space="preserve">
+    <value>Düzenle</value>
+  </data>
+  <data name="Failure_InputBlocked" xml:space="preserve">
+    <value>Windows tuşları ve tıklamaları kabul etmedi: ekran kilitlenmiş veya bir yönetici izni (UAC) penceresi açılmış olabilir. Ekranı açıp makroyu yeniden başlatın.</value>
+  </data>
+  <data name="Playback_ScreenQuestion" xml:space="preserve">
+    <value>{0}
+
+Yine de oynatılsın mı?</value>
+  </data>
+  <data name="Editor_Description" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+  <data name="Import_Title" xml:space="preserve">
+    <value>Makroyu içe aktar</value>
+  </data>
+  <data name="Import_Import" xml:space="preserve">
+    <value>İçe aktar</value>
+  </data>
+  <data name="Import_Notice" xml:space="preserve">
+    <value>Bu makroyu başka biri hazırladı. Makro çalışınca bilgisayarınızda tuşlara basar ve tıklar; eklemeden önce aşağıdaki adımlara göz atın.</value>
+  </data>
+  <data name="Home_NewRecording" xml:space="preserve">
+    <value>Yeni kayıt</value>
+  </data>
+  <data name="Macro_Summary" xml:space="preserve">
+    <value>{0} adım · tur başına ~{1} · {2}</value>
+  </data>
+  <data name="Macro_LastRun" xml:space="preserve">
+    <value>Son çalışma: {0} · {1}, {2} tur</value>
+  </data>
+  <data name="Outcome_Completed" xml:space="preserve">
+    <value>tamamlandı</value>
+  </data>
+  <data name="Outcome_ListEnded" xml:space="preserve">
+    <value>liste bitti</value>
+  </data>
+  <data name="Outcome_Stopped" xml:space="preserve">
+    <value>durduruldu</value>
+  </data>
+  <data name="Outcome_Failed" xml:space="preserve">
+    <value>hatayla durdu</value>
+  </data>
+  <data name="Duration_Seconds" xml:space="preserve">
+    <value>{0} sn</value>
+  </data>
+  <data name="Duration_Minutes" xml:space="preserve">
+    <value>{0} dk {1} sn</value>
+  </data>
+  <data name="Macros_Search" xml:space="preserve">
+    <value>Ara</value>
+  </data>
+  <data name="Macros_Import" xml:space="preserve">
+    <value>İçe aktar</value>
+  </data>
+  <data name="Macros_OpenFolder" xml:space="preserve">
+    <value>Klasörü aç</value>
+  </data>
+  <data name="Macros_Trash" xml:space="preserve">
+    <value>Çöp kutusu ({0})</value>
+  </data>
+  <data name="Macros_TrashHint" xml:space="preserve">
+    <value>Silinen makrolar 30 gün burada kalır, sonra kalıcı olarak silinir.</value>
+  </data>
+  <data name="Macros_NoMatches" xml:space="preserve">
+    <value>Aramaya uyan makro yok.</value>
+  </data>
+  <data name="Macros_Play" xml:space="preserve">
+    <value>Oynat (kayıtlı tekrar ve hızıyla)</value>
+  </data>
+  <data name="Macros_Duplicate" xml:space="preserve">
+    <value>Çoğalt</value>
+  </data>
+  <data name="Macros_Rename" xml:space="preserve">
+    <value>Yeniden adlandır</value>
+  </data>
+  <data name="Macros_RenamePrompt" xml:space="preserve">
+    <value>Yeni ad:</value>
+  </data>
+  <data name="Macros_InvalidName" xml:space="preserve">
+    <value>Ad 1 ile {0} karakter arasında olmalı.</value>
+  </data>
+  <data name="Macros_Export" xml:space="preserve">
+    <value>Dışa aktar</value>
+  </data>
+  <data name="Macros_Delete" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="Macros_DeleteConfirm" xml:space="preserve">
+    <value>&quot;{0}&quot; çöp kutusuna taşınsın mı? 30 gün içinde geri yüklenebilir.</value>
+  </data>
+  <data name="Macros_Restore" xml:space="preserve">
+    <value>Geri yükle</value>
+  </data>
+  <data name="Macros_DeletedAt" xml:space="preserve">
+    <value>{0} tarihinde silindi · {1} gün sonra kalıcı olarak silinecek</value>
+  </data>
+  <data name="Macros_CopyName" xml:space="preserve">
+    <value>{0} (kopya)</value>
+  </data>
+  <data name="Macros_FileType" xml:space="preserve">
+    <value>Macro Studio makrosu</value>
+  </data>
+  <data name="Macros_ImportFailed" xml:space="preserve">
+    <value>&quot;{0}&quot; içe aktarılamadı: {1}</value>
+  </data>
+  <data name="Macros_ActionFailed" xml:space="preserve">
+    <value>İşlem yapılamadı: {0}</value>
+  </data>
+  <data name="Macros_Unreadable" xml:space="preserve">
+    <value>Şu dosyalar makro olarak okunamadı ve listede yok: {0}. Dosyalar klasörde duruyor.</value>
+  </data>
+  <data name="Home_ShowAll" xml:space="preserve">
+    <value>Tümünü gör</value>
+  </data>
+  <data name="Import_StepCount" xml:space="preserve">
+    <value>{0} adım</value>
+  </data>
+  <data name="Window_Minimize" xml:space="preserve">
+    <value>Simge durumuna küçült</value>
+  </data>
+  <data name="Window_Maximize" xml:space="preserve">
+    <value>Ekranı kapla</value>
+  </data>
+  <data name="Window_Close" xml:space="preserve">
+    <value>Kapat</value>
+  </data>
+  <data name="Window_ToggleMenu" xml:space="preserve">
+    <value>Menüyü daralt veya genişlet</value>
+  </data>
+</root>

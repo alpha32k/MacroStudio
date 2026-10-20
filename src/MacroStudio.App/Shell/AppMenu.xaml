@@ -1,0 +1,22 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                    xmlns:l="clr-namespace:MacroStudio.App.Localization">
+
+  <!-- Shared by the notch bar (right click) and the tray icon. DataContext: NotchBarViewModel. -->
+  <ContextMenu x:Key="AppContextMenu" x:Shared="False">
+    <MenuItem Header="{l:Loc Menu_OpenMainWindow}" Command="{Binding OpenMainWindowCommand}" Icon="{ui:SymbolIcon Home20}" />
+    <MenuItem Header="{l:Loc Menu_Settings}" Command="{Binding OpenSettingsCommand}" Icon="{ui:SymbolIcon Settings20}" />
+    <Separator />
+    <MenuItem Header="{l:Loc Menu_HideBarForOneHour}"
+              Command="{Binding HideBarForOneHourCommand}"
+              Icon="{ui:SymbolIcon EyeOff20}"
+              Visibility="{Binding IsBarAvailable, Converter={StaticResource BooleanToVisibility}}" />
+    <MenuItem Header="{l:Loc Menu_ShowBar}"
+              Command="{Binding ShowBarCommand}"
+              Icon="{ui:SymbolIcon Eye20}"
+              Visibility="{Binding IsSnoozed, Converter={StaticResource BooleanToVisibility}}" />
+    <Separator />
+    <MenuItem Header="{l:Loc Menu_Exit}" Command="{Binding ExitCommand}" Icon="{ui:SymbolIcon Power20}" />
+  </ContextMenu>
+</ResourceDictionary>

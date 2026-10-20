@@ -1,0 +1,62 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                    xmlns:converters="clr-namespace:MacroStudio.App.Converters"
+                    xmlns:shell="clr-namespace:MacroStudio.App.Shell">
+
+  <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+  <converters:HexColorToBrushConverter x:Key="HexColorToBrush" />
+
+  <Style x:Key="PageTitleStyle" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="28" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Margin" Value="0,0,0,16" />
+    <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+  </Style>
+
+  <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Margin" Value="0,16,0,8" />
+    <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+  </Style>
+
+  <Style x:Key="BodyTextStyle" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+  </Style>
+
+  <Style x:Key="DescriptionTextStyle" TargetType="TextBlock">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+  </Style>
+
+  <!-- Optional lines (a description, the last run) take no space when there is nothing to say. -->
+  <Style x:Key="CollapsedWhenEmptyTextStyle" TargetType="TextBlock" BasedOn="{StaticResource DescriptionTextStyle}">
+    <Style.Triggers>
+      <Trigger Property="Text" Value="">
+        <Setter Property="Visibility" Value="Collapsed" />
+      </Trigger>
+      <Trigger Property="Text" Value="{x:Null}">
+        <Setter Property="Visibility" Value="Collapsed" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- "Made by Ahmet Şahin": small, grey and plain; opens the author's GitHub profile. -->
+  <Style x:Key="SignatureStyle" TargetType="ui:HyperlinkButton" BasedOn="{StaticResource {x:Type ui:HyperlinkButton}}">
+    <Setter Property="Content" Value="{x:Static shell:Author.Signature}" />
+    <Setter Property="NavigateUri" Value="{x:Static shell:Author.GitHubProfileUrl}" />
+    <Setter Property="ToolTip" Value="{x:Static shell:Author.GitHubProfileUrl}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Padding" Value="4,2" />
+    <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
+  </Style>
+
+  <Style x:Key="PageContentStyle" TargetType="StackPanel">
+    <Setter Property="Margin" Value="32,8,32,32" />
+    <Setter Property="MaxWidth" Value="960" />
+  </Style>
+</ResourceDictionary>

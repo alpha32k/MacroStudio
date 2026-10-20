@@ -1,0 +1,737 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>Macro Studio</value>
+  </data>
+  <data name="Nav_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Nav_Macros" xml:space="preserve">
+    <value>My macros</value>
+  </data>
+  <data name="Nav_Editor" xml:space="preserve">
+    <value>Editor</value>
+  </data>
+  <data name="Nav_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Nav_About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Home_Welcome" xml:space="preserve">
+    <value>Record a task once and let Macro Studio repeat it for you.</value>
+  </data>
+  <data name="Home_NoMacros" xml:space="preserve">
+    <value>No macros yet. Start a recording with the ● button on the bar at the top of the screen or with Ctrl+Alt+R.</value>
+  </data>
+  <data name="Macros_Empty" xml:space="preserve">
+    <value>No macros yet. Record one with &quot;New recording&quot; on the home page or Ctrl+Alt+R, or import a .msmacro file.</value>
+  </data>
+  <data name="Editor_Empty" xml:space="preserve">
+    <value>There is no macro to edit yet. Record one first with the ● button on the bar or Ctrl+Alt+R.</value>
+  </data>
+  <data name="Settings_General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings_LanguageDescription" xml:space="preserve">
+    <value>Language of the menus and messages.</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Settings_ThemeDescription" xml:space="preserve">
+    <value>Light, dark, or the same as Windows.</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>Same as Windows</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Settings_Accent" xml:space="preserve">
+    <value>Accent color</value>
+  </data>
+  <data name="Settings_AccentDescription" xml:space="preserve">
+    <value>Color of buttons and highlights.</value>
+  </data>
+  <data name="Accent_Windows" xml:space="preserve">
+    <value>Windows color</value>
+  </data>
+  <data name="Accent_Blue" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="Accent_Navy" xml:space="preserve">
+    <value>Navy</value>
+  </data>
+  <data name="Accent_Purple" xml:space="preserve">
+    <value>Purple</value>
+  </data>
+  <data name="Accent_Red" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Accent_Orange" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="Accent_Green" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="Accent_Teal" xml:space="preserve">
+    <value>Teal</value>
+  </data>
+  <data name="Accent_Graphite" xml:space="preserve">
+    <value>Graphite</value>
+  </data>
+  <data name="Settings_StartWithWindows" xml:space="preserve">
+    <value>Start with Windows</value>
+  </data>
+  <data name="Settings_StartWithWindowsDescription" xml:space="preserve">
+    <value>Macro Studio starts when you sign in to Windows.</value>
+  </data>
+  <data name="Settings_NotchBar" xml:space="preserve">
+    <value>Notch bar</value>
+  </data>
+  <data name="Settings_ShowNotchBar" xml:space="preserve">
+    <value>Show the notch bar</value>
+  </data>
+  <data name="Settings_ShowNotchBarDescription" xml:space="preserve">
+    <value>When it is off, open Macro Studio from the tray icon or with Ctrl+Alt+M.</value>
+  </data>
+  <data name="Settings_Monitor" xml:space="preserve">
+    <value>Monitor</value>
+  </data>
+  <data name="Settings_MonitorDescription" xml:space="preserve">
+    <value>Screen on which the bar appears.</value>
+  </data>
+  <data name="Monitor_Primary" xml:space="preserve">
+    <value>Primary monitor</value>
+  </data>
+  <data name="Monitor_Numbered" xml:space="preserve">
+    <value>Monitor {0} ({1} × {2})</value>
+  </data>
+  <data name="Settings_Position" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="Settings_PositionDescription" xml:space="preserve">
+    <value>Where the bar sits on the top edge of the screen.</value>
+  </data>
+  <data name="Position_Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="Position_Center" xml:space="preserve">
+    <value>Center</value>
+  </data>
+  <data name="Position_Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="Settings_OpenDelay" xml:space="preserve">
+    <value>Open delay</value>
+  </data>
+  <data name="Settings_OpenDelayDescription" xml:space="preserve">
+    <value>How long the pointer must rest on the bar before it opens.</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="About_Description" xml:space="preserve">
+    <value>Records the work you do with the mouse and keyboard once and repeats it for you.</value>
+  </data>
+  <data name="About_License" xml:space="preserve">
+    <value>Free and open source under the MIT license.</value>
+  </data>
+  <data name="About_ThirdParty" xml:space="preserve">
+    <value>Third-party components</value>
+  </data>
+  <data name="About_OpenLogs" xml:space="preserve">
+    <value>Open log folder</value>
+  </data>
+  <data name="Bar_Home" xml:space="preserve">
+    <value>Main menu (Ctrl+Alt+M)</value>
+  </data>
+  <data name="Bar_Record" xml:space="preserve">
+    <value>Record (Ctrl+Alt+R)</value>
+  </data>
+  <data name="Bar_Play" xml:space="preserve">
+    <value>Play (Ctrl+Alt+P)</value>
+  </data>
+  <data name="Bar_Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Bar_Macro" xml:space="preserve">
+    <value>Macro</value>
+  </data>
+  <data name="Bar_NoMacros" xml:space="preserve">
+    <value>No macros</value>
+  </data>
+  <data name="Bar_Loop" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="Loop_UntilEmpty" xml:space="preserve">
+    <value>Until empty</value>
+  </data>
+  <data name="Bar_Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="Bar_Pin" xml:space="preserve">
+    <value>Pin the bar open</value>
+  </data>
+  <data name="Bar_Unpin" xml:space="preserve">
+    <value>Unpin the bar (it closes again when the pointer leaves)</value>
+  </data>
+  <data name="Menu_OpenMainWindow" xml:space="preserve">
+    <value>Open Macro Studio</value>
+  </data>
+  <data name="Menu_HideBarForOneHour" xml:space="preserve">
+    <value>Hide the bar for 1 hour</value>
+  </data>
+  <data name="Menu_ShowBar" xml:space="preserve">
+    <value>Show the bar</value>
+  </data>
+  <data name="Menu_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Menu_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Hotkey_InUse" xml:space="preserve">
+    <value>The shortcut {0} is already used by another program.</value>
+  </data>
+  <data name="Error_Unexpected" xml:space="preserve">
+    <value>Something went wrong. The details were written to the log file.
+
+{0}</value>
+  </data>
+  <data name="Recording_CountdownTitle" xml:space="preserve">
+    <value>Recording starts</value>
+  </data>
+  <data name="Recording_CountdownHint" xml:space="preserve">
+    <value>Switch to the window you start in. Ctrl+Alt+R cancels.</value>
+  </data>
+  <data name="Recording_HooksFailed" xml:space="preserve">
+    <value>The recording could not start because Windows did not allow listening to the keyboard and mouse.
+
+{0}</value>
+  </data>
+  <data name="Recording_Failed" xml:space="preserve">
+    <value>The recording could not be completed. The details were written to the log file.
+
+{0}</value>
+  </data>
+  <data name="Recording_Nothing" xml:space="preserve">
+    <value>Nothing was recorded.</value>
+  </data>
+  <data name="Recording_Saved" xml:space="preserve">
+    <value>Saved: {0}</value>
+  </data>
+  <data name="Save_Title" xml:space="preserve">
+    <value>Save recording</value>
+  </data>
+  <data name="Save_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Save_DefaultName" xml:space="preserve">
+    <value>Macro {0}</value>
+  </data>
+  <data name="Save_StepCount" xml:space="preserve">
+    <value>{0} steps recorded</value>
+  </data>
+  <data name="Save_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Save_Discard" xml:space="preserve">
+    <value>Close without saving</value>
+  </data>
+  <data name="Save_DiscardConfirm" xml:space="preserve">
+    <value>Close without saving? This recording will be lost.</value>
+  </data>
+  <data name="Save_Failed" xml:space="preserve">
+    <value>The macro could not be saved.
+
+{0}</value>
+  </data>
+  <data name="Save_ExcelWheelTitle" xml:space="preserve">
+    <value>Mouse wheel in Excel</value>
+  </data>
+  <data name="Save_ExcelWheelMessage" xml:space="preserve">
+    <value>You scrolled {0} time(s) with the mouse wheel in Excel. One notch does not always scroll the same number of rows, so in a loop the macro can drift to the wrong row and copy wrong data without any error. The arrow keys move exactly one cell. Select cells with the keyboard too: a click hits the same spot on the screen in every loop.</value>
+  </data>
+  <data name="Save_ConvertWheel" xml:space="preserve">
+    <value>Change the wheel to ↓ key presses</value>
+  </data>
+  <data name="Step_WithWindow" xml:space="preserve">
+    <value>{0} – {1}</value>
+  </data>
+  <data name="Click_Left" xml:space="preserve">
+    <value>Left click</value>
+  </data>
+  <data name="Click_Right" xml:space="preserve">
+    <value>Right click</value>
+  </data>
+  <data name="Click_Middle" xml:space="preserve">
+    <value>Middle click</value>
+  </data>
+  <data name="Click_Side" xml:space="preserve">
+    <value>Side button</value>
+  </data>
+  <data name="Click_Double" xml:space="preserve">
+    <value>Double click</value>
+  </data>
+  <data name="Step_Drag" xml:space="preserve">
+    <value>Drag</value>
+  </data>
+  <data name="Step_WheelUp" xml:space="preserve">
+    <value>Wheel up ×{0}</value>
+  </data>
+  <data name="Step_WheelDown" xml:space="preserve">
+    <value>Wheel down ×{0}</value>
+  </data>
+  <data name="Step_WheelLeft" xml:space="preserve">
+    <value>Wheel left ×{0}</value>
+  </data>
+  <data name="Step_WheelRight" xml:space="preserve">
+    <value>Wheel right ×{0}</value>
+  </data>
+  <data name="Step_Key" xml:space="preserve">
+    <value>Key {0}</value>
+  </data>
+  <data name="Step_KeyRepeated" xml:space="preserve">
+    <value>Key {0} ×{1}</value>
+  </data>
+  <data name="Step_Hotkey" xml:space="preserve">
+    <value>Shortcut {0}</value>
+  </data>
+  <data name="Step_HotkeyRepeated" xml:space="preserve">
+    <value>Shortcut {0} ×{1}</value>
+  </data>
+  <data name="Step_Type" xml:space="preserve">
+    <value>Type “{0}”</value>
+  </data>
+  <data name="Step_Focus" xml:space="preserve">
+    <value>Bring to front</value>
+  </data>
+  <data name="Step_Copy" xml:space="preserve">
+    <value>Copy (Ctrl+C)</value>
+  </data>
+  <data name="Step_Paste" xml:space="preserve">
+    <value>Paste (Ctrl+V)</value>
+  </data>
+  <data name="Step_Wait" xml:space="preserve">
+    <value>Wait {0} ms</value>
+  </data>
+  <data name="Step_Password" xml:space="preserve">
+    <value>Password field – type it yourself</value>
+  </data>
+  <data name="Window_ScreenPosition" xml:space="preserve">
+    <value>screen ({0}, {1})</value>
+  </data>
+  <data name="Settings_Recording" xml:space="preserve">
+    <value>Recording</value>
+  </data>
+  <data name="Settings_Countdown" xml:space="preserve">
+    <value>Countdown</value>
+  </data>
+  <data name="Settings_CountdownDescription" xml:space="preserve">
+    <value>Time to switch to your starting window before the recording begins.</value>
+  </data>
+  <data name="Countdown_None" xml:space="preserve">
+    <value>No countdown</value>
+  </data>
+  <data name="Countdown_Seconds" xml:space="preserve">
+    <value>{0} seconds</value>
+  </data>
+  <data name="Settings_ConvertCopyPaste" xml:space="preserve">
+    <value>Ctrl+C and Ctrl+V as copy and paste steps</value>
+  </data>
+  <data name="Settings_ConvertCopyPasteDescription" xml:space="preserve">
+    <value>Waits until the clipboard is filled and removes the extra line break Excel adds.</value>
+  </data>
+  <data name="Settings_ConvertWindowSwitches" xml:space="preserve">
+    <value>Window switches as “bring to front” steps</value>
+  </data>
+  <data name="Settings_ConvertWindowSwitchesDescription" xml:space="preserve">
+    <value>Alt+Tab and taskbar clicks find the window by its name during playback.</value>
+  </data>
+  <data name="Settings_MergeTyping" xml:space="preserve">
+    <value>Typed text as one step</value>
+  </data>
+  <data name="Settings_MergeTypingDescription" xml:space="preserve">
+    <value>Letters typed one after another become one “type” step.</value>
+  </data>
+  <data name="Home_RecentMacros" xml:space="preserve">
+    <value>Recent macros</value>
+  </data>
+  <data name="Home_OpenMacroFolder" xml:space="preserve">
+    <value>Open macro folder</value>
+  </data>
+  <data name="Playback_CountdownTitle" xml:space="preserve">
+    <value>Playback starts</value>
+  </data>
+  <data name="Playback_CountdownHint" xml:space="preserve">
+    <value>Take your hands off the mouse and keyboard. Esc stops the macro.</value>
+  </data>
+  <data name="Playback_HooksFailed" xml:space="preserve">
+    <value>The macro could not start because Windows did not allow watching the keyboard and mouse.
+
+{0}</value>
+  </data>
+  <data name="Bar_Pause" xml:space="preserve">
+    <value>Pause (Ctrl+Alt+P)</value>
+  </data>
+  <data name="Bar_Resume" xml:space="preserve">
+    <value>Resume (Ctrl+Alt+P)</value>
+  </data>
+  <data name="Bar_StatusPlaying" xml:space="preserve">
+    <value>Round {0}/{1} · Step {2}/{3}</value>
+  </data>
+  <data name="Bar_StatusPlayingOpenEnded" xml:space="preserve">
+    <value>Round {0} · Step {1}/{2}</value>
+  </data>
+  <data name="Bar_StatusPaused" xml:space="preserve">
+    <value>Paused · Round {0}/{1} · Step {2}/{3}</value>
+  </data>
+  <data name="Bar_StatusPausedOpenEnded" xml:space="preserve">
+    <value>Paused · Round {0} · Step {1}/{2}</value>
+  </data>
+  <data name="Playback_Completed" xml:space="preserve">
+    <value>Done: {0} – {1} rounds</value>
+  </data>
+  <data name="Playback_ListEnded" xml:space="preserve">
+    <value>List finished: {0} – {1} rows done</value>
+  </data>
+  <data name="Playback_Stopped" xml:space="preserve">
+    <value>Stopped: {0} – {1} rounds done</value>
+  </data>
+  <data name="Playback_PausedByUser" xml:space="preserve">
+    <value>Paused because you touched the mouse or keyboard. Resume with Ctrl+Alt+P or the bar; Esc stops.</value>
+  </data>
+  <data name="Playback_PasswordNeeded" xml:space="preserve">
+    <value>Step {0}: type the password yourself, then resume with Ctrl+Alt+P.</value>
+  </data>
+  <data name="Playback_Failed" xml:space="preserve">
+    <value>“{0}” stopped at step {1}.
+
+{2}</value>
+  </data>
+  <data name="Failure_WindowNotFound" xml:space="preserve">
+    <value>This window was not found: {0}. Is the program open?</value>
+  </data>
+  <data name="Failure_WindowNotActivated" xml:space="preserve">
+    <value>Windows did not let this window come to the front: {0}.</value>
+  </data>
+  <data name="Failure_TargetIsElevated" xml:space="preserve">
+    <value>{0} runs as administrator. Windows does not let normal programs type or click into it. Start Macro Studio as administrator too, or start the program normally.</value>
+  </data>
+  <data name="Failure_ClipboardDidNotChange" xml:space="preserve">
+    <value>Nothing was copied: after Ctrl+C the clipboard did not change. Was the right cell or field selected?</value>
+  </data>
+  <data name="Failure_ClipboardUnavailable" xml:space="preserve">
+    <value>Another program kept the clipboard locked.</value>
+  </data>
+  <data name="Window_Name" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Settings_Playback" xml:space="preserve">
+    <value>Playback</value>
+  </data>
+  <data name="Settings_PlaybackCountdownDescription" xml:space="preserve">
+    <value>Time to take your hands off the mouse and keyboard before the macro starts.</value>
+  </data>
+  <data name="Settings_OnUserInput" xml:space="preserve">
+    <value>When you touch the mouse or keyboard</value>
+  </data>
+  <data name="Settings_OnUserInputDescription" xml:space="preserve">
+    <value>While a macro plays, your mouse and keyboard would mix with its clicks and keys.</value>
+  </data>
+  <data name="OnUserInput_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="OnUserInput_Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="OnUserInput_Ignore" xml:space="preserve">
+    <value>Keep playing</value>
+  </data>
+  <data name="Settings_WindowWait" xml:space="preserve">
+    <value>Wait for windows</value>
+  </data>
+  <data name="Settings_WindowWaitDescription" xml:space="preserve">
+    <value>How long to wait for a program or dialog to open before the macro stops.</value>
+  </data>
+  <data name="Dialog_Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Warning_UnreliableExcelWheel" xml:space="preserve">
+    <value>In Excel, a wheel scroll may not land on the same row every round. Use More &gt; Convert Excel wheel to arrow keys.</value>
+  </data>
+  <data name="Warning_UnconvertedAltTab" xml:space="preserve">
+    <value>Alt+Tab goes to the window used last, which can change between rounds. Add a &quot;Switch to window&quot; step instead.</value>
+  </data>
+  <data name="Editor_Macro" xml:space="preserve">
+    <value>Macro</value>
+  </data>
+  <data name="Editor_Unsaved" xml:space="preserve">
+    <value>Unsaved changes</value>
+  </data>
+  <data name="Screen_Warning" xml:space="preserve">
+    <value>This macro was recorded on a {0}×{1} screen at {2}% scale; this screen is {3}×{4} at {5}%. Clicks may land in the wrong place, so try the steps once.</value>
+  </data>
+  <data name="Editor_SaveChanges" xml:space="preserve">
+    <value>Save the changes to &quot;{0}&quot;?</value>
+  </data>
+  <data name="Editor_SetDelay" xml:space="preserve">
+    <value>Set wait</value>
+  </data>
+  <data name="Editor_DelayPrompt" xml:space="preserve">
+    <value>Time to wait before the step, for example 500, 500 ms or 1.5 s.</value>
+  </data>
+  <data name="Editor_InvalidDelay" xml:space="preserve">
+    <value>That is not a duration. Examples: 500, 500 ms, 1.5 s (at most 1 hour).</value>
+  </data>
+  <data name="Editor_NoPreviousVersion" xml:space="preserve">
+    <value>This macro has no earlier version yet. One is kept each time you save it here.</value>
+  </data>
+  <data name="Editor_Undo" xml:space="preserve">
+    <value>Undo (Ctrl+Z)</value>
+  </data>
+  <data name="Editor_Redo" xml:space="preserve">
+    <value>Redo (Ctrl+Y)</value>
+  </data>
+  <data name="Editor_Delete" xml:space="preserve">
+    <value>Delete (Del)</value>
+  </data>
+  <data name="Editor_Duplicate" xml:space="preserve">
+    <value>Duplicate (Ctrl+D)</value>
+  </data>
+  <data name="Editor_MoveUp" xml:space="preserve">
+    <value>Move up (Alt+↑)</value>
+  </data>
+  <data name="Editor_MoveDown" xml:space="preserve">
+    <value>Move down (Alt+↓)</value>
+  </data>
+  <data name="Editor_ToggleEnabled" xml:space="preserve">
+    <value>Turn on or off (steps that are off are skipped)</value>
+  </data>
+  <data name="Editor_AddStep" xml:space="preserve">
+    <value>Add step</value>
+  </data>
+  <data name="Editor_PlayFromHere" xml:space="preserve">
+    <value>Play from here</value>
+  </data>
+  <data name="Editor_TryStep" xml:space="preserve">
+    <value>Try this step</value>
+  </data>
+  <data name="Editor_More" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="Editor_RestorePrevious" xml:space="preserve">
+    <value>Restore previous version</value>
+  </data>
+  <data name="Editor_ConvertExcelWheel" xml:space="preserve">
+    <value>Convert Excel wheel to arrow keys</value>
+  </data>
+  <data name="Editor_ColumnEnabled" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Editor_ColumnStep" xml:space="preserve">
+    <value>Step</value>
+  </data>
+  <data name="Editor_ColumnDelay" xml:space="preserve">
+    <value>Wait (ms)</value>
+  </data>
+  <data name="Editor_ColumnNote" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Editor_NotePlaceholder" xml:space="preserve">
+    <value>Add a note</value>
+  </data>
+  <data name="Editor_Hint" xml:space="preserve">
+    <value>Wait is the time before a step. Drag lines to reorder them. Changes reach the file only when you save; &quot;Play from here&quot; plays the unsaved version.</value>
+  </data>
+  <data name="Insert_Wait" xml:space="preserve">
+    <value>Wait</value>
+  </data>
+  <data name="Insert_Key" xml:space="preserve">
+    <value>Key</value>
+  </data>
+  <data name="Insert_KeyPrompt" xml:space="preserve">
+    <value>Key to press:</value>
+  </data>
+  <data name="Insert_Text" xml:space="preserve">
+    <value>Type text</value>
+  </data>
+  <data name="Insert_TextPrompt" xml:space="preserve">
+    <value>Text to type:</value>
+  </data>
+  <data name="Insert_Copy" xml:space="preserve">
+    <value>Copy (Ctrl+C)</value>
+  </data>
+  <data name="Insert_Paste" xml:space="preserve">
+    <value>Paste (Ctrl+V)</value>
+  </data>
+  <data name="Insert_FocusWindow" xml:space="preserve">
+    <value>Switch to window</value>
+  </data>
+  <data name="Insert_FocusWindowPrompt" xml:space="preserve">
+    <value>Window to bring to the front:</value>
+  </data>
+  <data name="Insert_Click" xml:space="preserve">
+    <value>Click (point with the mouse)</value>
+  </data>
+  <data name="Insert_ClickTitle" xml:space="preserve">
+    <value>Point at the spot to click</value>
+  </data>
+  <data name="Insert_ClickHint" xml:space="preserve">
+    <value>Move the mouse over the spot and wait.</value>
+  </data>
+  <data name="Home_Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Failure_InputBlocked" xml:space="preserve">
+    <value>Windows refused the keys and clicks: the screen may be locked or an administrator (UAC) prompt may be open. Unlock the screen and start the macro again.</value>
+  </data>
+  <data name="Playback_ScreenQuestion" xml:space="preserve">
+    <value>{0}
+
+Play it anyway?</value>
+  </data>
+  <data name="Editor_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Import_Title" xml:space="preserve">
+    <value>Import macro</value>
+  </data>
+  <data name="Import_Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Import_Notice" xml:space="preserve">
+    <value>Someone else made this macro. When it runs it presses keys and clicks on your computer, so look through the steps below before adding it.</value>
+  </data>
+  <data name="Home_NewRecording" xml:space="preserve">
+    <value>New recording</value>
+  </data>
+  <data name="Macro_Summary" xml:space="preserve">
+    <value>{0} steps · ~{1} per round · {2}</value>
+  </data>
+  <data name="Macro_LastRun" xml:space="preserve">
+    <value>Last run: {0} · {1}, {2} rounds</value>
+  </data>
+  <data name="Outcome_Completed" xml:space="preserve">
+    <value>completed</value>
+  </data>
+  <data name="Outcome_ListEnded" xml:space="preserve">
+    <value>list ended</value>
+  </data>
+  <data name="Outcome_Stopped" xml:space="preserve">
+    <value>stopped</value>
+  </data>
+  <data name="Outcome_Failed" xml:space="preserve">
+    <value>stopped with an error</value>
+  </data>
+  <data name="Duration_Seconds" xml:space="preserve">
+    <value>{0} s</value>
+  </data>
+  <data name="Duration_Minutes" xml:space="preserve">
+    <value>{0} min {1} s</value>
+  </data>
+  <data name="Macros_Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Macros_Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Macros_OpenFolder" xml:space="preserve">
+    <value>Open folder</value>
+  </data>
+  <data name="Macros_Trash" xml:space="preserve">
+    <value>Trash ({0})</value>
+  </data>
+  <data name="Macros_TrashHint" xml:space="preserve">
+    <value>Deleted macros stay here for 30 days, then they are deleted for good.</value>
+  </data>
+  <data name="Macros_NoMatches" xml:space="preserve">
+    <value>No macro matches the search.</value>
+  </data>
+  <data name="Macros_Play" xml:space="preserve">
+    <value>Play (with its saved repeat and speed)</value>
+  </data>
+  <data name="Macros_Duplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="Macros_Rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="Macros_RenamePrompt" xml:space="preserve">
+    <value>New name:</value>
+  </data>
+  <data name="Macros_InvalidName" xml:space="preserve">
+    <value>The name must have 1 to {0} characters.</value>
+  </data>
+  <data name="Macros_Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Macros_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Macros_DeleteConfirm" xml:space="preserve">
+    <value>Move &quot;{0}&quot; to the trash? It can be restored for 30 days.</value>
+  </data>
+  <data name="Macros_Restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="Macros_DeletedAt" xml:space="preserve">
+    <value>Deleted {0} · deleted for good in {1} days</value>
+  </data>
+  <data name="Macros_CopyName" xml:space="preserve">
+    <value>{0} (copy)</value>
+  </data>
+  <data name="Macros_FileType" xml:space="preserve">
+    <value>Macro Studio macro</value>
+  </data>
+  <data name="Macros_ImportFailed" xml:space="preserve">
+    <value>&quot;{0}&quot; could not be imported: {1}</value>
+  </data>
+  <data name="Macros_ActionFailed" xml:space="preserve">
+    <value>That did not work: {0}</value>
+  </data>
+  <data name="Macros_Unreadable" xml:space="preserve">
+    <value>These files could not be read as macros and are not listed: {0}. They are still in the folder.</value>
+  </data>
+  <data name="Home_ShowAll" xml:space="preserve">
+    <value>See all</value>
+  </data>
+  <data name="Import_StepCount" xml:space="preserve">
+    <value>{0} steps</value>
+  </data>
+  <data name="Window_Minimize" xml:space="preserve">
+    <value>Minimize</value>
+  </data>
+  <data name="Window_Maximize" xml:space="preserve">
+    <value>Maximize</value>
+  </data>
+  <data name="Window_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Window_ToggleMenu" xml:space="preserve">
+    <value>Collapse or expand the menu</value>
+  </data>
+</root>

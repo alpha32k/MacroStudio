@@ -1,0 +1,69 @@
+<pages:ContentPage x:Class="MacroStudio.App.Pages.HomePage"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                   xmlns:l="clr-namespace:MacroStudio.App.Localization"
+                   xmlns:pages="clr-namespace:MacroStudio.App.Pages">
+  <StackPanel Style="{StaticResource PageContentStyle}">
+    <TextBlock Style="{StaticResource PageTitleStyle}" Text="{l:Loc Nav_Home}" />
+    <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Home_Welcome}" />
+
+    <ui:Button Margin="0,16,0,0"
+               Padding="20,12"
+               FontSize="16"
+               Appearance="Primary"
+               Icon="{ui:SymbolIcon Record24}"
+               Content="{l:Loc Home_NewRecording}"
+               ToolTip="Ctrl+Alt+R"
+               Command="{Binding NewRecordingCommand}" />
+
+    <!-- No macros yet. -->
+    <ui:Card Margin="0,24,0,0" Padding="24">
+      <ui:Card.Style>
+        <Style TargetType="ui:Card" BasedOn="{StaticResource {x:Type ui:Card}}">
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding HasMacros}" Value="True">
+              <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </ui:Card.Style>
+      <StackPanel Orientation="Horizontal">
+        <ui:SymbolIcon Symbol="Record24" FontSize="32" VerticalAlignment="Center" Foreground="{DynamicResource SystemFillColorCriticalBrush}" />
+        <TextBlock Style="{StaticResource BodyTextStyle}" Margin="16,0,0,0" VerticalAlignment="Center" Text="{l:Loc Home_NoMacros}" />
+      </StackPanel>
+    </ui:Card>
+
+    <!-- Recent macros with how their last run ended. -->
+    <StackPanel Visibility="{Binding HasMacros, Converter={StaticResource BooleanToVisibility}}">
+      <DockPanel Margin="0,24,0,8">
+        <ui:Button DockPanel.Dock="Right" Appearance="Transparent" Content="{l:Loc Home_ShowAll}" Command="{Binding ShowAllMacrosCommand}" />
+        <TextBlock Style="{StaticResource SectionHeaderStyle}" Margin="0" VerticalAlignment="Center" Text="{l:Loc Home_RecentMacros}" />
+      </DockPanel>
+      <ItemsControl ItemsSource="{Binding RecentMacros}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type pages:RecentMacro}">
+            <ui:Card Margin="0,0,0,4" Padding="16,12">
+              <DockPanel>
+                <ui:Button DockPanel.Dock="Right"
+                           VerticalAlignment="Center"
+                           Icon="{ui:SymbolIcon Edit24}"
+                           Content="{l:Loc Home_Edit}"
+                           Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                           CommandParameter="{Binding}" />
+                <ui:SymbolIcon Symbol="DocumentBulletList24" FontSize="24" VerticalAlignment="Center" />
+                <StackPanel Margin="12,0,0,0">
+                  <TextBlock Style="{StaticResource BodyTextStyle}" FontWeight="SemiBold" Text="{Binding Name}" />
+                  <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{Binding Summary}" />
+                  <TextBlock Style="{StaticResource CollapsedWhenEmptyTextStyle}" Text="{Binding LastRun}" />
+                </StackPanel>
+              </DockPanel>
+            </ui:Card>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+
+    <ui:Button Margin="0,12,0,0" Icon="{ui:SymbolIcon FolderOpen24}" Content="{l:Loc Home_OpenMacroFolder}" Command="{Binding OpenMacroFolderCommand}" />
+  </StackPanel>
+</pages:ContentPage>

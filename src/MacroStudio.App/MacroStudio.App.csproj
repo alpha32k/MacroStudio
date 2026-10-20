@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- Only for the system tray icon (NotifyIcon); WPF has none. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>MacroStudio</AssemblyName>
+    <RootNamespace>MacroStudio.App</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\MacroStudio.ico</ApplicationIcon>
+    <!-- WFO0003 asks WinForms apps to set DPI in code. This is a WPF app: its DPI mode belongs in app.manifest. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+    <!--
+      No background garbage collection: it reserves memory for a second collector, which more than doubled the app's
+      committed memory (measured 144 MB against 68 MB). The heap is small, so a full collection pauses only milliseconds.
+    -->
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WinForms implicit usings would clash with WPF types (Application, Button, ...). -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Sinks.File" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MacroStudio.Core\MacroStudio.Core.csproj" />
+    <ProjectReference Include="..\MacroStudio.Engine\MacroStudio.Engine.csproj" />
+    <ProjectReference Include="..\MacroStudio.Native\MacroStudio.Native.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\MacroStudio.ico" />
+  </ItemGroup>
+</Project>

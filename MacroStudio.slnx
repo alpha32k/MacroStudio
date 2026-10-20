@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MacroStudio.Core/MacroStudio.Core.csproj" />
+    <Project Path="src/MacroStudio.Engine/MacroStudio.Engine.csproj" />
+    <Project Path="src/MacroStudio.Native/MacroStudio.Native.csproj" />
+    <Project Path="src/MacroStudio.App/MacroStudio.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MacroStudio.Core.Tests/MacroStudio.Core.Tests.csproj" />
+    <Project Path="tests/MacroStudio.Engine.Tests/MacroStudio.Engine.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path=".editorconfig" />
+    <File Path="MacroStudio_Master_Prompt.md" />
+    <File Path="docs/DECISIONS.md" />
+  </Folder>
+</Solution>

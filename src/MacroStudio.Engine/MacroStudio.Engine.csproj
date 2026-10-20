@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Recording and playback logic. Talks to Windows only through the interfaces in Core, so it can be unit tested. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MacroStudio.Core\MacroStudio.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Every Win32 call of the application lives in this project. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Only for UI Automation (System.Windows.Automation), which finds password fields; no WPF windows here. -->
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MacroStudio.Core\MacroStudio.Core.csproj" />
+  </ItemGroup>
+</Project>

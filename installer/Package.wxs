@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Macro Studio installer, per user: installs to %LocalAppData%\Programs\Macro Studio without administrator rights.
+  The user's macros, settings and logs (%LocalAppData%\MacroStudio) are not part of the package, so uninstalling
+  keeps them.
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package Name="Macro Studio"
+           Manufacturer="Ahmet Şahin"
+           Version="$(var.Version)"
+           UpgradeCode="07A54CBD-B8CF-457E-943B-3CFD8867C3C8"
+           Scope="perUser"
+           Language="!(loc.PackageLanguage)"
+           Codepage="1254">
+
+    <!-- A newer version replaces the installed one; an older one refuses to install over it. -->
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="AppIcon" SourceFile="..\src\MacroStudio.App\Assets\MacroStudio.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <!-- The link next to Macro Studio in Settings > Apps. -->
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/alpha32k" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+    <!-- Drawn from the app icon by make-images.ps1. -->
+    <WixVariable Id="WixUIDialogBmp" Value="Dialog.bmp" />
+    <WixVariable Id="WixUIBannerBmp" Value="Banner.bmp" />
+
+    <!-- The last page offers to start Macro Studio. -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="!(loc.LaunchAfterInstall)" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <Property Id="WixShellExecTarget" Value="[#MacroStudioExe]" />
+    <CustomAction Id="LaunchMacroStudio" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" DllEntry="WixShellExec" Impersonate="yes" />
+
+    <UI>
+      <!-- The feature list is where the desktop shortcut can be left out. -->
+      <ui:WixUI Id="WixUI_FeatureTree" />
+      <Publish Dialog="ExitDialog"
+               Control="Finish"
+               Event="DoAction"
+               Value="LaunchMacroStudio"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+    </UI>
+
+    <!-- "Start with Windows" is written by the app itself, so uninstalling removes it explicitly. -->
+    <SetProperty Id="RemoveAutostart"
+                 Value="&quot;[System64Folder]reg.exe&quot; delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v MacroStudio /f"
+                 Before="RemoveAutostart"
+                 Sequence="execute" />
+    <CustomAction Id="RemoveAutostart"
+                  BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)"
+                  DllEntry="WixQuietExec"
+                  Execute="deferred"
+                  Impersonate="yes"
+                  Return="ignore" />
+    <InstallExecuteSequence>
+      <Custom Action="RemoveAutostart" Before="RemoveFiles" Condition="REMOVE = &quot;ALL&quot; AND NOT UPGRADINGPRODUCTCODE" />
+    </InstallExecuteSequence>
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="UserProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="Macro Studio">
+          <Directory Id="TurkishFolder" Name="tr" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+      <Component Id="MainExecutable">
+        <File Id="MacroStudioExe" Source="$(var.AppPublishDir)\MacroStudio.exe" KeyPath="yes" />
+        <RemoveFolder Id="RemoveInstallFolder" On="uninstall" />
+      </Component>
+
+      <!--
+        .msmacro files open with Macro Studio. Written straight to the user's own classes (HKCU\Software\Classes):
+        WiX's ProgId element would write to HKEY_CLASSES_ROOT, which validation counts as per-machine.
+      -->
+      <Component Id="FileAssociation">
+        <RegistryValue Root="HKCU" Key="Software\Classes\.msmacro" Type="string" Value="MacroStudio.Macro" />
+        <RegistryKey Root="HKCU" Key="Software\Classes\MacroStudio.Macro">
+          <RegistryValue Type="string" Value="!(loc.FileTypeDescription)" />
+          <RegistryValue Key="DefaultIcon" Type="string" Value="&quot;[#MacroStudioExe]&quot;,0" />
+          <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[#MacroStudioExe]&quot; &quot;%1&quot;" />
+        </RegistryKey>
+        <RemoveRegistryKey Action="removeOnUninstall" Root="HKCU" Key="Software\Classes\.msmacro" />
+        <RemoveRegistryKey Action="removeOnUninstall" Root="HKCU" Key="Software\Classes\MacroStudio.Macro" />
+        <RegistryValue Root="HKCU" Key="Software\Macro Studio" Name="FileAssociation" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <!-- Everything else the self-contained build needs: the .NET runtime, WPF and the app's libraries. -->
+      <Files Include="$(var.AppPublishDir)\*">
+        <Exclude Files="$(var.AppPublishDir)\MacroStudio.exe" />
+      </Files>
+      <Files Directory="TurkishFolder" Include="$(var.AppPublishDir)\tr\*" />
+      <Component Id="TurkishFolderCleanup" Directory="TurkishFolder">
+        <RemoveFolder Id="RemoveTurkishFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\Macro Studio" Name="TurkishResources" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="StartMenuShortcut">
+        <Shortcut Id="StartMenuShortcut"
+                  Name="Macro Studio"
+                  Description="!(loc.ShortcutDescription)"
+                  Target="[#MacroStudioExe]"
+                  WorkingDirectory="INSTALLFOLDER" />
+        <RegistryValue Root="HKCU" Key="Software\Macro Studio" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder">
+      <Component Id="DesktopShortcut">
+        <Shortcut Id="DesktopShortcut"
+                  Name="Macro Studio"
+                  Description="!(loc.ShortcutDescription)"
+                  Target="[#MacroStudioExe]"
+                  WorkingDirectory="INSTALLFOLDER" />
+        <RegistryValue Root="HKCU" Key="Software\Macro Studio" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="!(loc.FeatureMainTitle)" Description="!(loc.FeatureMainDescription)" AllowAbsent="no" Display="expand">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <Feature Id="Desktop" Title="!(loc.FeatureDesktopTitle)" Description="!(loc.FeatureDesktopDescription)">
+        <ComponentRef Id="DesktopShortcut" />
+      </Feature>
+    </Feature>
+  </Package>
+</Wix>

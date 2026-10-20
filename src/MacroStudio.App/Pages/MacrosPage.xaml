@@ -1,0 +1,162 @@
+<pages:ContentPage x:Class="MacroStudio.App.Pages.MacrosPage"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                   xmlns:l="clr-namespace:MacroStudio.App.Localization"
+                   xmlns:pages="clr-namespace:MacroStudio.App.Pages">
+  <pages:ContentPage.Resources>
+    <Style x:Key="IconButtonStyle" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+      <Setter Property="Margin" Value="4,0,0,0" />
+      <Setter Property="Padding" Value="8" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+      <!-- Icon-only buttons: screen readers read the tooltip text as the name. -->
+      <Setter Property="AutomationProperties.Name" Value="{Binding ToolTip, RelativeSource={RelativeSource Self}}" />
+    </Style>
+  </pages:ContentPage.Resources>
+
+  <StackPanel Style="{StaticResource PageContentStyle}">
+    <TextBlock Style="{StaticResource PageTitleStyle}" Text="{l:Loc Nav_Macros}" />
+
+    <DockPanel Margin="0,0,0,12">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+        <ui:Button Margin="8,0,0,0" Icon="{ui:SymbolIcon ArrowImport24}" Content="{l:Loc Macros_Import}" Command="{Binding ImportCommand}" />
+        <ui:Button Margin="8,0,0,0" Icon="{ui:SymbolIcon FolderOpen24}" Content="{l:Loc Macros_OpenFolder}" Command="{Binding OpenFolderCommand}" />
+        <ToggleButton Margin="8,0,0,0" IsChecked="{Binding IsShowingTrash}" Content="{Binding TrashButtonText}" />
+      </StackPanel>
+      <ui:TextBox Icon="{ui:SymbolIcon Search24}"
+                  PlaceholderText="{l:Loc Macros_Search}"
+                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                  AutomationProperties.Name="{l:Loc Macros_Search}" />
+    </DockPanel>
+
+    <ui:InfoBar Margin="0,0,0,12" Severity="Warning" IsOpen="True" IsClosable="False" Message="{Binding UnreadableWarning}">
+      <ui:InfoBar.Style>
+        <Style TargetType="ui:InfoBar" BasedOn="{StaticResource {x:Type ui:InfoBar}}">
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding UnreadableWarning}" Value="{x:Null}">
+              <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </ui:InfoBar.Style>
+    </ui:InfoBar>
+
+    <!-- The macros. -->
+    <StackPanel>
+      <StackPanel.Style>
+        <Style TargetType="StackPanel">
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding IsShowingTrash}" Value="True">
+              <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </StackPanel.Style>
+
+      <ui:Card Padding="24">
+        <ui:Card.Style>
+          <Style TargetType="ui:Card" BasedOn="{StaticResource {x:Type ui:Card}}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding HasMacros}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ui:Card.Style>
+        <StackPanel Orientation="Horizontal">
+          <ui:SymbolIcon Symbol="Library24" FontSize="32" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+          <TextBlock Style="{StaticResource BodyTextStyle}" Margin="16,0,0,0" VerticalAlignment="Center" Text="{l:Loc Macros_Empty}" />
+        </StackPanel>
+      </ui:Card>
+
+      <TextBlock Style="{StaticResource BodyTextStyle}"
+                 Text="{l:Loc Macros_NoMatches}"
+                 Visibility="{Binding HasNoMatches, Converter={StaticResource BooleanToVisibility}}" />
+
+      <ItemsControl ItemsSource="{Binding Items}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type pages:MacroItem}">
+            <ui:Card Margin="0,0,0,4" Padding="16,12">
+              <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                  <ui:Button Style="{StaticResource IconButtonStyle}"
+                             Icon="{ui:SymbolIcon Play24}"
+                             ToolTip="{l:Loc Macros_Play}"
+                             Command="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                             CommandParameter="{Binding}" />
+                  <ui:Button Style="{StaticResource IconButtonStyle}"
+                             Icon="{ui:SymbolIcon Edit24}"
+                             ToolTip="{l:Loc Home_Edit}"
+                             Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                             CommandParameter="{Binding}" />
+                  <!-- Tag carries the page's view model into the menu, which is not part of the page's tree. -->
+                  <ui:Button Style="{StaticResource IconButtonStyle}"
+                             Icon="{ui:SymbolIcon MoreHorizontal24}"
+                             ToolTip="{l:Loc Editor_More}"
+                             Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                             Click="OnMenuButtonClick">
+                    <ui:Button.ContextMenu>
+                      <ContextMenu>
+                        <MenuItem Header="{l:Loc Macros_Duplicate}"
+                                  Icon="{ui:SymbolIcon Copy20}"
+                                  Command="{Binding PlacementTarget.Tag.DuplicateCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  CommandParameter="{Binding}" />
+                        <MenuItem Header="{l:Loc Macros_Rename}"
+                                  Icon="{ui:SymbolIcon Rename20}"
+                                  Command="{Binding PlacementTarget.Tag.RenameCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  CommandParameter="{Binding}" />
+                        <MenuItem Header="{l:Loc Macros_Export}"
+                                  Icon="{ui:SymbolIcon ArrowExport20}"
+                                  Command="{Binding PlacementTarget.Tag.ExportCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  CommandParameter="{Binding}" />
+                        <Separator />
+                        <MenuItem Header="{l:Loc Macros_Delete}"
+                                  Icon="{ui:SymbolIcon Delete20}"
+                                  Command="{Binding PlacementTarget.Tag.DeleteCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  CommandParameter="{Binding}" />
+                      </ContextMenu>
+                    </ui:Button.ContextMenu>
+                  </ui:Button>
+                </StackPanel>
+                <ui:SymbolIcon Symbol="DocumentBulletList24" FontSize="24" VerticalAlignment="Center" />
+                <StackPanel Margin="12,0,0,0">
+                  <TextBlock Style="{StaticResource BodyTextStyle}" FontWeight="SemiBold" Text="{Binding Name}" />
+                  <TextBlock Style="{StaticResource CollapsedWhenEmptyTextStyle}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="{Binding Description}" />
+                  <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{Binding Summary}" />
+                  <TextBlock Style="{StaticResource CollapsedWhenEmptyTextStyle}" Text="{Binding LastRun}" />
+                </StackPanel>
+              </DockPanel>
+            </ui:Card>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+
+    <!-- The trash. -->
+    <StackPanel Visibility="{Binding IsShowingTrash, Converter={StaticResource BooleanToVisibility}}">
+      <TextBlock Style="{StaticResource DescriptionTextStyle}" Margin="0,0,0,8" Text="{l:Loc Macros_TrashHint}" />
+      <ItemsControl ItemsSource="{Binding TrashItems}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type pages:TrashItem}">
+            <ui:Card Margin="0,0,0,4" Padding="16,12">
+              <DockPanel>
+                <ui:Button DockPanel.Dock="Right"
+                           VerticalAlignment="Center"
+                           Icon="{ui:SymbolIcon ArrowUndo24}"
+                           Content="{l:Loc Macros_Restore}"
+                           Command="{Binding DataContext.RestoreCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                           CommandParameter="{Binding}" />
+                <ui:SymbolIcon Symbol="Delete24" FontSize="24" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <StackPanel Margin="12,0,0,0">
+                  <TextBlock Style="{StaticResource BodyTextStyle}" FontWeight="SemiBold" Text="{Binding Name}" />
+                  <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{Binding Deleted}" />
+                </StackPanel>
+              </DockPanel>
+            </ui:Card>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </StackPanel>
+</pages:ContentPage>
