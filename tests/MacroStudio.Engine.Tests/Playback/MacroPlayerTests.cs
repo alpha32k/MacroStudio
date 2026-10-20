@@ -103,6 +103,34 @@ public sealed class MacroPlayerTests
     }
 
     [Fact]
+    public void StepsInWindowsSearch_DoNotWaitForItAsAWindow()
+    {
+        var search = new WindowTarget("SearchApp", "Arama", "Windows.UI.Core.CoreWindow", new ScreenRect(48, 560, 832, 1040));
+        var desktop = new FakeDesktop();
+        MacroStep[] steps = [new FocusWindowStep { Target = search }, new TypeTextStep { Text = "hi", Target = search }];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(1) });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Equal(["h", "i"], desktop.Typed);
+        Assert.Empty(desktop.Activations);
+    }
+
+    [Fact]
+    public void BringToFront_OfAHiddenShellHostWindow_IsSkipped()
+    {
+        var shellHost = new WindowTarget("explorer", "", "ApplicationManager_DesktopShellWindow", new ScreenRect(0, 0, 0, 0));
+        var desktop = new FakeDesktop();
+        desktop.Windows.Add(SapWindow);
+        MacroStep[] steps = [new FocusWindowStep { Target = shellHost }, new FocusWindowStep { Target = SapTarget }];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(1) });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Equal([SapWindow.Handle], desktop.Activations);
+    }
+
+    [Fact]
     public void KeyStep_InAWindowOfAnotherSize_LeavesTheWindowAlone()
     {
         var desktop = new FakeDesktop();

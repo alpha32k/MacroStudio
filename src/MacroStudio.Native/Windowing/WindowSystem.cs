@@ -34,7 +34,7 @@ public sealed unsafe class WindowSystem : IWindowSystem
         foreach (nint hwnd in handles)
         {
             GetWindowThreadProcessId(hwnd, out uint processId);
-            if (processId == _ownProcessId || !IsShown(hwnd) || GetBounds(hwnd) is not ScreenRect bounds)
+            if (processId == _ownProcessId || !WindowInterop.IsShown(hwnd) || GetBounds(hwnd) is not ScreenRect bounds)
             {
                 continue;
             }
@@ -159,8 +159,4 @@ public sealed unsafe class WindowSystem : IWindowSystem
         ((List<nint>)GCHandle.FromIntPtr(state).Target!).Add(hwnd);
         return 1;
     }
-
-    /// <summary>Visible and not hidden by Windows (suspended store apps stay "visible" but are cloaked).</summary>
-    private static bool IsShown(nint hwnd) =>
-        IsWindowVisible(hwnd) && (DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, out int cloaked, sizeof(int)) != 0 || cloaked == 0);
 }

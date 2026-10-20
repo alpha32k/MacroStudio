@@ -175,7 +175,8 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
     /// <returns>The window; null for steps without a window.</returns>
     private WindowCandidate? Activate(WindowTarget? target, PlaybackRun run)
     {
-        if (target is null)
+        // A Windows panel such as search is already in front when its step comes; keys go to it as they are.
+        if (target is null || ShellPanels.IsShellPanel(target))
         {
             return null;
         }

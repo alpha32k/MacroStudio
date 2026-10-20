@@ -5,6 +5,26 @@ Etiketler: **[Kesin]** doğrulandı · **[Muhtemel]** güçlü çıkarım · **[
 
 ---
 
+## 1.0.1 — Windows panelleri ve gizli pencereler (2026-10-20)
+
+Kullanıcı hatası: Windows tuşu/arama kutusu → metin → Enter (tarayıcı açılır) kaydı, oynatmada 2. adımda "pencere bulunamadı" diye durdu.
+
+### Nedenler
+
+1. **Windows'un kendi panelleri program penceresi sanılıyordu.** Arama paneli (`SearchApp`, sınıf `Windows.UI.Core.CoreWindow`) kayda hedef pencere olarak giriyordu. Oynatmada Windows tuşu önce Başlat'ı açıyor, arama paneli ancak yazınca beliriyor. Makro yazmadan önce paneli beklediği için onu hiç bulamıyordu.
+2. **Gizli kabuk pencereleri "öne getir" olarak kaydediliyordu.** Arama kapanırken Windows odağı bir anlığına görünmez bir pencereye (`explorer` / `ApplicationManager_DesktopShellWindow`) veriyor. Kaydedici öne gelen her pencereyi kaydettiği için bu da adım oluyordu; oynatmada görünmediği için bulunamazdı.
+
+### Çözüm
+
+- Yeni pencere türleri: `ShellPanel` (Başlat, arama, bildirim ve hızlı ayarlar paneli) ve `Hidden` (görünmeyen pencere). İkisi de görev çubuğu gibi ele alınıyor: adımlar pencere hedefi olmadan kaydediliyor, "öne getir" adımı yazılmıyor.
+- Oynatıcı eski kayıtlardaki bu hedefleri (`ShellPanels`) beklemeden geçiyor; tuşlar o an açık olan panele gidiyor. Var olan makrolar yeniden kaydedilmeden düzeliyor.
+
+### Testler
+
+146 testin 146'sı geçiyor; dört yeni test eklendi (arama paneline yazma, gizli pencereye odak kaydı, eski kayıtta arama adımları, eski kayıtta gizli pencere). Gerçek Windows araması üzerinde oynatma denenmedi.
+
+---
+
 ## GitHub hazırlığı (2026-10-20)
 
 - İmza bağlantısı `https://github.com/alpha32k` oldu (uygulama, Hakkında, README, Ayarlar > Uygulamalar'daki bağlantı). Bağlantı boşken imzayı düz yazıya çeviren kod artık gereksiz olduğu için kaldırıldı.

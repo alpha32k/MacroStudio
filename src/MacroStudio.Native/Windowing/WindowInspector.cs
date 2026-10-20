@@ -17,15 +17,28 @@ public sealed unsafe class WindowInspector : IWindowInspector
 
         GetWindowThreadProcessId(window.Handle, out uint processId);
         string className = WindowText.ClassNameOf(window.Handle);
-        var target = new WindowTarget(ProcessNames.Of(processId), WindowText.TitleOf(window.Handle), className, window.Bounds);
-        return new WindowInfo(RoleOf(processId, className), target);
+        string processName = ProcessNames.Of(processId);
+        var target = new WindowTarget(processName, WindowText.TitleOf(window.Handle), className, window.Bounds);
+        return new WindowInfo(RoleOf(window.Handle, processId, processName, className), target);
     }
 
-    private WindowRole RoleOf(uint processId, string className)
+    private WindowRole RoleOf(nint handle, uint processId, string processName, string className)
     {
         if (processId == _ownProcessId)
         {
             return WindowRole.MacroStudio;
+        }
+
+        if (ShellPanels.IsShellPanel(processName, className))
+        {
+            return WindowRole.ShellPanel;
+        }
+
+        // Windows briefly gives the focus to hidden host windows (for example when the search panel closes).
+        // Playback could never find them, so they are not recorded as windows.
+        if (!WindowInterop.IsShown(handle))
+        {
+            return WindowRole.Hidden;
         }
 
         return className switch

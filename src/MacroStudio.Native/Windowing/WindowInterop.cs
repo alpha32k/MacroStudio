@@ -6,6 +6,10 @@ namespace MacroStudio.Native.Windowing;
 
 public static unsafe class WindowInterop
 {
+    /// <summary>Visible and not hidden by Windows (suspended store apps and shell host windows stay "visible" but are cloaked).</summary>
+    public static bool IsShown(nint hwnd) =>
+        IsWindowVisible(hwnd) && (DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, out int cloaked, sizeof(int)) != 0 || cloaked == 0);
+
     /// <summary>
     /// Clicking the window never takes the keyboard focus from the window the user works in,
     /// and the window is hidden from the taskbar and Alt+Tab.

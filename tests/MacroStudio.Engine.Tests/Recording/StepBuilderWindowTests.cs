@@ -1,4 +1,6 @@
+using MacroStudio.Core.Geometry;
 using MacroStudio.Core.Input;
+using MacroStudio.Core.Macros;
 using MacroStudio.Core.Macros.Steps;
 using MacroStudio.Core.Recording;
 using static MacroStudio.Engine.Tests.Recording.RecordingScript;
@@ -29,6 +31,26 @@ public sealed class StepBuilderWindowTests
     public void TaskbarClick_ThatBringsAWindowUp_BecomesBringToFront()
     {
         IReadOnlyList<MacroStep> steps = new RecordingScript().Click(Taskbar, 400, 1060).Wait(150).Foreground(Sap).Finish();
+
+        Assert.Equal("saplogon", Assert.IsType<FocusWindowStep>(Assert.Single(steps)).Target.ProcessName);
+    }
+
+    [Fact]
+    public void TypingInWindowsSearch_IsRecordedWithoutAWindow()
+    {
+        IReadOnlyList<MacroStep> steps = new RecordingScript().Key(Desktop, VirtualKeys.LeftWindows).Foreground(Search).Wait(300).Type(Search, "merhaba").Finish();
+
+        Assert.DoesNotContain(steps, step => step is FocusWindowStep);
+        TypeTextStep typed = Assert.IsType<TypeTextStep>(steps[^1]);
+        Assert.Equal(("merhaba", null), (typed.Text, typed.Target));
+    }
+
+    [Fact]
+    public void FocusOnAHiddenWindow_IsNotRecorded()
+    {
+        var hidden = new TestWindow(510, new WindowInfo(WindowRole.Hidden, new WindowTarget("explorer", "", "ApplicationManager_DesktopShellWindow", new ScreenRect(0, 0, 0, 0))));
+
+        IReadOnlyList<MacroStep> steps = new RecordingScript().Foreground(hidden).Wait(100).Foreground(Sap).Finish();
 
         Assert.Equal("saplogon", Assert.IsType<FocusWindowStep>(Assert.Single(steps)).Target.ProcessName);
     }

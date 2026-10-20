@@ -19,6 +19,7 @@ internal sealed class RecordingScript(RecordingOptions? options = null)
     public static readonly TestWindow Taskbar = Shell(300, WindowRole.Taskbar, "Shell_TrayWnd");
     public static readonly TestWindow Desktop = Shell(310, WindowRole.Desktop, "Progman");
     public static readonly TestWindow Bar = Shell(400, WindowRole.MacroStudio, "HwndWrapper");
+    public static readonly TestWindow Search = new(500, new WindowInfo(WindowRole.ShellPanel, new WindowTarget("SearchApp", "Arama", "Windows.UI.Core.CoreWindow", new ScreenRect(48, 560, 832, 1040))));
 
     private readonly StepBuilder _builder = new(options ?? new RecordingOptions());
     private long _timeMs;
