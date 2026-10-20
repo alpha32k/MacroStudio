@@ -2,6 +2,18 @@
 
 [Türkçe](#türkçe) · [English](#english)
 
+<p align="center">
+  <img src="docs/images/notch-bar.png" alt="The notch bar at the top of the screen: home, record, play, stop, macro, repeat, speed and pin" width="640">
+</p>
+
+<p align="center">
+  <img src="docs/images/editor.png" alt="The editor: a macro's steps with their waits, notes and tools" width="800">
+</p>
+
+| | |
+|---|---|
+| <img src="docs/images/home.png" alt="Home page with the New recording button and recent macros"> | <img src="docs/images/macros.png" alt="My macros page with search, import and trash"> |
+
 ---
 
 ## Türkçe
