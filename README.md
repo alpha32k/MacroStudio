@@ -24,7 +24,7 @@ Macro Studio, programlar arasında elle yapılan tekrarlayan ofis işini **bir k
 
 ### Kurulum
 
-1. `MacroStudio-1.0.0-tr-TR.msi` dosyasını açın; İngilizce ekranlar için `en-US` olanı kullanın.
+1. [Releases](https://github.com/alpha32k/MacroStudio/releases/latest) sayfasından `MacroStudio-<sürüm>-tr-TR.msi` dosyasını indirip açın; İngilizce ekranlar için `en-US` olanı kullanın.
 2. Yönetici izni gerekmez. Program yalnızca sizin kullanıcınıza, `%LocalAppData%\Programs\Macro Studio` klasörüne kurulur.
 3. Başlat menüsüne kısayol eklenir. Masaüstü kısayolu isteğe bağlıdır; kurulumdaki listeden çıkarabilirsiniz.
 4. `.msmacro` dosyaları Macro Studio ile açılır. Çift tıklanan makro, adımları gösterildikten sonra içe aktarılır.
@@ -120,7 +120,7 @@ Example: copy a cell in Excel, paste it into another program, press Enter, copy 
 
 ### Installation
 
-1. Open `MacroStudio-1.0.0-en-US.msi`; for Turkish screens use the `tr-TR` one.
+1. Download `MacroStudio-<version>-en-US.msi` from the [Releases](https://github.com/alpha32k/MacroStudio/releases/latest) page and open it; for Turkish screens use the `tr-TR` one.
 2. No administrator rights are needed. The program is installed for your user only, in `%LocalAppData%\Programs\Macro Studio`.
 3. A Start menu shortcut is added. The desktop shortcut is optional; you can leave it out in the installer's list.
 4. `.msmacro` files open with Macro Studio. A double-clicked macro is imported after its steps are shown.
