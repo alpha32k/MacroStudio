@@ -108,7 +108,7 @@ powershell -File installer\build.ps1 -CertificateThumbprint <sertifika parmak iz
 
 ### Lisans
 
-[MIT](LICENSE). Made by [Ahmet Şahin](https://github.com/alpha32k).
+[MIT](LICENSE). [Ahmet Şahin](https://github.com/alpha32k) tarafından [Claude](https://claude.ai) ile birlikte yapıldı.
 
 ---
 
@@ -204,4 +204,4 @@ The second command signs the program and the installers with a code-signing cert
 
 ### License
 
-[MIT](LICENSE). Made by [Ahmet Şahin](https://github.com/alpha32k).
+[MIT](LICENSE). Made by [Ahmet Şahin](https://github.com/alpha32k) together with [Claude](https://claude.ai).
