@@ -24,7 +24,7 @@ Macro Studio, programlar arasında elle yapılan tekrarlayan ofis işini **bir k
 
 ### Kurulum
 
-1. [Releases](https://github.com/alpha32k/MacroStudio/releases/latest) sayfasından `MacroStudio-<sürüm>.msi` dosyasını indirip açın. Program Türkçe ve İngilizcedir, Windows'un dilini izler (Ayarlar'dan değiştirilebilir); kurulum ekranları Türkçedir.
+1. [Releases](https://github.com/alpha32k/MacroStudio/releases/latest) sayfasından `MacroStudio-<sürüm>.msi` dosyasını indirip açın. Program Türkçe ve İngilizcedir, Windows'un diline göre açılır; dil Ayarlar'dan değiştirilebilir.
 2. Yönetici izni gerekmez. Program yalnızca sizin kullanıcınıza, `%LocalAppData%\Programs\Macro Studio` klasörüne kurulur.
 3. Başlat menüsüne kısayol eklenir. Masaüstü kısayolu isteğe bağlıdır; kurulumdaki listeden çıkarabilirsiniz.
 4. `.msmacro` dosyaları Macro Studio ile açılır. Çift tıklanan makro, adımları gösterildikten sonra içe aktarılır.
@@ -134,7 +134,7 @@ Example: copy a cell in Excel, paste it into another program, press Enter, copy 
 
 ### Installation
 
-1. Download `MacroStudio-<version>.msi` from the [Releases](https://github.com/alpha32k/MacroStudio/releases/latest) page and open it. The program speaks English and Turkish and follows Windows' language (changeable in Settings); the installer screens are in Turkish.
+1. Download `MacroStudio-<version>.msi` from the [Releases](https://github.com/alpha32k/MacroStudio/releases/latest) page and open it. The program speaks English and Turkish and follows the Windows language; change it in Settings. The installer's few screens are in Turkish.
 2. No administrator rights are needed. The program is installed for your user only, in `%LocalAppData%\Programs\Macro Studio`.
 3. A Start menu shortcut is added. The desktop shortcut is optional; you can leave it out in the installer's list.
 4. `.msmacro` files open with Macro Studio. A double-clicked macro is imported after its steps are shown.
