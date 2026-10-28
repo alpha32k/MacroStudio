@@ -23,6 +23,8 @@ public sealed class MacroLibraryTests : IDisposable
         Assert.Equal(macro.Steps.Select(step => step.GetType()), loaded.Steps.Select(step => step.GetType()));
         Assert.Equal(macro.Steps[0], loaded.Steps[0]);
         Assert.Equal("Çağrı İş öğü", Assert.IsType<TypeTextStep>(loaded.Steps[5]).Text);
+        Assert.Equal(macro.Steps[^2], loaded.Steps[^2]);
+        Assert.Equal(macro.Steps[^1], loaded.Steps[^1]);
         Assert.Equal(macro.Name, loaded.Name);
     }
 
@@ -172,6 +174,39 @@ public sealed class MacroLibraryTests : IDisposable
         }
     }
 
+    [Fact]
+    public void Rename_WhenTheFileIsOpenElsewhere_LeavesOneFileAndNotTwo()
+    {
+        var library = new MacroLibrary(_folder);
+        string path = library.SaveNew(CreateMacro("Eski ad", [new CopyStep()]));
+
+        using (new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+        {
+            Exception? error = Record.Exception(() => library.Rename(path, "Yeni ad"));
+            Assert.True(error is IOException or UnauthorizedAccessException, error?.GetType().Name);
+        }
+
+        Assert.Single(Directory.GetFiles(_folder, "*" + MacroLibrary.FileExtension));
+    }
+
+    [Fact]
+    public void SaveNew_ThenLoad_KeepsTheMacroShortcut()
+    {
+        var shortcut = new KeyShortcut(KeyModifiers.Control | KeyModifiers.Shift, 0x31);
+        string path = new MacroLibrary(_folder).SaveNew(CreateMacro("Fatura", [new CopyStep()]) with { Shortcut = shortcut });
+
+        Assert.Equal(shortcut, MacroLibrary.Load(path).Shortcut);
+    }
+
+    [Fact]
+    public void Load_AnOlderFileWithoutAShortcut_HasNone()
+    {
+        string path = new MacroLibrary(_folder).SaveNew(CreateMacro("Eski", [new CopyStep()]));
+        File.WriteAllText(path, File.ReadAllText(path).Replace("\"shortcut\": null,", "", StringComparison.Ordinal));
+
+        Assert.Null(MacroLibrary.Load(path).Shortcut);
+    }
+
     private static MacroDefinition CreateMacro(string name, IReadOnlyList<MacroStep> steps) => new()
     {
         Name = name,
@@ -192,5 +227,7 @@ public sealed class MacroLibraryTests : IDisposable
         new CopyStep { Target = Excel },
         new PasteStep { Target = Excel, CleanText = false },
         new WaitStep { IsPasswordEntry = true, Note = "Parola" },
+        new MouseClickStep { Button = MouseButton.Left, Target = Excel, ScreenPosition = new ScreenPoint(40, 60), Element = new UiElement("btnOk", "Tamam", "ControlType.Button", "Button", 0.25, 0.75) },
+        new OpenStep { Path = @"%USERPROFILE%\Belgeler\Liste.xlsx", Arguments = "/r" },
     ];
 }

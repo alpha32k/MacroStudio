@@ -17,4 +17,7 @@ public sealed record MouseClickStep : MacroStep
     public WindowTarget? Target { get; set; }
 
     public required ScreenPoint ScreenPosition { get; set; }
+
+    /// <summary>The control that was clicked; null when it had no usable name or recording did not look.</summary>
+    public UiElement? Element { get; set; }
 }

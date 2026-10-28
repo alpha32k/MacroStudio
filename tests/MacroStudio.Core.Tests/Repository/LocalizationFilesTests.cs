@@ -55,6 +55,7 @@ public sealed partial class LocalizationFilesTests
         return folder?.FullName ?? throw new InvalidOperationException("MacroStudio.slnx was not found above the test folder.");
     }
 
-    [GeneratedRegex(@"\{\d+\}")]
+    // {0} for values, %PlayPause% for the current shortcut names.
+    [GeneratedRegex(@"\{\d+\}|%[A-Za-z]+%")]
     private static partial Regex PlaceholderPattern();
 }

@@ -1,3 +1,4 @@
+using MacroStudio.Core.Input;
 using MacroStudio.Core.Playback;
 
 namespace MacroStudio.Core.Settings;
@@ -16,6 +17,17 @@ public sealed record AppSettings
     public const int MaxRecordingCountdownSeconds = 10;
     public const int MinWindowWaitSeconds = 1;
     public const int MaxWindowWaitSeconds = 60;
+
+    private const KeyModifiers ControlAlt = KeyModifiers.Control | KeyModifiers.Alt;
+
+    public static KeyShortcut DefaultOpenMainWindowShortcut { get; } = new(ControlAlt, 0x4D);
+
+    public static KeyShortcut DefaultToggleRecordingShortcut { get; } = new(ControlAlt, 0x52);
+
+    public static KeyShortcut DefaultPlayPauseShortcut { get; } = new(ControlAlt, 0x50);
+
+    /// <summary>Ctrl+Alt+End; registered only while a macro plays.</summary>
+    public static KeyShortcut DefaultEmergencyStopShortcut { get; } = new(ControlAlt, 0x23);
 
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
 
@@ -47,6 +59,9 @@ public sealed record AppSettings
 
     public bool RecordingMergeTyping { get; set; } = true;
 
+    /// <summary>Clicks also note the clicked control's name, so playback finds a button that moved.</summary>
+    public bool RecordingFindElements { get; set; } = true;
+
     /// <summary>Seconds to take the hands off the mouse and keyboard before a macro starts; 0 starts at once.</summary>
     public int PlaybackCountdownSeconds { get; set; } = 3;
 
@@ -54,6 +69,18 @@ public sealed record AppSettings
 
     /// <summary>How long playback waits for a program or dialog to open before it stops.</summary>
     public int PlaybackWindowWaitSeconds { get; set; } = 5;
+
+    public KeyShortcut OpenMainWindowShortcut { get; set; } = DefaultOpenMainWindowShortcut;
+
+    public KeyShortcut ToggleRecordingShortcut { get; set; } = DefaultToggleRecordingShortcut;
+
+    public KeyShortcut PlayPauseShortcut { get; set; } = DefaultPlayPauseShortcut;
+
+    public KeyShortcut EmergencyStopShortcut { get; set; } = DefaultEmergencyStopShortcut;
+
+    /// <summary>Macro Studio's own shortcuts, in a fixed order.</summary>
+    public IReadOnlyList<KeyShortcut> AppShortcuts() =>
+        [OpenMainWindowShortcut, ToggleRecordingShortcut, PlayPauseShortcut, EmergencyStopShortcut];
 
     /// <summary>First-run settings: Turkish when Windows is in Turkish, otherwise English.</summary>
     public static AppSettings CreateDefault(string windowsLanguageCode) => new()
@@ -76,6 +103,10 @@ public sealed record AppSettings
         PlaybackCountdownSeconds = Math.Clamp(PlaybackCountdownSeconds, 0, MaxRecordingCountdownSeconds),
         PlaybackOnUserInput = Enum.IsDefined(PlaybackOnUserInput) ? PlaybackOnUserInput : InterferencePolicy.Pause,
         PlaybackWindowWaitSeconds = Math.Clamp(PlaybackWindowWaitSeconds, MinWindowWaitSeconds, MaxWindowWaitSeconds),
+        OpenMainWindowShortcut = OpenMainWindowShortcut.IsUsable ? OpenMainWindowShortcut : DefaultOpenMainWindowShortcut,
+        ToggleRecordingShortcut = ToggleRecordingShortcut.IsUsable ? ToggleRecordingShortcut : DefaultToggleRecordingShortcut,
+        PlayPauseShortcut = PlayPauseShortcut.IsUsable ? PlayPauseShortcut : DefaultPlayPauseShortcut,
+        EmergencyStopShortcut = EmergencyStopShortcut.IsUsable ? EmergencyStopShortcut : DefaultEmergencyStopShortcut,
     };
 
     public static bool IsHexColor(string? value) =>

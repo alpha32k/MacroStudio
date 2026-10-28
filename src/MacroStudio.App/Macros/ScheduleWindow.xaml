@@ -1,0 +1,39 @@
+<ui:FluentWindow x:Class="MacroStudio.App.Macros.ScheduleWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:l="clr-namespace:MacroStudio.App.Localization"
+                 Width="460"
+                 SizeToContent="Height"
+                 ResizeMode="NoResize"
+                 ShowInTaskbar="False"
+                 WindowStartupLocation="CenterOwner"
+                 ExtendsContentIntoTitleBar="True"
+                 WindowBackdropType="Mica"
+                 WindowCornerPreference="Round">
+  <StackPanel>
+    <ui:TitleBar x:Name="DialogTitle" ShowMaximize="False" ShowMinimize="False" />
+    <StackPanel Margin="24,4,24,20">
+      <TextBlock Margin="0,0,0,12" Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Schedule_Hint}" />
+
+      <TextBlock Margin="0,0,0,4" Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Schedule_Frequency}" />
+      <ComboBox x:Name="FrequencyBox" HorizontalAlignment="Stretch" DisplayMemberPath="Label" AutomationProperties.Name="{l:Loc Schedule_Frequency}" />
+
+      <TextBlock Margin="0,12,0,4" Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Schedule_Date}" />
+      <DatePicker x:Name="DateBox" AutomationProperties.Name="{l:Loc Schedule_Date}" />
+
+      <TextBlock Margin="0,12,0,4" Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Schedule_Time}" />
+      <ui:TextBox x:Name="TimeBox" Width="120" HorizontalAlignment="Left" ClearButtonEnabled="False" AutomationProperties.Name="{l:Loc Schedule_Time}" />
+
+      <TextBlock x:Name="ErrorText" Margin="0,8,0,0" Style="{StaticResource CollapsedWhenEmptyTextStyle}" Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+
+      <Grid Margin="0,20,0,0">
+        <ui:Button x:Name="RemoveButton" HorizontalAlignment="Left" Content="{l:Loc Schedule_Remove}" Click="OnRemoveClick" />
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+          <ui:Button Margin="0,0,8,0" IsCancel="True" Content="{l:Loc Dialog_Cancel}" />
+          <ui:Button Appearance="Primary" IsDefault="True" Content="{l:Loc Save_Save}" Click="OnSaveClick" />
+        </StackPanel>
+      </Grid>
+    </StackPanel>
+  </StackPanel>
+</ui:FluentWindow>

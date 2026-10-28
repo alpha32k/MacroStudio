@@ -1,3 +1,4 @@
+using System.Globalization;
 using MacroStudio.Core.Macros;
 
 namespace MacroStudio.Core.Playback;
@@ -20,4 +21,16 @@ public sealed record PlaybackOptions
 
     /// <summary>"Try this step": no step after this 1-based number is played. Null plays to the end.</summary>
     public int? LastStep { get; init; }
+
+    /// <summary>What to do when a step fails; by default the macro stops at once.</summary>
+    public ErrorPolicy OnError { get; init; } = ErrorPolicy.StopAtOnce;
+
+    /// <summary>The rows of the macro's list file, one per round; null when it has none. The list ending ends the macro.</summary>
+    public IReadOnlyList<IReadOnlyList<string>>? ListRows { get; init; }
+
+    /// <summary>The list's column names, for {Müşteri}-style fields in text steps.</summary>
+    public IReadOnlyList<string> ListColumns { get; init; } = [];
+
+    /// <summary>The date and time format of {tarih} and {saat}.</summary>
+    public CultureInfo Culture { get; init; } = CultureInfo.CurrentCulture;
 }

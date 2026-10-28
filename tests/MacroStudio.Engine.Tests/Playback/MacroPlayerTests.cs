@@ -130,6 +130,296 @@ public sealed class MacroPlayerTests
         Assert.Equal([SapWindow.Handle], desktop.Activations);
     }
 
+    private static readonly UiElement SaveButton = new("", "Kaydet", "ControlType.Button", "Button", 0.5, 0.5);
+
+    [Fact]
+    public void Click_OnANamedControlThatMoved_ClicksTheControlWhereItIsNow()
+    {
+        var desktop = new FakeDesktop();
+        desktop.Windows.Add(SapWindow);
+        desktop.Controls["Kaydet"] = new ScreenRect(700, 500, 781, 531);
+        MacroStep[] steps = [new MouseClickStep { Button = MouseButton.Left, Target = SapTarget, ScreenPosition = new ScreenPoint(100, 50), Element = SaveButton }];
+
+        PlaybackResult result = new MacroPlayer(desktop, desktop, desktop, desktop, desktop)
+            .Play(Macro(steps), new PlaybackOptions { Loop = LoopSettings.Times(1) }, CancellationToken.None);
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Equal([new ScreenPoint(740, 515)], desktop.Clicks);
+    }
+
+    [Fact]
+    public void Click_OnANamedControlThatIsGone_ClicksTheRecordedSpot_AndLooksOnlyOnce()
+    {
+        var desktop = new FakeDesktop();
+        desktop.Windows.Add(SapWindow);
+        MacroStep[] steps = [new MouseClickStep { Button = MouseButton.Left, Target = SapTarget, ScreenPosition = new ScreenPoint(100, 50), Element = SaveButton }];
+
+        new MacroPlayer(desktop, desktop, desktop, desktop, desktop)
+            .Play(Macro(steps), new PlaybackOptions { Loop = LoopSettings.Times(3) }, CancellationToken.None);
+
+        Assert.Equal([new ScreenPoint(100, 50), new ScreenPoint(100, 50), new ScreenPoint(100, 50)], desktop.Clicks);
+        Assert.Equal(1, desktop.ControlSearches);
+    }
+
+    [Fact]
+    public void Retry_AfterAFailedStep_GoesOnWhenTheWindowCameLate()
+    {
+        var desktop = Desktop();
+        desktop.Windows.Remove(SapWindow);
+        desktop.OnWait = now =>
+        {
+            if (now >= 1500 && !desktop.Windows.Contains(SapWindow))
+            {
+                desktop.Windows.Add(SapWindow);
+            }
+        };
+        var options = new PlaybackOptions { Loop = LoopSettings.Times(1), WindowWait = TimeSpan.FromMilliseconds(500), OnError = new ErrorPolicy(ErrorAction.Stop, 2) };
+
+        PlaybackResult result = Play(desktop, [new TypeTextStep { Text = "a", Target = SapTarget }], options);
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Equal(["a"], desktop.Typed);
+    }
+
+    [Fact]
+    public void SkipStep_LeavesOutTheFailingStepInEveryRound()
+    {
+        var desktop = Desktop();
+        desktop.Windows.Remove(SapWindow);
+        MacroStep[] steps = [new TypeTextStep { Text = "a", Target = SapTarget }, new TypeTextStep { Text = "b", Target = ExcelTarget }];
+        var options = new PlaybackOptions { Loop = LoopSettings.Times(2), WindowWait = TimeSpan.FromMilliseconds(100), OnError = new ErrorPolicy(ErrorAction.SkipStep, 1) };
+
+        PlaybackResult result = Play(desktop, steps, options);
+
+        Assert.Equal((PlaybackOutcome.Completed, 2, 2), (result.Outcome, result.CompletedRounds, result.SkippedSteps));
+        Assert.Equal(["b", "b"], desktop.Typed);
+    }
+
+    [Fact]
+    public void SkipRound_GoesToTheNextRound_ButStopsWhenRoundsFailInARow()
+    {
+        var desktop = Desktop("1", "2", "3", "4", "5", "6");
+        desktop.Windows.Remove(SapWindow);
+        var options = new PlaybackOptions { Loop = LoopSettings.Times(2), WindowWait = TimeSpan.FromMilliseconds(100), OnError = new ErrorPolicy(ErrorAction.SkipRound, 0) };
+
+        PlaybackResult twoRounds = Play(desktop, CopyPasteNextRow, options);
+        PlaybackResult manyRounds = Play(desktop, CopyPasteNextRow, options with { Loop = LoopSettings.Times(5) });
+
+        Assert.Equal((PlaybackOutcome.Completed, 0, 2), (twoRounds.Outcome, twoRounds.CompletedRounds, twoRounds.SkippedRounds));
+        Assert.Equal((PlaybackOutcome.Failed, PlaybackFailure.WindowNotFound), (manyRounds.Outcome, manyRounds.Failure));
+        Assert.Empty(desktop.Pasted);
+    }
+
+    [Fact]
+    public void AdministratorProgram_IsNeverSkipped()
+    {
+        var desktop = Desktop("x");
+        desktop.ElevatedWindows.Add(SapWindow.Handle);
+        var options = new PlaybackOptions { OnError = new ErrorPolicy(ErrorAction.SkipStep, 2) };
+
+        PlaybackResult result = Play(desktop, CopyPasteNextRow, options);
+
+        Assert.Equal((PlaybackOutcome.Failed, PlaybackFailure.TargetIsElevated), (result.Outcome, result.Failure));
+    }
+
+    [Fact]
+    public void WaitFor_WindowCloses_GoesOnAsSoonAsItIsGone()
+    {
+        var desktop = Desktop();
+        desktop.OnWait = now =>
+        {
+            if (now >= 2_000)
+            {
+                desktop.Windows.Remove(SapWindow);
+            }
+        };
+        MacroStep[] steps = [new WaitForStep { Condition = WaitCondition.WindowCloses, Target = SapTarget }, new TypeTextStep { Text = "a", Target = ExcelTarget }];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(1) });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.InRange(desktop.NowMs, 2_000, 2_300);
+    }
+
+    [Fact]
+    public void WaitFor_Color_WatchesTheSpotOfAWindowThatMoved()
+    {
+        var desktop = new FakeDesktop();
+        desktop.Windows.Add(SapWindow with { Bounds = new ScreenRect(300, 200, 1300, 1000) });
+        desktop.OnWait = now =>
+        {
+            if (now >= 1_000)
+            {
+                desktop.Pixels[new ScreenPoint(400, 250)] = 0x10A010;
+            }
+        };
+        MacroStep[] steps = [new WaitForStep { Condition = WaitCondition.ColorAppears, Target = SapTarget, ScreenPosition = new ScreenPoint(100, 50), Color = 0x00A000 }];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(1) });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.InRange(desktop.NowMs, 1_000, 1_200);
+    }
+
+    [Fact]
+    public void WaitFor_ThatNeverComes_FailsAfterItsLongestTime()
+    {
+        var desktop = Desktop();
+        MacroStep[] steps = [new WaitForStep { Condition = WaitCondition.WindowCloses, Target = SapTarget, TimeoutMs = 5_000 }];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(1), Speed = 5 });
+
+        Assert.Equal((PlaybackOutcome.Failed, PlaybackFailure.WaitTimedOut), (result.Outcome, result.Failure));
+        Assert.InRange(desktop.NowMs, 5_000, 5_200);
+    }
+
+    [Fact]
+    public void ListRows_TypeOneRowPerRound_AndTheListEndingEndsTheMacro()
+    {
+        var desktop = Desktop();
+        MacroStep[] steps = [new TypeTextStep { Text = "{1}:{Tutar};", Target = SapTarget }];
+        var options = new PlaybackOptions
+        {
+            ListRows = [["K1", "10"], ["K2", "20"]],
+            ListColumns = ["Kod", "Tutar"],
+        };
+
+        PlaybackResult result = Play(desktop, steps, options);
+
+        Assert.Equal((PlaybackOutcome.ListEnded, 2), (result.Outcome, result.CompletedRounds));
+        Assert.Equal("K1:10;K2:20;", string.Concat(desktop.Typed));
+    }
+
+    [Fact]
+    public void ListRows_WithACountSmallerThanTheList_StopsAtTheCount()
+    {
+        var desktop = Desktop();
+        var options = new PlaybackOptions { Loop = LoopSettings.Times(1), ListRows = [["a"], ["b"]] };
+
+        PlaybackResult result = Play(desktop, [new TypeTextStep { Text = "{1}", Target = SapTarget }], options);
+
+        Assert.Equal((PlaybackOutcome.Completed, 1), (result.Outcome, result.CompletedRounds));
+        Assert.Equal(["a"], desktop.Typed);
+    }
+
+    [Fact]
+    public void If_WindowNotOpen_SkipsTheStepThatNeedsIt_OnlyInTheRoundsWhereItIsMissing()
+    {
+        var desktop = Desktop();
+        var dialog = new WindowTarget("saplogon", "Uyarı", "#32770", new ScreenRect(0, 0, 300, 200));
+        var dialogWindow = new WindowCandidate(9, "saplogon", "#32770", "Uyarı", new ScreenRect(0, 0, 300, 200));
+        desktop.OnWait = now =>
+        {
+            // The warning shows up only during the second round.
+            if (desktop.Typed.Count == 1 && !desktop.Windows.Contains(dialogWindow))
+            {
+                desktop.Windows.Insert(0, dialogWindow);
+            }
+        };
+        MacroStep[] steps =
+        [
+            new IfStep { Check = IfCheck.WindowNotOpen, Target = dialog, Action = IfAction.SkipSteps },
+            new KeyPressStep { VirtualKey = VirtualKeys.Return, Target = dialog },
+            new TypeTextStep { Text = "x", Target = SapTarget, DelayBeforeMs = 10 },
+        ];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(2) });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Equal(["x", "x"], desktop.Typed);
+        Assert.Equal([SapWindow.Handle, dialogWindow.Handle, SapWindow.Handle], desktop.Activations);
+    }
+
+    [Theory]
+    [InlineData(IfAction.EndRound, PlaybackOutcome.Completed, 3, "a,a,a")]
+    [InlineData(IfAction.StopMacro, PlaybackOutcome.Completed, 1, "a")]
+    public void If_ColorIs_EndsTheRoundOrTheMacro(IfAction action, PlaybackOutcome outcome, int rounds, string typed)
+    {
+        var desktop = Desktop();
+        desktop.Pixels[new ScreenPoint(10, 10)] = 0xFF0000;
+        MacroStep[] steps =
+        [
+            new TypeTextStep { Text = "a", Target = SapTarget },
+            new IfStep { Check = IfCheck.ColorIs, ScreenPosition = new ScreenPoint(10, 10), Color = 0xFF0000, Action = action },
+            new TypeTextStep { Text = "b", Target = SapTarget },
+        ];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(3) });
+
+        Assert.Equal((outcome, rounds), (result.Outcome, result.CompletedRounds));
+        Assert.Equal(typed, string.Join(",", desktop.Typed));
+    }
+
+    [Fact]
+    public void ImageClick_ClicksTheMiddleOfThePictureWhereItIsInTheWindow()
+    {
+        var random = new Random(7);
+        var screenPixels = new byte[1400 * 1100 * 4];
+        random.NextBytes(screenPixels);
+        var screen = new Bgra32Image(1400, 1100, screenPixels);
+        var picturePixels = new byte[20 * 10 * 4];
+        random.NextBytes(picturePixels);
+        for (int y = 0; y < 10; y++)
+        {
+            Array.Copy(picturePixels, y * 80, screenPixels, (((700 + y) * 1400) + 900) * 4, 80);
+        }
+
+        var desktop = new FakeDesktop { Screen = screen };
+        desktop.Windows.Add(SapWindow with { Bounds = new ScreenRect(300, 200, 1300, 1000) });
+        var target = SapTarget with { Bounds = new ScreenRect(300, 200, 1300, 1000) };
+        MacroStep[] steps = [new ImageClickStep { ImageWidth = 20, ImageHeight = 10, ImagePixels = picturePixels, Target = target }];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(1) });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Equal([new ScreenPoint(910, 705)], desktop.Clicks);
+    }
+
+    [Fact]
+    public void ImageClick_ThatIsNotOnTheScreen_FailsAfterItsTime()
+    {
+        var desktop = new FakeDesktop { Screen = new Bgra32Image(100, 100, new byte[100 * 100 * 4]) };
+        var picture = new byte[10 * 10 * 4];
+        Array.Fill(picture, (byte)200);
+        MacroStep[] steps = [new ImageClickStep { ImageWidth = 10, ImageHeight = 10, ImagePixels = picture, TimeoutMs = 1_000 }];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(1) });
+
+        Assert.Equal((PlaybackOutcome.Failed, PlaybackFailure.ImageNotFound), (result.Outcome, result.Failure));
+        Assert.Empty(desktop.Clicks);
+    }
+
+    [Fact]
+    public void OpenStep_OpensItAndTheNextStepWaitsForItsWindow()
+    {
+        var desktop = new FakeDesktop();
+        desktop.OnWait = now =>
+        {
+            // The program's window appears a moment after it was started.
+            if (now >= 300 && desktop.Windows.Count == 0)
+            {
+                desktop.Windows.Add(SapWindow);
+            }
+        };
+        MacroStep[] steps = [new OpenStep { Path = "saplogon" }, new TypeTextStep { Text = "a", Target = SapTarget }];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions { Loop = LoopSettings.Times(1) });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Equal(["saplogon"], desktop.Opened);
+        Assert.Equal(["a"], desktop.Typed);
+    }
+
+    [Fact]
+    public void OpenStep_ThatCannotBeOpened_Fails()
+    {
+        var desktop = new FakeDesktop { CanOpen = false };
+
+        PlaybackResult result = Play(desktop, [new OpenStep { Path = @"C:\yok.xlsx" }], new PlaybackOptions { Loop = LoopSettings.Times(1) });
+
+        Assert.Equal((PlaybackOutcome.Failed, PlaybackFailure.OpenFailed, 1), (result.Outcome, result.Failure, result.FailedStepNumber));
+    }
+
     [Fact]
     public void KeyStep_InAWindowOfAnotherSize_LeavesTheWindowAlone()
     {
@@ -192,6 +482,29 @@ public sealed class MacroPlayerTests
         desktop.CopyChangesClipboard = false;
 
         PlaybackResult result = Play(desktop, CopyPasteNextRow, new PlaybackOptions());
+
+        Assert.Equal((PlaybackOutcome.Failed, PlaybackFailure.ClipboardDidNotChange), (result.Outcome, result.Failure));
+    }
+
+    [Fact]
+    public void UntilClipboardEmpty_CopyOfAnEmptySelectionAfterSomeRounds_EndsTheList()
+    {
+        var desktop = Desktop("elma", "armut", "kiraz");
+        desktop.CopyPastTheListChangesClipboard = false;
+
+        PlaybackResult result = Play(desktop, CopyPasteNextRow, new PlaybackOptions());
+
+        Assert.Equal((PlaybackOutcome.ListEnded, 3), (result.Outcome, result.CompletedRounds));
+        Assert.Equal(["elma", "armut", "kiraz"], desktop.Pasted);
+    }
+
+    [Fact]
+    public void Count_CopyThatStopsChangingTheClipboard_StillFails()
+    {
+        var desktop = Desktop("elma");
+        desktop.CopyPastTheListChangesClipboard = false;
+
+        PlaybackResult result = Play(desktop, CopyPasteNextRow, new PlaybackOptions { Loop = LoopSettings.Times(3) });
 
         Assert.Equal((PlaybackOutcome.Failed, PlaybackFailure.ClipboardDidNotChange), (result.Outcome, result.Failure));
     }

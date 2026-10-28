@@ -1,4 +1,5 @@
 using MacroStudio.Core.Macros.Steps;
+using MacroStudio.Core.Playback;
 
 namespace MacroStudio.Core.Macros;
 
@@ -15,6 +16,7 @@ public static class MacroValidator
     public const int MaxPressCount = 1_000;
     public const int MaxTextLength = 10_000;
     public const int MaxPathPoints = 1_000;
+    public const int MaxOpenPathLength = 2_000;
     public const double MinSpeed = 0.25;
     public const double MaxSpeed = 5;
 
@@ -53,6 +55,21 @@ public static class MacroValidator
             problems.Add($"Loop count must be between 1 and {LoopSettings.MaxCount}.");
         }
 
+        if (macro.OnError is null || macro.OnError.Retries is < 0 or > ErrorPolicy.MaxRetries || !Enum.IsDefined(macro.OnError.Action))
+        {
+            problems.Add($"Retries must be between 0 and {ErrorPolicy.MaxRetries}.");
+        }
+
+        if (macro.DataList is { } list && (string.IsNullOrWhiteSpace(list.Path) || list.Path.Length > MaxOpenPathLength))
+        {
+            problems.Add("The list file path is empty or too long.");
+        }
+
+        if (macro.Shortcut is { IsUsable: false })
+        {
+            problems.Add("The shortcut needs Ctrl, Alt or Win and one other key.");
+        }
+
         for (int i = 0; i < macro.Steps.Count; i++)
         {
             string? problem = ValidateStep(macro.Steps[i]);
@@ -80,6 +97,16 @@ public static class MacroValidator
             HotkeyStep { PressCount: < 1 or > MaxPressCount } => $"press count must be between 1 and {MaxPressCount}.",
             TypeTextStep { Text.Length: 0 or > MaxTextLength } => $"text must have 1 to {MaxTextLength} characters.",
             WaitStep { DurationMs: < 0 or > MaxDelayMs } => $"wait must be between 0 and {MaxDelayMs} ms.",
+            WaitForStep { TimeoutMs: < 0 or > MaxDelayMs } => $"waiting can last at most {MaxDelayMs} ms.",
+            WaitForStep { Condition: WaitCondition.WindowAppears or WaitCondition.WindowCloses, Target: null } => "a window to wait for is missing.",
+            IfStep { SkipCount: < 1 or > IfStep.MaxSkipCount } => $"a condition can skip 1 to {IfStep.MaxSkipCount} steps.",
+            IfStep { Check: IfCheck.WindowOpen or IfCheck.WindowNotOpen, Target: null } => "a window to look for is missing.",
+            ImageClickStep image when image.ImageWidth is < 1 or > ImageClickStep.MaxImageSide || image.ImageHeight is < 1 or > ImageClickStep.MaxImageSide
+                || image.ImagePixels.Length != image.ImageWidth * image.ImageHeight * 4 => "the picture to look for is damaged.",
+            ImageClickStep { ClickCount: < 1 or > 2 } => "click count must be 1 or 2.",
+            ImageClickStep { TimeoutMs: < 0 or > MaxDelayMs } => $"looking can last at most {MaxDelayMs} ms.",
+            OpenStep open when string.IsNullOrWhiteSpace(open.Path) || open.Path.Length > MaxOpenPathLength || open.Arguments.Length > MaxOpenPathLength
+                => $"what to open must have 1 to {MaxOpenPathLength} characters.",
             _ => null,
         };
     }

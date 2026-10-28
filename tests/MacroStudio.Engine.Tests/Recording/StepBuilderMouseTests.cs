@@ -1,6 +1,9 @@
 using MacroStudio.Core.Geometry;
 using MacroStudio.Core.Input;
+using MacroStudio.Core.Macros;
 using MacroStudio.Core.Macros.Steps;
+using MacroStudio.Core.Recording;
+using MacroStudio.Engine.Recording;
 using static MacroStudio.Engine.Tests.Recording.RecordingScript;
 
 namespace MacroStudio.Engine.Tests.Recording;
@@ -16,6 +19,22 @@ public sealed class StepBuilderMouseTests
         Assert.Equal(new ScreenPoint(300, 200), click.ScreenPosition);
         Assert.Equal("EXCEL", click.Target?.ProcessName);
         Assert.Equal(1, click.ClickCount);
+    }
+
+    [Fact]
+    public void Click_KeepsTheControlUnderThePress_ButADragDoesNot()
+    {
+        var element = new UiElement("btnSave", "Kaydet", "ControlType.Button", "Button", 0.5, 0.5);
+        var builder = new StepBuilder(new RecordingOptions());
+        builder.AddMouse(new CapturedMouse(0, MouseAction.Down, MouseButton.Left, new ScreenPoint(300, 200), 0, KeyModifiers.None, Sap.Captured), Sap.Info, element);
+        builder.AddMouse(new CapturedMouse(60, MouseAction.Up, MouseButton.Left, new ScreenPoint(300, 200), 0, KeyModifiers.None, Sap.Captured), Sap.Info);
+        builder.AddMouse(new CapturedMouse(2000, MouseAction.Down, MouseButton.Left, new ScreenPoint(300, 200), 0, KeyModifiers.None, Sap.Captured), Sap.Info, element);
+        builder.AddMouse(new CapturedMouse(2300, MouseAction.Up, MouseButton.Left, new ScreenPoint(500, 400), 0, KeyModifiers.None, Sap.Captured), Sap.Info);
+
+        IReadOnlyList<MacroStep> steps = builder.Finish();
+
+        Assert.Equal(element, Assert.IsType<MouseClickStep>(steps[0]).Element);
+        Assert.IsType<MouseDragStep>(steps[1]);
     }
 
     [Fact]

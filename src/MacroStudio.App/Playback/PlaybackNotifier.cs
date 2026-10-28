@@ -30,16 +30,22 @@ public sealed class PlaybackNotifier
         return text.Format("Failure_" + result.Failure, window);
     }
 
+    /// <summary>" (2 adım, 1 tur atlandı)"; empty when nothing was skipped.</summary>
+    private static string Skipped(PlaybackResult result) =>
+        result.SkippedSteps + result.SkippedRounds == 0
+            ? ""
+            : " " + Localizer.Instance.Format("Playback_Skipped", result.SkippedSteps, result.SkippedRounds);
+
     private void ShowResult(string macroName, PlaybackResult result)
     {
         Localizer text = Localizer.Instance;
         switch (result.Outcome)
         {
             case PlaybackOutcome.Completed:
-                _tray.ShowInfo(text.Format("Playback_Completed", macroName, result.CompletedRounds));
+                _tray.ShowInfo(text.Format("Playback_Completed", macroName, result.CompletedRounds) + Skipped(result));
                 break;
             case PlaybackOutcome.ListEnded:
-                _tray.ShowInfo(text.Format("Playback_ListEnded", macroName, result.CompletedRounds));
+                _tray.ShowInfo(text.Format("Playback_ListEnded", macroName, result.CompletedRounds) + Skipped(result));
                 break;
             case PlaybackOutcome.Stopped:
                 _tray.ShowInfo(text.Format("Playback_Stopped", macroName, result.CompletedRounds));

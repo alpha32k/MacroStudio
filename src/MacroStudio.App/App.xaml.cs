@@ -35,12 +35,17 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        // A double-clicked .msmacro file arrives as the first argument.
-        string? fileToOpen = e.Args.Length > 0 ? Path.GetFullPath(e.Args[0]) : null;
+        // A double-clicked .msmacro file arrives as the first argument; "--play <name>" plays a saved macro.
+        LaunchRequest launch = LaunchRequest.Parse(e.Args);
+        if (launch is { Kind: LaunchKind.OpenFile, Value: { } file })
+        {
+            launch = launch with { Value = Path.GetFullPath(file) };
+        }
+
         _singleInstance = SingleInstance.TryAcquire();
         if (_singleInstance is null)
         {
-            SingleInstance.SendToRunningInstance(fileToOpen);
+            SingleInstance.SendToRunningInstance(launch.ToMessage());
             Shutdown();
             return;
         }
@@ -72,21 +77,34 @@ public partial class App : Application
 
         MainWindowService mainWindow = _services.GetRequiredService<MainWindowService>();
         MacrosViewModel macros = _services.GetRequiredService<MacrosViewModel>();
-        _singleInstance.RequestReceived += (_, filePath) => Dispatcher.BeginInvoke(() =>
+        NotchBarViewModel bar = _services.GetRequiredService<NotchBarViewModel>();
+        void Handle(LaunchRequest request)
         {
-            if (filePath is null)
+            switch (request.Kind)
             {
-                mainWindow.Show();
+                case LaunchKind.OpenFile:
+                    macros.OpenFile(request.Value!);
+                    break;
+                case LaunchKind.Play when !bar.PlayByNameOrId(request.Value!):
+                    Log.Warning("Macro to play from the command line was not found");
+                    tray.ShowWarning(Localizer.Instance.Format("Launch_MacroNotFound", request.Value!));
+                    break;
+                case LaunchKind.ShowMainWindow:
+                    mainWindow.Show();
+                    break;
             }
-            else
-            {
-                macros.OpenFile(filePath);
-            }
-        });
-        if (fileToOpen is not null)
-        {
-            Dispatcher.BeginInvoke(() => macros.OpenFile(fileToOpen));
         }
+
+        _singleInstance.RequestReceived += (_, message) => Dispatcher.BeginInvoke(() => Handle(LaunchRequest.FromMessage(message)));
+        if (launch.Kind != LaunchKind.ShowMainWindow)
+        {
+            // After start-up has settled, so the bar and the hotkeys are ready when a macro plays.
+            Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () => Handle(launch));
+        }
+
+        // Tasks of scheduled macros are created again if they went missing (the program was reinstalled elsewhere).
+        ScheduleService schedules = _services.GetRequiredService<ScheduleService>();
+        _ = schedules.Sync();
 
         Log.Information("Macro Studio {Version} started", typeof(App).Assembly.GetName().Version);
     }
@@ -109,6 +127,8 @@ public partial class App : Application
         services.AddSingleton(new SettingsService(store, initial));
         services.AddSingleton<ThemeService>();
         services.AddSingleton<HotkeyService>();
+        services.AddSingleton<ShortcutService>();
+        services.AddSingleton<ScheduleService>();
         services.AddSingleton<TrayIcon>();
 
         services.AddSingleton(new MacroLibrary(AppDataPaths.MacrosDirectory));
@@ -118,6 +138,7 @@ public partial class App : Application
         services.AddSingleton<IInputCapture, InputCapture>();
         services.AddSingleton<IWindowInspector, WindowInspector>();
         services.AddSingleton<IFocusInspector, FocusInspector>();
+        services.AddSingleton<IUiElements, UiElements>();
         services.AddSingleton<MacroRecorder>();
         services.AddSingleton<RecordingController>();
 
@@ -168,27 +189,22 @@ public partial class App : Application
 
     private void RegisterHotkeys(TrayIcon tray, RecordingController recording, NotchBarViewModel bar)
     {
-        HotkeyService hotkeys = _services!.GetRequiredService<HotkeyService>();
+        ShortcutService shortcuts = _services!.GetRequiredService<ShortcutService>();
         MainWindowService mainWindow = _services!.GetRequiredService<MainWindowService>();
+        ShortcutBox.CapturingChanged += (_, isCapturing) => shortcuts.Suspend(isCapturing);
 
-        Register(AppShortcuts.OpenMainWindow, mainWindow.Show);
-        Register(AppShortcuts.ToggleRecording, () => _ = recording.ToggleAsync());
-        Register(AppShortcuts.PlayPause, () =>
-        {
-            if (bar.PlayPauseCommand.CanExecute(null))
+        var actions = new ShortcutService.AppActions(
+            OpenMainWindow: mainWindow.Show,
+            ToggleRecording: () => _ = recording.ToggleAsync(),
+            PlayPause: () =>
             {
-                bar.PlayPauseCommand.Execute(null);
-            }
-        });
-
-        void Register(AppShortcut shortcut, Action action)
-        {
-            if (hotkeys.TryRegister(shortcut, action) is null)
-            {
-                Log.Warning("Shortcut {Shortcut} is used by another program", shortcut.ToString());
-                tray.ShowWarning(Localizer.Instance.Format("Hotkey_InUse", shortcut.ToString()));
-            }
-        }
+                if (bar.PlayPauseCommand.CanExecute(null))
+                {
+                    bar.PlayPauseCommand.Execute(null);
+                }
+            },
+            PlayMacro: bar.PlayMacro);
+        shortcuts.Start(actions, tray.ShowWarning);
     }
 
     // Keeps the app alive after an unexpected error, writes it to the log and tells the user.

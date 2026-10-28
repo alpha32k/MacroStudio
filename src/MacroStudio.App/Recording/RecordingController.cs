@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using MacroStudio.App.Localization;
 using MacroStudio.App.Macros;
 using MacroStudio.App.Services;
+using MacroStudio.Core.Input;
 using MacroStudio.Core.Macros;
 using MacroStudio.Core.Macros.Steps;
 using MacroStudio.Core.Recording;
@@ -20,7 +21,7 @@ namespace MacroStudio.App.Recording;
 /// One recording from start to end: countdown, hooks on, hooks off, save window.
 /// Started and stopped from the bar or with Ctrl+Alt+R.
 /// </summary>
-public sealed partial class RecordingController(MacroRecorder recorder, SettingsService settings, MacroLibraryService library)
+public sealed partial class RecordingController(MacroRecorder recorder, SettingsService settings, MacroLibraryService library, ShortcutService shortcuts)
     : ObservableObject
 {
     private CancellationTokenSource? _countdown;
@@ -65,7 +66,7 @@ public sealed partial class RecordingController(MacroRecorder recorder, Settings
 
         try
         {
-            recorder.Start(CreateOptions(settings.Current));
+            recorder.Start(CreateOptions(settings.Current, shortcuts.Reserved));
             State = RecordingState.Recording;
             Log.Information("Recording started");
         }
@@ -120,16 +121,17 @@ public sealed partial class RecordingController(MacroRecorder recorder, Settings
         }
     }
 
-    private static RecordingOptions CreateOptions(AppSettings current) => new()
+    private static RecordingOptions CreateOptions(AppSettings current, IReadOnlySet<KeyShortcut> appShortcuts) => new()
     {
         ConvertCopyPaste = current.RecordingConvertCopyPaste,
         ConvertWindowSwitches = current.RecordingConvertWindowSwitches,
         MergeTyping = current.RecordingMergeTyping,
+        FindElements = current.RecordingFindElements,
         DoubleClickTimeMs = SystemInformation.DoubleClickTime,
 
         // A hand moving a few pixels while clicking still makes a click, as in Windows' own drag-and-drop.
         DragThresholdPx = Math.Max(SystemInformation.DragSize.Width, SystemInformation.DragSize.Height),
-        AppShortcuts = AppShortcuts.All,
+        AppShortcuts = appShortcuts,
     };
 
     private static void ShowError(string messageKey, Exception ex) =>

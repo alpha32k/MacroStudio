@@ -158,6 +158,42 @@ public sealed partial class NotchBarViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// A macro's own shortcut: selects that macro on the bar and plays it with its saved repeat and speed.
+    /// Ignored while something records or plays, so a second press cannot start a second macro.
+    /// </summary>
+    public void PlayMacro(Guid macroId)
+    {
+        if (_playback.State != PlaybackState.Idle || _recording.State != RecordingState.Idle
+            || Macros.FirstOrDefault(m => m.Macro.Id == macroId) is not { } file)
+        {
+            return;
+        }
+
+        SelectedMacro = file;
+        if (PlayPauseCommand.CanExecute(null))
+        {
+            PlayPauseCommand.Execute(null);
+        }
+    }
+
+    /// <summary>"--play": a macro named by its id (scheduled tasks), its name or its file.</summary>
+    /// <returns>False when no such macro exists.</returns>
+    public bool PlayByNameOrId(string nameOrId)
+    {
+        MacroFile? file = Guid.TryParse(nameOrId, out Guid id)
+            ? Macros.FirstOrDefault(m => m.Macro.Id == id)
+            : Macros.FirstOrDefault(m => string.Equals(m.Macro.Name, nameOrId, StringComparison.CurrentCultureIgnoreCase))
+                ?? Macros.FirstOrDefault(m => string.Equals(m.Path, nameOrId, StringComparison.OrdinalIgnoreCase));
+        if (file is null)
+        {
+            return false;
+        }
+
+        PlayMacro(file.Macro.Id);
+        return true;
+    }
+
     private bool CanPlayPause() => _playback.State switch
     {
         PlaybackState.Idle => SelectedMacro is not null && _recording.State == RecordingState.Idle,

@@ -34,13 +34,13 @@
     <value>Record a task once and let Macro Studio repeat it for you.</value>
   </data>
   <data name="Home_NoMacros" xml:space="preserve">
-    <value>No macros yet. Start a recording with the ● button on the bar at the top of the screen or with Ctrl+Alt+R.</value>
+    <value>No macros yet. Start a recording with the ● button on the bar at the top of the screen or with %ToggleRecording%.</value>
   </data>
   <data name="Macros_Empty" xml:space="preserve">
-    <value>No macros yet. Record one with &quot;New recording&quot; on the home page or Ctrl+Alt+R, or import a .msmacro file.</value>
+    <value>No macros yet. Record one with &quot;New recording&quot; on the home page or %ToggleRecording%, or import a .msmacro file.</value>
   </data>
   <data name="Editor_Empty" xml:space="preserve">
-    <value>There is no macro to edit yet. Record one first with the ● button on the bar or Ctrl+Alt+R.</value>
+    <value>There is no macro to edit yet. Record one first with the ● button on the bar or %ToggleRecording%.</value>
   </data>
   <data name="Settings_General" xml:space="preserve">
     <value>General</value>
@@ -112,7 +112,7 @@
     <value>Show the notch bar</value>
   </data>
   <data name="Settings_ShowNotchBarDescription" xml:space="preserve">
-    <value>When it is off, open Macro Studio from the tray icon or with Ctrl+Alt+M.</value>
+    <value>When it is off, open Macro Studio from the tray icon or with %OpenMainWindow%.</value>
   </data>
   <data name="Settings_Monitor" xml:space="preserve">
     <value>Monitor</value>
@@ -163,13 +163,13 @@
     <value>Open log folder</value>
   </data>
   <data name="Bar_Home" xml:space="preserve">
-    <value>Main menu (Ctrl+Alt+M)</value>
+    <value>Main menu (%OpenMainWindow%)</value>
   </data>
   <data name="Bar_Record" xml:space="preserve">
-    <value>Record (Ctrl+Alt+R)</value>
+    <value>Record (%ToggleRecording%)</value>
   </data>
   <data name="Bar_Play" xml:space="preserve">
-    <value>Play (Ctrl+Alt+P)</value>
+    <value>Play (%PlayPause%)</value>
   </data>
   <data name="Bar_Stop" xml:space="preserve">
     <value>Stop</value>
@@ -222,7 +222,7 @@
     <value>Recording starts</value>
   </data>
   <data name="Recording_CountdownHint" xml:space="preserve">
-    <value>Switch to the window you start in. Ctrl+Alt+R cancels.</value>
+    <value>Switch to the window you start in. %ToggleRecording% cancels.</value>
   </data>
   <data name="Recording_HooksFailed" xml:space="preserve">
     <value>The recording could not start because Windows did not allow listening to the keyboard and mouse.
@@ -392,10 +392,10 @@
 {0}</value>
   </data>
   <data name="Bar_Pause" xml:space="preserve">
-    <value>Pause (Ctrl+Alt+P)</value>
+    <value>Pause (%PlayPause%)</value>
   </data>
   <data name="Bar_Resume" xml:space="preserve">
-    <value>Resume (Ctrl+Alt+P)</value>
+    <value>Resume (%PlayPause%)</value>
   </data>
   <data name="Bar_StatusPlaying" xml:space="preserve">
     <value>Round {0}/{1} · Step {2}/{3}</value>
@@ -419,10 +419,10 @@
     <value>Stopped: {0} – {1} rounds done</value>
   </data>
   <data name="Playback_PausedByUser" xml:space="preserve">
-    <value>Paused because you touched the mouse or keyboard. Resume with Ctrl+Alt+P or the bar; Esc stops.</value>
+    <value>Paused because you touched the mouse or keyboard. Resume with %PlayPause% or the bar; Esc stops.</value>
   </data>
   <data name="Playback_PasswordNeeded" xml:space="preserve">
-    <value>Step {0}: type the password yourself, then resume with Ctrl+Alt+P.</value>
+    <value>Step {0}: type the password yourself, then resume with %PlayPause%.</value>
   </data>
   <data name="Playback_Failed" xml:space="preserve">
     <value>“{0}” stopped at step {1}.
@@ -733,5 +733,299 @@ Play it anyway?</value>
   </data>
   <data name="Window_ToggleMenu" xml:space="preserve">
     <value>Collapse or expand the menu</value>
+  </data>
+  <data name="Settings_Shortcuts" xml:space="preserve">
+    <value>Shortcuts</value>
+  </data>
+  <data name="Settings_ShortcutsDescription" xml:space="preserve">
+    <value>Click a box and press the new keys: one key together with Ctrl, Alt or Win.</value>
+  </data>
+  <data name="Shortcut_OpenMainWindow" xml:space="preserve">
+    <value>Open the main window</value>
+  </data>
+  <data name="Shortcut_ToggleRecording" xml:space="preserve">
+    <value>Start / stop recording</value>
+  </data>
+  <data name="Shortcut_PlayPause" xml:space="preserve">
+    <value>Play / pause / resume</value>
+  </data>
+  <data name="Shortcut_EmergencyStop" xml:space="preserve">
+    <value>Stop playback</value>
+  </data>
+  <data name="Shortcut_PressKeys" xml:space="preserve">
+    <value>Press the keys…</value>
+  </data>
+  <data name="Shortcut_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Shortcut_Invalid" xml:space="preserve">
+    <value>Choose one key together with Ctrl, Alt or Win.</value>
+  </data>
+  <data name="Shortcut_Taken" xml:space="preserve">
+    <value>&quot;{0}&quot; already uses this shortcut.</value>
+  </data>
+  <data name="Shortcut_HeldByOther" xml:space="preserve">
+    <value>Another program uses this shortcut, so it does not work. Choose other keys.</value>
+  </data>
+  <data name="Shortcut_Reset" xml:space="preserve">
+    <value>Restore defaults</value>
+  </data>
+  <data name="Shortcut_Clear" xml:space="preserve">
+    <value>Remove shortcut</value>
+  </data>
+  <data name="Editor_Shortcut" xml:space="preserve">
+    <value>Shortcut</value>
+  </data>
+  <data name="Editor_ShortcutDescription" xml:space="preserve">
+    <value>Plays this macro from anywhere with one key combination.</value>
+  </data>
+  <data name="Settings_FindElements" xml:space="preserve">
+    <value>Find buttons by name</value>
+  </data>
+  <data name="Settings_FindElementsDescription" xml:space="preserve">
+    <value>The clicked button&apos;s name is saved too; if it has moved during playback, it is found by its name. If it cannot be found, the recorded spot is clicked.</value>
+  </data>
+  <data name="Step_ClickOn" xml:space="preserve">
+    <value>{0} “{1}”</value>
+  </data>
+  <data name="Insert_Open" xml:space="preserve">
+    <value>Open a program, file or website</value>
+  </data>
+  <data name="Insert_OpenPrompt" xml:space="preserve">
+    <value>What should open? For example: excel, C:\Reports\List.xlsx or https://portal.example.com</value>
+  </data>
+  <data name="Step_Open" xml:space="preserve">
+    <value>Open: {0}</value>
+  </data>
+  <data name="Failure_OpenFailed" xml:space="preserve">
+    <value>The program, file or website could not be opened. Check the path or address in the editor.</value>
+  </data>
+  <data name="Macros_Schedule" xml:space="preserve">
+    <value>Schedule…</value>
+  </data>
+  <data name="Schedule_Title" xml:space="preserve">
+    <value>Schedule: {0}</value>
+  </data>
+  <data name="Schedule_Hint" xml:space="preserve">
+    <value>Windows plays this macro by itself at the chosen time. You must be signed in then; if the screen is locked, the macro stops.</value>
+  </data>
+  <data name="Schedule_Frequency" xml:space="preserve">
+    <value>How often</value>
+  </data>
+  <data name="Schedule_Date" xml:space="preserve">
+    <value>Date (for once; the first day otherwise)</value>
+  </data>
+  <data name="Schedule_Time" xml:space="preserve">
+    <value>Time (for example 09:00)</value>
+  </data>
+  <data name="Schedule_Remove" xml:space="preserve">
+    <value>Remove schedule</value>
+  </data>
+  <data name="Schedule_Daily" xml:space="preserve">
+    <value>Every day</value>
+  </data>
+  <data name="Schedule_Weekdays" xml:space="preserve">
+    <value>Every weekday</value>
+  </data>
+  <data name="Schedule_Once" xml:space="preserve">
+    <value>Once</value>
+  </data>
+  <data name="Schedule_InvalidTime" xml:space="preserve">
+    <value>Write the time like 09:00.</value>
+  </data>
+  <data name="Schedule_InThePast" xml:space="preserve">
+    <value>That time has passed; choose a later one.</value>
+  </data>
+  <data name="Schedule_Failed" xml:space="preserve">
+    <value>The schedule could not be saved in the Windows Task Scheduler: {0}</value>
+  </data>
+  <data name="Schedule_Summary_Daily" xml:space="preserve">
+    <value>Every day {0}</value>
+  </data>
+  <data name="Schedule_Summary_Weekdays" xml:space="preserve">
+    <value>Weekdays {0}</value>
+  </data>
+  <data name="Schedule_Summary_Once" xml:space="preserve">
+    <value>{1} {0}</value>
+  </data>
+  <data name="Launch_MacroNotFound" xml:space="preserve">
+    <value>The macro to play was not found: {0}</value>
+  </data>
+  <data name="Editor_OnError" xml:space="preserve">
+    <value>If a step fails</value>
+  </data>
+  <data name="Editor_OnErrorDescription" xml:space="preserve">
+    <value>What to do when a window does not come or the clipboard does not change. An administrator program or a locked screen always stops the macro.</value>
+  </data>
+  <data name="OnError_Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="OnError_RetryThenStop" xml:space="preserve">
+    <value>Try 2 more times, then stop</value>
+  </data>
+  <data name="OnError_RetryThenSkipStep" xml:space="preserve">
+    <value>Try 2 more times, then skip the step</value>
+  </data>
+  <data name="OnError_RetryThenSkipRound" xml:space="preserve">
+    <value>Try 2 more times, then skip this round</value>
+  </data>
+  <data name="Playback_Skipped" xml:space="preserve">
+    <value>({0} steps, {1} rounds skipped)</value>
+  </data>
+  <data name="Insert_WaitForWindow" xml:space="preserve">
+    <value>Wait until a window opens</value>
+  </data>
+  <data name="Insert_WaitForWindowClose" xml:space="preserve">
+    <value>Wait until a window closes</value>
+  </data>
+  <data name="Insert_WaitForColor" xml:space="preserve">
+    <value>Wait until a spot has this color</value>
+  </data>
+  <data name="Insert_WaitForWindowPrompt" xml:space="preserve">
+    <value>Which window? Choose from the open ones.</value>
+  </data>
+  <data name="Insert_WaitTimeoutPrompt" xml:space="preserve">
+    <value>How long at most? For example: 30 s</value>
+  </data>
+  <data name="Insert_ColorTitle" xml:space="preserve">
+    <value>Show the spot</value>
+  </data>
+  <data name="Insert_ColorHint" xml:space="preserve">
+    <value>Point at the spot with the color to wait for and leave the mouse there.</value>
+  </data>
+  <data name="Step_WaitForWindow" xml:space="preserve">
+    <value>Wait until the window opens (at most {0})</value>
+  </data>
+  <data name="Step_WaitForWindowClose" xml:space="preserve">
+    <value>Wait until the window closes (at most {0})</value>
+  </data>
+  <data name="Step_WaitForColor" xml:space="preserve">
+    <value>Wait until the spot is {0} (at most {1})</value>
+  </data>
+  <data name="Failure_WaitTimedOut" xml:space="preserve">
+    <value>The window or color waited for did not come in time. {0}</value>
+  </data>
+  <data name="Editor_List" xml:space="preserve">
+    <value>List file (one row per round)</value>
+  </data>
+  <data name="Editor_NoList" xml:space="preserve">
+    <value>No list</value>
+  </data>
+  <data name="Editor_ChooseList" xml:space="preserve">
+    <value>Choose a list file (CSV or text)</value>
+  </data>
+  <data name="Editor_ClearList" xml:space="preserve">
+    <value>Remove the list</value>
+  </data>
+  <data name="Editor_ListHeader" xml:space="preserve">
+    <value>First row is a header</value>
+  </data>
+  <data name="Editor_ListFilter" xml:space="preserve">
+    <value>List files (CSV, text)</value>
+  </data>
+  <data name="Editor_ListFirst" xml:space="preserve">
+    <value>Choose a list file for the macro first (&quot;List file&quot; in the editor). For an Excel list: Save as &gt; CSV.</value>
+  </data>
+  <data name="Editor_ListColumn" xml:space="preserve">
+    <value>{0} – for example: {1}</value>
+  </data>
+  <data name="Insert_ListValue" xml:space="preserve">
+    <value>Type a value from the list</value>
+  </data>
+  <data name="Insert_ListValuePrompt" xml:space="preserve">
+    <value>Which column? Each round types the value in that round&apos;s row.</value>
+  </data>
+  <data name="Playback_ListUnreadable" xml:space="preserve">
+    <value>The list file could not be read: {0}. {1}</value>
+  </data>
+  <data name="Insert_Variable" xml:space="preserve">
+    <value>Type a variable (round, date, time)</value>
+  </data>
+  <data name="Insert_VariablePrompt" xml:space="preserve">
+    <value>What should be typed? Text steps also accept {tur}, {tarih}, {saat} and list columns ({1}, {2}…) typed by hand.</value>
+  </data>
+  <data name="Variable_Round" xml:space="preserve">
+    <value>Round number: 1, 2, 3…</value>
+  </data>
+  <data name="Variable_Date" xml:space="preserve">
+    <value>Today&apos;s date</value>
+  </data>
+  <data name="Variable_Time" xml:space="preserve">
+    <value>The current time</value>
+  </data>
+  <data name="Insert_Condition" xml:space="preserve">
+    <value>Add a condition (if …)</value>
+  </data>
+  <data name="Insert_ConditionPrompt" xml:space="preserve">
+    <value>What should be checked? The macro looks once when it reaches this step.</value>
+  </data>
+  <data name="Insert_ConditionActionPrompt" xml:space="preserve">
+    <value>What happens when it is true? Otherwise the macro goes on as it is.</value>
+  </data>
+  <data name="Insert_ConditionColorHint" xml:space="preserve">
+    <value>Point at the spot to check; its current color is saved.</value>
+  </data>
+  <data name="If_WindowOpen" xml:space="preserve">
+    <value>If a window is open</value>
+  </data>
+  <data name="If_WindowNotOpen" xml:space="preserve">
+    <value>If a window is not open</value>
+  </data>
+  <data name="If_ColorIs" xml:space="preserve">
+    <value>If a spot has this color</value>
+  </data>
+  <data name="If_ColorIsNot" xml:space="preserve">
+    <value>If a spot does not have this color</value>
+  </data>
+  <data name="If_SkipSteps" xml:space="preserve">
+    <value>skip the next {0} steps</value>
+  </data>
+  <data name="If_EndRound" xml:space="preserve">
+    <value>end this round, go to the next</value>
+  </data>
+  <data name="If_StopMacro" xml:space="preserve">
+    <value>end the macro</value>
+  </data>
+  <data name="If_Short_WindowOpen" xml:space="preserve">
+    <value>the window is open</value>
+  </data>
+  <data name="If_Short_WindowNotOpen" xml:space="preserve">
+    <value>the window is not open</value>
+  </data>
+  <data name="If_Short_ColorIs" xml:space="preserve">
+    <value>the spot is {0}</value>
+  </data>
+  <data name="If_Short_ColorIsNot" xml:space="preserve">
+    <value>the spot is not {0}</value>
+  </data>
+  <data name="Step_If" xml:space="preserve">
+    <value>If {0}: {1}</value>
+  </data>
+  <data name="Insert_ImageClick" xml:space="preserve">
+    <value>Find a picture and click it</value>
+  </data>
+  <data name="Insert_ImageClickPrompt" xml:space="preserve">
+    <value>How large an area? Choose the smallest size that holds the whole button. If the screen scale or theme changes, the picture may not be found.</value>
+  </data>
+  <data name="Insert_ImageClickHint" xml:space="preserve">
+    <value>Point at the middle of the button and leave the mouse there; the area around it is captured.</value>
+  </data>
+  <data name="Image_Size" xml:space="preserve">
+    <value>{0} ({1}×{2})</value>
+  </data>
+  <data name="Image_Small" xml:space="preserve">
+    <value>Small</value>
+  </data>
+  <data name="Image_Medium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="Image_Large" xml:space="preserve">
+    <value>Large</value>
+  </data>
+  <data name="Step_ImageClick" xml:space="preserve">
+    <value>Find the picture and click it ({0}×{1})</value>
+  </data>
+  <data name="Failure_ImageNotFound" xml:space="preserve">
+    <value>The picture was not found on the screen. {0}</value>
   </data>
 </root>

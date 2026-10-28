@@ -22,4 +22,16 @@ public interface IWindowSystem
 
     /// <summary>True when the window's program runs with more rights than Macro Studio, so input to it is blocked.</summary>
     bool IsElevatedAboveUs(nint window);
+
+    /// <summary>Opens a program, file or web address as Explorer would; false when Windows could not open it.</summary>
+    bool TryOpen(string path, string arguments);
+
+    /// <summary>The color of one screen pixel as 0xRRGGBB; null when the screen cannot be read (for example locked).</summary>
+    int? PixelAt(ScreenPoint point);
+
+    /// <summary>A copy of part of the screen; null when the screen cannot be read.</summary>
+    Bgra32Image? Capture(ScreenRect area);
+
+    /// <summary>All monitors together, in physical pixels.</summary>
+    ScreenRect DesktopBounds { get; }
 }

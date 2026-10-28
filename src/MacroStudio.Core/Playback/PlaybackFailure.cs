@@ -19,4 +19,13 @@ public enum PlaybackFailure
 
     /// <summary>Windows refused the input: the screen is locked or an administrator (UAC) prompt is open.</summary>
     InputBlocked,
+
+    /// <summary>An open step's program, file or web address could not be opened.</summary>
+    OpenFailed,
+
+    /// <summary>A wait-until step waited its longest time and the window or color did not come.</summary>
+    WaitTimedOut,
+
+    /// <summary>The picture of an image-click step was not on the screen.</summary>
+    ImageNotFound,
 }

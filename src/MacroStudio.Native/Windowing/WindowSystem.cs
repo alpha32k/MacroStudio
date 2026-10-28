@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using MacroStudio.Core.Geometry;
 using MacroStudio.Core.Playback;
@@ -150,6 +153,35 @@ public sealed unsafe class WindowSystem : IWindowSystem
         finally
         {
             CloseHandle(process);
+        }
+    }
+
+    public bool TryOpen(string path, string arguments)
+    {
+        try
+        {
+            // %USERPROFILE% and the like work as in the Run box. The started program is not waited for.
+            var start = new ProcessStartInfo(Environment.ExpandEnvironmentVariables(path.Trim()), arguments) { UseShellExecute = true };
+            Process.Start(start)?.Dispose();
+            return true;
+        }
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or FileNotFoundException)
+        {
+            return false;
+        }
+    }
+
+    public int? PixelAt(ScreenPoint point) => ScreenPixels.At(point);
+
+    public Bgra32Image? Capture(ScreenRect area) => ScreenPixels.Capture(area);
+
+    public ScreenRect DesktopBounds
+    {
+        get
+        {
+            int left = GetSystemMetrics(SM_XVIRTUALSCREEN);
+            int top = GetSystemMetrics(SM_YVIRTUALSCREEN);
+            return new ScreenRect(left, top, left + GetSystemMetrics(SM_CXVIRTUALSCREEN), top + GetSystemMetrics(SM_CYVIRTUALSCREEN));
         }
     }
 

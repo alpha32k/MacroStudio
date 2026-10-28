@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MacroStudio.App.Localization;
 using MacroStudio.App.Services;
+using MacroStudio.Core.Input;
 using MacroStudio.Core.Playback;
 using MacroStudio.Core.Settings;
 using MacroStudio.Native.Displays;
@@ -12,12 +14,15 @@ namespace MacroStudio.App.Pages;
 public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsService _settings;
+    private readonly ShortcutService _shortcuts;
     private readonly string _executablePath = Environment.ProcessPath!;
     private bool _isLoading = true;
+    private string? _refusal;
 
-    public SettingsViewModel(SettingsService settings)
+    public SettingsViewModel(SettingsService settings, ShortcutService shortcuts)
     {
         _settings = settings;
+        _shortcuts = shortcuts;
         AppSettings current = settings.Current;
 
         SelectedLanguage = Languages.First(o => o.Value == current.Language);
@@ -32,10 +37,13 @@ public sealed partial class SettingsViewModel : ObservableObject
         ConvertCopyPaste = current.RecordingConvertCopyPaste;
         ConvertWindowSwitches = current.RecordingConvertWindowSwitches;
         MergeTyping = current.RecordingMergeTyping;
+        FindElements = current.RecordingFindElements;
         SelectedPlaybackCountdown = Closest(Countdowns, current.PlaybackCountdownSeconds);
         SelectedOnUserInput = UserInputPolicies.First(o => o.Value == current.PlaybackOnUserInput);
         SelectedWindowWait = Closest(WindowWaits, current.PlaybackWindowWaitSeconds);
         RefreshMonitors();
+        LoadShortcuts();
+        shortcuts.Changed += (_, _) => LoadShortcuts();
 
         _isLoading = false;
     }
@@ -135,6 +143,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     public partial bool MergeTyping { get; set; }
 
     [ObservableProperty]
+    public partial bool FindElements { get; set; }
+
+    [ObservableProperty]
     public partial LocalizedOption<int> SelectedPlaybackCountdown { get; set; }
 
     [ObservableProperty]
@@ -147,6 +158,87 @@ public sealed partial class SettingsViewModel : ObservableObject
     public double MinOpenDelayMs => AppSettings.MinNotchBarOpenDelayMs;
 
     public double MaxOpenDelayMs => AppSettings.MaxNotchBarOpenDelayMs;
+
+    [ObservableProperty]
+    public partial KeyShortcut? OpenMainWindowShortcut { get; set; }
+
+    [ObservableProperty]
+    public partial KeyShortcut? ToggleRecordingShortcut { get; set; }
+
+    [ObservableProperty]
+    public partial KeyShortcut? PlayPauseShortcut { get; set; }
+
+    [ObservableProperty]
+    public partial KeyShortcut? EmergencyStopShortcut { get; set; }
+
+    /// <summary>Why the last shortcut was refused, or which shortcut another program holds; empty when all is well.</summary>
+    [ObservableProperty]
+    public partial string ShortcutMessage { get; private set; } = "";
+
+    [RelayCommand]
+    private void ResetShortcuts()
+    {
+        _refusal = null;
+        Save(s => s with
+        {
+            OpenMainWindowShortcut = AppSettings.DefaultOpenMainWindowShortcut,
+            ToggleRecordingShortcut = AppSettings.DefaultToggleRecordingShortcut,
+            PlayPauseShortcut = AppSettings.DefaultPlayPauseShortcut,
+            EmergencyStopShortcut = AppSettings.DefaultEmergencyStopShortcut,
+        });
+        LoadShortcuts();
+    }
+
+    partial void OnOpenMainWindowShortcutChanged(KeyShortcut? value) =>
+        ChangeShortcut(value, 0, (s, k) => s with { OpenMainWindowShortcut = k });
+
+    partial void OnToggleRecordingShortcutChanged(KeyShortcut? value) =>
+        ChangeShortcut(value, 1, (s, k) => s with { ToggleRecordingShortcut = k });
+
+    partial void OnPlayPauseShortcutChanged(KeyShortcut? value) =>
+        ChangeShortcut(value, 2, (s, k) => s with { PlayPauseShortcut = k });
+
+    partial void OnEmergencyStopShortcutChanged(KeyShortcut? value) =>
+        ChangeShortcut(value, 3, (s, k) => s with { EmergencyStopShortcut = k });
+
+    /// <param name="index">Position in AppSettings.AppShortcuts; that shortcut does not conflict with itself.</param>
+    private void ChangeShortcut(KeyShortcut? value, int index, Func<AppSettings, KeyShortcut, AppSettings> change)
+    {
+        if (_isLoading || value is not { } shortcut || shortcut == _settings.Current.AppShortcuts()[index])
+        {
+            return;
+        }
+
+        if (_shortcuts.FindOwner(shortcut, exceptAppShortcut: index) is { } owner)
+        {
+            _refusal = Localizer.Instance.Format("Shortcut_Taken", owner);
+            LoadShortcuts();
+            return;
+        }
+
+        _refusal = null;
+        Save(s => change(s, shortcut));
+    }
+
+    private void LoadShortcuts()
+    {
+        bool wasLoading = _isLoading;
+        _isLoading = true;
+        AppSettings current = _settings.Current;
+        OpenMainWindowShortcut = current.OpenMainWindowShortcut;
+        ToggleRecordingShortcut = current.ToggleRecordingShortcut;
+        PlayPauseShortcut = current.PlayPauseShortcut;
+        EmergencyStopShortcut = current.EmergencyStopShortcut;
+        _isLoading = wasLoading;
+
+        // The stop shortcut is only registered while a macro plays, so it is not checked here.
+        // A refusal stays until the next shortcut is taken: leaving the box registers the shortcuts again,
+        // which comes back here.
+        KeyShortcut[] held = [.. current.AppShortcuts().Take(3).Where(_shortcuts.Unavailable.Contains)];
+        ShortcutMessage = _refusal ?? (held.Length == 0
+            ? ""
+            : string.Join(", ", held.Select(ShortcutService.NameOf)) + ": " + Localizer.Instance["Shortcut_HeldByOther"]);
+    }
 
     /// <summary>Monitors can be plugged in or out while the app runs, so the list is rebuilt when the page opens.</summary>
     public void RefreshMonitors()
@@ -200,6 +292,9 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     partial void OnMergeTypingChanged(bool value) =>
         Save(s => s with { RecordingMergeTyping = value });
+
+    partial void OnFindElementsChanged(bool value) =>
+        Save(s => s with { RecordingFindElements = value });
 
     partial void OnSelectedPlaybackCountdownChanged(LocalizedOption<int> value) =>
         Save(s => s with { PlaybackCountdownSeconds = value.Value });

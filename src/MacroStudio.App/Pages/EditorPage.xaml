@@ -5,6 +5,7 @@
                    xmlns:l="clr-namespace:MacroStudio.App.Localization"
                    xmlns:pages="clr-namespace:MacroStudio.App.Pages"
                    xmlns:macros="clr-namespace:MacroStudio.Core.Macros;assembly=MacroStudio.Core"
+                   xmlns:controls="clr-namespace:MacroStudio.App.Controls"
                    ScrollViewer.CanContentScroll="False">
   <!-- CanContentScroll="False": the step table scrolls by itself, so WPF UI leaves out its page scroll viewer. -->
   <pages:ContentPage.InputBindings>
@@ -75,6 +76,16 @@
         <TextBlock Style="{StaticResource DescriptionTextStyle}" Margin="0,0,0,4" Text="{l:Loc Editor_Description}" />
         <ui:TextBox Width="260" AutomationProperties.Name="{l:Loc Editor_Description}" MaxLength="{x:Static macros:MacroValidator.MaxDescriptionLength}" ClearButtonEnabled="False" Text="{Binding MacroDescription, UpdateSourceTrigger=PropertyChanged}" />
       </StackPanel>
+      <StackPanel Margin="0,0,12,8" MaxWidth="260">
+        <TextBlock Style="{StaticResource DescriptionTextStyle}" Margin="0,0,0,4" Text="{l:Loc Editor_Shortcut}" />
+        <controls:ShortcutBox MinWidth="160"
+                              CanClear="True"
+                              AutomationProperties.Name="{l:Loc Editor_Shortcut}"
+                              AutomationProperties.HelpText="{l:Loc Editor_ShortcutDescription}"
+                              ToolTip="{l:Loc Editor_ShortcutDescription}"
+                              Shortcut="{Binding MacroShortcut}" />
+        <TextBlock Margin="0,4,0,0" Style="{StaticResource CollapsedWhenEmptyTextStyle}" Foreground="{DynamicResource SystemFillColorCautionBrush}" Text="{Binding ShortcutMessage}" />
+      </StackPanel>
       <StackPanel Margin="0,0,12,8">
         <TextBlock Style="{StaticResource DescriptionTextStyle}" Margin="0,0,0,4" Text="{l:Loc Bar_Loop}" />
         <ComboBox Width="140" AutomationProperties.Name="{l:Loc Bar_Loop}" ItemsSource="{Binding LoopChoices}" SelectedItem="{Binding SelectedLoop}" DisplayMemberPath="Label" />
@@ -82,6 +93,18 @@
       <StackPanel Margin="0,0,12,8">
         <TextBlock Style="{StaticResource DescriptionTextStyle}" Margin="0,0,0,4" Text="{l:Loc Bar_Speed}" />
         <ComboBox Width="90" AutomationProperties.Name="{l:Loc Bar_Speed}" ItemsSource="{Binding SpeedChoices}" SelectedItem="{Binding SelectedSpeed}" ItemStringFormat="{}{0:0.##}x" />
+      </StackPanel>
+      <StackPanel Margin="0,0,12,8">
+        <TextBlock Style="{StaticResource DescriptionTextStyle}" Margin="0,0,0,4" Text="{l:Loc Editor_List}" />
+        <StackPanel Orientation="Horizontal">
+          <ui:Button Icon="{ui:SymbolIcon DocumentTable20}" Content="{Binding ListName}" ToolTip="{Binding ListPath}" AutomationProperties.Name="{l:Loc Editor_ChooseList}" Command="{Binding ChooseListCommand}" />
+          <ui:Button Margin="4,0,0,0" Icon="{ui:SymbolIcon Dismiss20}" ToolTip="{l:Loc Editor_ClearList}" AutomationProperties.Name="{l:Loc Editor_ClearList}" Command="{Binding ClearListCommand}" Visibility="{Binding HasList, Converter={StaticResource BooleanToVisibility}}" />
+          <CheckBox Margin="8,0,0,0" Content="{l:Loc Editor_ListHeader}" IsChecked="{Binding ListHasHeader}" Visibility="{Binding HasList, Converter={StaticResource BooleanToVisibility}}" />
+        </StackPanel>
+      </StackPanel>
+      <StackPanel Margin="0,0,12,8">
+        <TextBlock Style="{StaticResource DescriptionTextStyle}" Margin="0,0,0,4" Text="{l:Loc Editor_OnError}" />
+        <ComboBox Width="260" AutomationProperties.Name="{l:Loc Editor_OnError}" ToolTip="{l:Loc Editor_OnErrorDescription}" ItemsSource="{Binding ErrorPolicyChoices}" SelectedItem="{Binding SelectedErrorPolicy}" DisplayMemberPath="Label" />
       </StackPanel>
       <StackPanel Margin="0,0,0,8" VerticalAlignment="Bottom" Orientation="Horizontal">
         <ui:Button Appearance="Primary" Icon="{ui:SymbolIcon Save24}" Content="{l:Loc Save_Save}" ToolTip="Ctrl+S" Command="{Binding SaveCommand}" />
@@ -135,6 +158,14 @@
               <MenuItem Header="{l:Loc Insert_Copy}" Icon="{ui:SymbolIcon Copy20}" Command="{Binding InsertCopyCommand}" />
               <MenuItem Header="{l:Loc Insert_Paste}" Icon="{ui:SymbolIcon ClipboardPaste20}" Command="{Binding InsertPasteCommand}" />
               <MenuItem Header="{l:Loc Insert_FocusWindow}" Icon="{ui:SymbolIcon Window20}" Command="{Binding InsertFocusWindowCommand}" />
+              <MenuItem Header="{l:Loc Insert_ListValue}" Icon="{ui:SymbolIcon TextBulletListSquare20}" Command="{Binding InsertListValueCommand}" />
+              <MenuItem Header="{l:Loc Insert_ImageClick}" Icon="{ui:SymbolIcon ImageSearch20}" Command="{Binding InsertImageClickCommand}" />
+              <MenuItem Header="{l:Loc Insert_Condition}" Icon="{ui:SymbolIcon BranchFork20}" Command="{Binding InsertConditionCommand}" />
+              <MenuItem Header="{l:Loc Insert_Variable}" Icon="{ui:SymbolIcon NumberSymbol20}" Command="{Binding InsertVariableCommand}" />
+              <MenuItem Header="{l:Loc Insert_Open}" Icon="{ui:SymbolIcon Open20}" Command="{Binding InsertOpenCommand}" />
+              <MenuItem Header="{l:Loc Insert_WaitForWindow}" Icon="{ui:SymbolIcon WindowNew20}" Command="{Binding InsertWaitForWindowCommand}" />
+              <MenuItem Header="{l:Loc Insert_WaitForWindowClose}" Icon="{ui:SymbolIcon WindowDevTools20}" Command="{Binding InsertWaitForWindowCloseCommand}" />
+              <MenuItem Header="{l:Loc Insert_WaitForColor}" Icon="{ui:SymbolIcon ColorBackground20}" Command="{Binding InsertWaitForColorCommand}" />
               <MenuItem Header="{l:Loc Insert_Click}" Icon="{ui:SymbolIcon CursorClick20}" Command="{Binding InsertClickCommand}" />
             </ContextMenu>
           </ui:Button.ContextMenu>

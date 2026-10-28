@@ -5,6 +5,31 @@ Etiketler: **[Kesin]** doğrulandı · **[Muhtemel]** güçlü çıkarım · **[
 
 ---
 
+## 1.1.0 — Rakiplerden gelen özellikler (2026-10-28)
+
+Proje sahibi rakip analizindeki maddelerin hepsini onayladı; EXE üretme sonradan iptal edildi (bkz. aşağı).
+
+### Eklenenler
+- **Kısayollar ayarlardan değişiyor**, her makroya kendi kısayolu verilebiliyor (`ShortcutService`, `ShortcutBox`). [Kesin] Bu bilgisayarda Ctrl+Alt+M başka bir programda; günlük her açılışta bunu yazıyordu. Metinlerdeki kısayollar `%PlayPause%` gibi işaretlerle o anki tuşları gösteriyor.
+- **Butonu adıyla bulma** (UI Automation, `UiElements`): tıklamada küçük ve adlı kontrol (buton, menü öğesi, sekme, alan) kaydediliyor; oynatmada 1,5 sn içinde bulunamazsa kayıtlı konuma tıklanıyor ve o çalıştırmada bir daha aranmıyor. Excel hücreleri ve büyük alanlar bilerek dışarıda (yavaş / yanlış eşleşme). Ayarlardan kapatılabilir.
+- **Program/dosya/site aç** adımı, **pencere açılana/kapanana veya nokta bir renge dönene kadar bekle** adımı, **koşul** adımı (eğer … ise sonraki N adımı atla / turu bitir / makroyu bitir).
+- **Hata olursa**: dur, 2 kez daha dene sonra dur / adımı atla / turu atla. Yönetici programı ve kilitli ekran asla atlanmaz; art arda 3 tur atlanırsa makro durur (liste ilerlemiyorsa sonsuz döngü olmasın).
+- **Liste dosyası** (CSV/TXT; `;` `,` sekme; tırnak; UTF-8 veya 1254) ve metin alanları `{1}`, `{Başlık}`, `{tur}`, `{tarih}`, `{saat}`.
+- **Görüntüyü bul ve tıkla** (GDI ekran yakalama, örnek-nokta ön elemeli eşleştirme; ölçek/tema değişirse bulunamayabilir).
+- **Komut satırı** `--play <ad veya id>` ve **Zamanla…** (Windows Görev Zamanlayıcı, XML ile; oturum açıkken, normal yetkiyle).
+
+### Düzeltilen hata
+- Not Defteri gibi programlarda liste bitince Ctrl+C panoyu değiştirmiyor; makro "pano değişmedi" hatasıyla duruyordu. Artık önceki turlarda çalışan kopyalama değişmezse "liste bitti" sayılıyor. [Kesin, canlı test]
+- Ayarlarda çakışan kısayol reddedilince uyarı kutudan çıkınca siliniyordu; düzeltildi. [Kesin, canlı test]
+
+### İptal
+- **EXE olarak kaydet**: yazıldı (tek dosya oynatıcı, ~59 MB) ve denendi, proje sahibi istemediği için tamamen geri alındı. Dağıtım MSI ile.
+
+### Testler
+- Birim: 201/201. Uçtan uca (gerçek kancalar, SendInput, Not Defteri / Paint / uygulamanın kendisi / gerçek Windows görevi): yeni özelliklerin hepsi canlı geçti.
+- **Test edilmedi:** butonu adıyla bulmanın canlı testi (Hesap Makinesi o sırada açıktı), Zamanla penceresinin tıklamayla kullanımı, bilgisayar kullanılırken kesilen birkaç senaryonun tam tur tekrarı.
+- MSI 1.1.0 bu bilgisayara sessiz kuruldu, 1.0.1'in üstüne yükseltti ve açıldı. [Kesin]
+
 ## 1.0.1 — Windows panelleri ve gizli pencereler (2026-10-20)
 
 Kullanıcı hatası: Windows tuşu/arama kutusu → metin → Enter (tarayıcı açılır) kaydı, oynatmada 2. adımda "pencere bulunamadı" diye durdu.

@@ -67,6 +67,11 @@ public sealed class MacroLibrary(string folder)
             throw new InvalidMacroFileException("File is not a valid macro.", ex);
         }
 
+        return Checked(macro);
+    }
+
+    private static MacroDefinition Checked(MacroDefinition? macro)
+    {
         if (macro is null)
         {
             throw new InvalidMacroFileException("File is empty.");
@@ -119,10 +124,13 @@ public sealed class MacroLibrary(string folder)
     {
         MacroDefinition macro = Load(path) with { Name = newName };
         string newPath = GetFreePath(newName, currentPath: path);
-        Write(newPath, macro);
+
+        // The new name is written into the file where it is, then the file is moved in one step: when the move
+        // fails (the file is open elsewhere) there is still exactly one file, never one under each name.
+        Write(path, macro);
         if (!string.Equals(newPath, path, StringComparison.OrdinalIgnoreCase))
         {
-            File.Delete(path);
+            File.Move(path, newPath);
             MoveFolder(HistoryFolderOf(path), HistoryFolderOf(newPath));
         }
 

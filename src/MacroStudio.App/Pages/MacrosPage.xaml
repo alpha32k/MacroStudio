@@ -106,6 +106,10 @@
                                   Icon="{ui:SymbolIcon Rename20}"
                                   Command="{Binding PlacementTarget.Tag.RenameCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                   CommandParameter="{Binding}" />
+                        <MenuItem Header="{l:Loc Macros_Schedule}"
+                                  Icon="{ui:SymbolIcon CalendarClock20}"
+                                  Command="{Binding PlacementTarget.Tag.ScheduleCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                  CommandParameter="{Binding}" />
                         <MenuItem Header="{l:Loc Macros_Export}"
                                   Icon="{ui:SymbolIcon ArrowExport20}"
                                   Command="{Binding PlacementTarget.Tag.ExportCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"

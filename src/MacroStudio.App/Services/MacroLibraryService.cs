@@ -75,7 +75,7 @@ public sealed class MacroLibraryService(MacroLibrary library)
     }
 
     public MacroFile Duplicate(MacroFile file, string copyName) =>
-        SaveNew(file.Macro with { Id = Guid.NewGuid(), Name = copyName, CreatedAt = DateTimeOffset.Now });
+        SaveNew(file.Macro with { Id = Guid.NewGuid(), Name = copyName, CreatedAt = DateTimeOffset.Now, Shortcut = null });
 
     public MacroFile Rename(MacroFile file, string newName)
     {

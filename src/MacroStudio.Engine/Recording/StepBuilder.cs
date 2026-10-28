@@ -44,7 +44,8 @@ public sealed class StepBuilder(RecordingOptions options)
     private int _taskbarClickIndex = -1;
 
     /// <summary>Mouse button, wheel events. Moves go to <see cref="AddMouseMove"/>.</summary>
-    public void AddMouse(CapturedMouse input, WindowInfo window)
+    /// <param name="element">The control under a press, when recording looked for one.</param>
+    public void AddMouse(CapturedMouse input, WindowInfo window, UiElement? element = null)
     {
         switch (input.Action)
         {
@@ -53,7 +54,7 @@ public sealed class StepBuilder(RecordingOptions options)
                 FlushTyping();
                 _lastMouseDownMs = input.TimeMs;
                 _lastMouseDownWindow = input.Window.Handle;
-                _pressedButtons[input.Button] = new PressedButton(input, window);
+                _pressedButtons[input.Button] = new PressedButton(input, window, element);
                 break;
 
             case MouseAction.Up when _pressedButtons.Remove(input.Button, out PressedButton? pressed):
@@ -363,7 +364,7 @@ public sealed class StepBuilder(RecordingOptions options)
             return;
         }
 
-        Add(new MouseClickStep { Button = down.Button, Modifiers = down.Modifiers, Target = target, ScreenPosition = down.Position }, down.TimeMs, up.TimeMs, handle);
+        Add(new MouseClickStep { Button = down.Button, Modifiers = down.Modifiers, Target = target, ScreenPosition = down.Position, Element = target is null ? null : pressed.Element }, down.TimeMs, up.TimeMs, handle);
         _lastClickUpMs = up.TimeMs;
         _taskbarClickIndex = pressed.Window.Role == WindowRole.Taskbar && down.Button == MouseButton.Left ? _steps.Count - 1 : -1;
     }

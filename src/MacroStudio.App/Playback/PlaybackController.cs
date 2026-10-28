@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -27,17 +28,19 @@ public sealed partial class PlaybackController : ObservableObject
     private readonly IUserActivityMonitor _activity;
     private readonly SettingsService _settings;
     private readonly HotkeyService _hotkeys;
+    private readonly ShortcutService _shortcuts;
     private readonly Dispatcher _dispatcher = Application.Current.Dispatcher;
     private readonly HashSet<Guid> _screenAccepted = [];
     private CancellationTokenSource? _cancellation;
     private long _ignoreUserInputUntilMs;
 
-    public PlaybackController(MacroPlayer player, IUserActivityMonitor activity, SettingsService settings, HotkeyService hotkeys)
+    public PlaybackController(MacroPlayer player, IUserActivityMonitor activity, SettingsService settings, HotkeyService hotkeys, ShortcutService shortcuts)
     {
         _player = player;
         _activity = activity;
         _settings = settings;
         _hotkeys = hotkeys;
+        _shortcuts = shortcuts;
 
         // The player and the hooks report on their own threads; the user interface changes on its thread.
         _player.ProgressChanged += (_, progress) => _dispatcher.BeginInvoke(() => Progress = progress);
@@ -73,7 +76,7 @@ public sealed partial class PlaybackController : ObservableObject
             return;
         }
 
-        if (!ConfirmScreen(macro))
+        if (!ConfirmScreen(macro) || !TryReadList(macro, out var list))
         {
             return;
         }
@@ -94,6 +97,10 @@ public sealed partial class PlaybackController : ObservableObject
                 WindowWait = TimeSpan.FromSeconds(_settings.Current.PlaybackWindowWaitSeconds),
                 FirstStep = firstStep,
                 LastStep = lastStep,
+                OnError = macro.OnError,
+                ListRows = list?.Rows,
+                ListColumns = list?.Columns ?? [],
+                Culture = Localizer.Instance.Culture,
             };
             PlaybackResult? result = await RunAsync(macro, options, cancellation.Token);
             if (result is not null)
@@ -141,6 +148,28 @@ public sealed partial class PlaybackController : ObservableObject
         }
     }
 
+    /// <summary>The list file is read before the countdown, so a missing file is told before anything is played.</summary>
+    private static bool TryReadList(MacroDefinition macro, out (IReadOnlyList<IReadOnlyList<string>> Rows, IReadOnlyList<string> Columns)? list)
+    {
+        list = null;
+        if (macro.DataList is not { } dataList)
+        {
+            return true;
+        }
+
+        try
+        {
+            list = DataListReader.Read(dataList);
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            Log.Warning(ex, "List file could not be read");
+            MessageBox.Show(Localizer.Instance.Format("Playback_ListUnreadable", dataList.Path, ex.Message), "Macro Studio", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return false;
+        }
+    }
+
     /// <summary>
     /// A clicking macro recorded on a screen of another size or scale may click beside its targets. Asked once per
     /// macro while the app runs, so a user who knows the macro still works is not asked every time.
@@ -174,7 +203,7 @@ public sealed partial class PlaybackController : ObservableObject
         using TimerResolution timer = TimerResolution.OneMs();
         try
         {
-            _activity.Start(AppShortcuts.All);
+            _activity.Start(_shortcuts.Reserved);
         }
         catch (Win32Exception ex)
         {
@@ -183,7 +212,7 @@ public sealed partial class PlaybackController : ObservableObject
             return null;
         }
 
-        int? stopHotkey = _hotkeys.TryRegister(AppShortcuts.EmergencyStop, Stop);
+        int? stopHotkey = _hotkeys.TryRegister(_shortcuts.EmergencyStop, Stop);
         try
         {
             Volatile.Write(ref _ignoreUserInputUntilMs, Environment.TickCount64 + ResumeGraceMs);

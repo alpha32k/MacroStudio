@@ -43,6 +43,7 @@ public sealed partial class EditorViewModel : ObservableObject
     private readonly MainWindowService _mainWindow;
     private readonly IWindowSystem _windows;
     private readonly IWindowInspector _inspector;
+    private readonly ShortcutService _shortcuts;
     private StepListEditor? _editor;
     private MacroFile? _openFile;
     private bool _detailsChanged;
@@ -54,13 +55,15 @@ public sealed partial class EditorViewModel : ObservableObject
         PlaybackController playback,
         MainWindowService mainWindow,
         IWindowSystem windows,
-        IWindowInspector inspector)
+        IWindowInspector inspector,
+        ShortcutService shortcuts)
     {
         _library = library;
         _playback = playback;
         _mainWindow = mainWindow;
         _windows = windows;
         _inspector = inspector;
+        _shortcuts = shortcuts;
         Macros = library.Macros;
         SelectedLoop = PlaybackChoices.Loops[0];
         SelectedSpeed = 1;
@@ -85,6 +88,11 @@ public sealed partial class EditorViewModel : ObservableObject
 
     public IReadOnlyList<double> SpeedChoices => PlaybackChoices.Speeds;
 
+    public IReadOnlyList<LocalizedOption<ErrorPolicy>> ErrorPolicyChoices => PlaybackChoices.ErrorPolicies;
+
+    [ObservableProperty]
+    public partial LocalizedOption<ErrorPolicy> SelectedErrorPolicy { get; set; } = PlaybackChoices.ErrorPolicies[0];
+
     [ObservableProperty]
     public partial MacroFile? SelectedMacro { get; set; }
 
@@ -103,6 +111,219 @@ public sealed partial class EditorViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string MacroDescription { get; set; } = "";
+
+    /// <summary>The macro's own system-wide shortcut; null when it has none.</summary>
+    [ObservableProperty]
+    public partial KeyShortcut? MacroShortcut { get; set; }
+
+    /// <summary>The list file worked through one row per round; empty when the macro has none.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasList), nameof(ListName))]
+    public partial string ListPath { get; set; } = "";
+
+    [ObservableProperty]
+    public partial bool ListHasHeader { get; set; } = true;
+
+    public bool HasList => ListPath.Length > 0;
+
+    public string ListName => HasList ? Path.GetFileName(ListPath) : Localizer.Instance["Editor_NoList"];
+
+    partial void OnListPathChanged(string value) => MarkDetailsChanged();
+
+    partial void OnListHasHeaderChanged(bool value) => MarkDetailsChanged();
+
+    [RelayCommand(CanExecute = nameof(IsOpen))]
+    private void ChooseList()
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = Localizer.Instance["Editor_ChooseList"],
+            Filter = Localizer.Instance["Editor_ListFilter"] + "|*.csv;*.txt;*.tsv|*.*|*.*",
+        };
+        if (dialog.ShowDialog() == true)
+        {
+            ListPath = dialog.FileName;
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(IsOpen))]
+    private void ClearList() => ListPath = "";
+
+    /// <summary>The user points at a button; a picture around the pointer is kept and searched for when playing.</summary>
+    [RelayCommand(CanExecute = nameof(IsOpen))]
+    private async Task InsertImageClick()
+    {
+        List<LocalizedOption<int>> sizes =
+        [
+            new(48, l => l.Format("Image_Size", l["Image_Small"], 48, 24)),
+            new(96, l => l.Format("Image_Size", l["Image_Medium"], 96, 40)),
+            new(160, l => l.Format("Image_Size", l["Image_Large"], 160, 64)),
+        ];
+        int width = InputDialog.AskChoice(Localizer.Instance["Insert_ImageClick"], Localizer.Instance["Insert_ImageClickPrompt"], sizes);
+        if (width == 0)
+        {
+            return;
+        }
+
+        int height = width switch { 48 => 24, 96 => 40, _ => 64 };
+        _mainWindow.Minimize();
+        try
+        {
+            await CountdownWindow.RunAsync(ClickPickSeconds, "Insert_ClickTitle", "Insert_ImageClickHint", CancellationToken.None);
+        }
+        finally
+        {
+            _mainWindow.Show();
+        }
+
+        if (!MouseCursor.TryGetPosition(out ScreenPoint position))
+        {
+            return;
+        }
+
+        var area = new ScreenRect(position.X - (width / 2), position.Y - (height / 2), position.X - (width / 2) + width, position.Y - (height / 2) + height);
+        if (ScreenPixels.Capture(area) is not { } picture)
+        {
+            return;
+        }
+
+        WindowInfo window = _inspector.Describe(WindowInterop.TopLevelWindowAt(position));
+        InsertStep(new ImageClickStep
+        {
+            ImageWidth = picture.Width,
+            ImageHeight = picture.Height,
+            ImagePixels = picture.Pixels,
+            Target = window.Role == WindowRole.Application ? window.Target : null,
+        });
+    }
+
+    /// <summary>"If this window is open / this spot has this color, then skip steps, end the round or stop."</summary>
+    [RelayCommand(CanExecute = nameof(IsOpen))]
+    private async Task InsertCondition()
+    {
+        List<LocalizedOption<IfCheck>> checks =
+        [
+            LocalizedOption<IfCheck>.FromKey(IfCheck.WindowOpen, "If_WindowOpen"),
+            LocalizedOption<IfCheck>.FromKey(IfCheck.WindowNotOpen, "If_WindowNotOpen"),
+            LocalizedOption<IfCheck>.FromKey(IfCheck.ColorIs, "If_ColorIs"),
+            LocalizedOption<IfCheck>.FromKey(IfCheck.ColorIsNot, "If_ColorIsNot"),
+        ];
+        string title = Localizer.Instance["Insert_Condition"];
+        int checkIndex = InputDialog.AskChoice(title, Localizer.Instance["Insert_ConditionPrompt"], checks.Select((c, i) => new LocalizedOption<int>(i + 1, _ => c.Label)).ToList());
+        if (checkIndex == 0)
+        {
+            return;
+        }
+
+        IfCheck check = checks[checkIndex - 1].Value;
+        var step = new IfStep { Check = check, Action = IfAction.SkipSteps };
+        if (check is IfCheck.WindowOpen or IfCheck.WindowNotOpen)
+        {
+            List<LocalizedOption<WindowCandidate?>> windows = _windows.ListWindows()
+                .Where(w => w.Title.Length > 0)
+                .Select(w => new LocalizedOption<WindowCandidate?>(w, l => l.Format("Window_Name", w.Title, w.ProcessName)))
+                .ToList();
+            if (windows.Count == 0 || InputDialog.AskChoice(title, Localizer.Instance["Insert_WaitForWindowPrompt"], windows) is not { } chosen)
+            {
+                return;
+            }
+
+            step = step with { Target = new WindowTarget(chosen.ProcessName, chosen.Title, chosen.ClassName, chosen.Bounds) };
+        }
+        else
+        {
+            _mainWindow.Minimize();
+            try
+            {
+                await CountdownWindow.RunAsync(ClickPickSeconds, "Insert_ColorTitle", "Insert_ConditionColorHint", CancellationToken.None);
+            }
+            finally
+            {
+                _mainWindow.Show();
+            }
+
+            if (!MouseCursor.TryGetPosition(out ScreenPoint position) || ScreenPixels.At(position) is not int color)
+            {
+                return;
+            }
+
+            WindowInfo window = _inspector.Describe(WindowInterop.TopLevelWindowAt(position));
+            step = step with { Target = window.Role == WindowRole.Application ? window.Target : null, ScreenPosition = position, Color = color };
+        }
+
+        List<LocalizedOption<int>> actions =
+        [
+            new(1, l => l.Format("If_SkipSteps", 1)),
+            new(2, l => l.Format("If_SkipSteps", 2)),
+            new(3, l => l.Format("If_SkipSteps", 3)),
+            LocalizedOption<int>.FromKey(-1, "If_EndRound"),
+            LocalizedOption<int>.FromKey(-2, "If_StopMacro"),
+        ];
+        int action = InputDialog.AskChoice(title, Localizer.Instance["Insert_ConditionActionPrompt"], actions);
+        if (action == 0)
+        {
+            return;
+        }
+
+        InsertStep(action > 0
+            ? step with { Action = IfAction.SkipSteps, SkipCount = action }
+            : step with { Action = action == -1 ? IfAction.EndRound : IfAction.StopMacro });
+    }
+
+    /// <summary>A text step with a field that changes every time: the round number, today's date or the time.</summary>
+    [RelayCommand(CanExecute = nameof(IsOpen))]
+    private void InsertVariable()
+    {
+        List<LocalizedOption<string>> choices =
+        [
+            LocalizedOption<string>.FromKey("{tur}", "Variable_Round"),
+            LocalizedOption<string>.FromKey("{tarih}", "Variable_Date"),
+            LocalizedOption<string>.FromKey("{saat}", "Variable_Time"),
+        ];
+        if (InputDialog.AskChoice(Localizer.Instance["Insert_Variable"], Localizer.Instance["Insert_VariablePrompt"], choices) is { } field)
+        {
+            InsertStep(new TypeTextStep { Text = field, Target = TargetBeforeInsertPoint() });
+        }
+    }
+
+    /// <summary>A text step that types one column of the list row of each round, for example {2} or {Müşteri}.</summary>
+    [RelayCommand(CanExecute = nameof(IsOpen))]
+    private void InsertListValue()
+    {
+        IReadOnlyList<string> columns;
+        IReadOnlyList<IReadOnlyList<string>> rows;
+        try
+        {
+            if (!HasList)
+            {
+                MessageBox.Show(Localizer.Instance["Editor_ListFirst"], "Macro Studio", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            (rows, columns) = DataListReader.Read(new DataList(ListPath, ListHasHeader));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            MessageBox.Show(Localizer.Instance.Format("Playback_ListUnreadable", ListPath, ex.Message), "Macro Studio", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        // Each choice shows the column with the value of the first row, so the right one is easy to find.
+        List<LocalizedOption<string>> choices = columns
+            .Select((name, index) => new LocalizedOption<string>(
+                ListHasHeader ? "{" + name + "}" : "{" + (index + 1).ToString(CultureInfo.InvariantCulture) + "}",
+                l => l.Format("Editor_ListColumn", name, rows.Count > 0 && index < rows[0].Count ? rows[0][index] : "")))
+            .ToList();
+        if (choices.Count > 0
+            && InputDialog.AskChoice(Localizer.Instance["Insert_ListValue"], Localizer.Instance["Insert_ListValuePrompt"], choices) is { } field)
+        {
+            InsertStep(new TypeTextStep { Text = field, Target = TargetBeforeInsertPoint() });
+        }
+    }
+
+    /// <summary>Why the chosen shortcut was refused or will not work; empty when all is well.</summary>
+    [ObservableProperty]
+    public partial string ShortcutMessage { get; private set; } = "";
 
     /// <summary>Set when the macro clicks and was recorded on a screen of another size or scale.</summary>
     public string? ScreenWarning => _editor is null ? null : ScreenWarningText.For(CurrentMacro());
@@ -191,9 +412,31 @@ public sealed partial class EditorViewModel : ObservableObject
 
     partial void OnMacroDescriptionChanged(string value) => MarkDetailsChanged();
 
+    partial void OnMacroShortcutChanged(KeyShortcut? oldValue, KeyShortcut? newValue)
+    {
+        if (_isShowingMacro || _openFile is null)
+        {
+            return;
+        }
+
+        if (newValue is { } shortcut && _shortcuts.FindOwner(shortcut, exceptMacro: _openFile.Macro.Id) is { } owner)
+        {
+            _isShowingMacro = true;
+            MacroShortcut = oldValue;
+            _isShowingMacro = false;
+            ShortcutMessage = Localizer.Instance.Format("Shortcut_Taken", owner);
+            return;
+        }
+
+        ShortcutMessage = "";
+        MarkDetailsChanged();
+    }
+
     partial void OnSelectedLoopChanged(LocalizedOption<LoopSettings> value) => MarkDetailsChanged();
 
     partial void OnSelectedSpeedChanged(double value) => MarkDetailsChanged();
+
+    partial void OnSelectedErrorPolicyChanged(LocalizedOption<ErrorPolicy> value) => MarkDetailsChanged();
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private void Save() => TrySave();
@@ -359,6 +602,16 @@ public sealed partial class EditorViewModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(IsOpen))]
+    private void InsertOpen()
+    {
+        string? path = InputDialog.AskText(Localizer.Instance["Insert_Open"], Localizer.Instance["Insert_OpenPrompt"]);
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            InsertStep(new OpenStep { Path = path.Trim().Trim('"') });
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(IsOpen))]
     private void InsertCopy() => InsertStep(new CopyStep { Target = TargetBeforeInsertPoint() });
 
     [RelayCommand(CanExecute = nameof(IsOpen))]
@@ -381,6 +634,72 @@ public sealed partial class EditorViewModel : ObservableObject
         {
             InsertStep(new FocusWindowStep { Target = new WindowTarget(chosen.ProcessName, chosen.Title, chosen.ClassName, chosen.Bounds) });
         }
+    }
+
+    [RelayCommand(CanExecute = nameof(IsOpen))]
+    private void InsertWaitForWindow() => InsertWaitForWindowStep(WaitCondition.WindowAppears, "Insert_WaitForWindow");
+
+    [RelayCommand(CanExecute = nameof(IsOpen))]
+    private void InsertWaitForWindowClose() => InsertWaitForWindowStep(WaitCondition.WindowCloses, "Insert_WaitForWindowClose");
+
+    /// <summary>The user shows the spot while it has the color to wait for (for example the finished state).</summary>
+    [RelayCommand(CanExecute = nameof(IsOpen))]
+    private async Task InsertWaitForColor()
+    {
+        _mainWindow.Minimize();
+        try
+        {
+            await CountdownWindow.RunAsync(ClickPickSeconds, "Insert_ColorTitle", "Insert_ColorHint", CancellationToken.None);
+        }
+        finally
+        {
+            _mainWindow.Show();
+        }
+
+        if (!MouseCursor.TryGetPosition(out ScreenPoint position) || ScreenPixels.At(position) is not int color
+            || AskWaitTimeout("Insert_WaitForColor") is not int timeout)
+        {
+            return;
+        }
+
+        WindowInfo window = _inspector.Describe(WindowInterop.TopLevelWindowAt(position));
+        WindowTarget? target = window.Role == WindowRole.Application ? window.Target : null;
+        InsertStep(new WaitForStep { Condition = WaitCondition.ColorAppears, Target = target, ScreenPosition = position, Color = color, TimeoutMs = timeout });
+    }
+
+    private void InsertWaitForWindowStep(WaitCondition condition, string titleKey)
+    {
+        List<LocalizedOption<WindowCandidate?>> choices = _windows.ListWindows()
+            .Where(w => w.Title.Length > 0)
+            .Select(w => new LocalizedOption<WindowCandidate?>(w, l => l.Format("Window_Name", w.Title, w.ProcessName)))
+            .ToList();
+        if (choices.Count == 0
+            || InputDialog.AskChoice(Localizer.Instance[titleKey], Localizer.Instance["Insert_WaitForWindowPrompt"], choices) is not { } chosen
+            || AskWaitTimeout(titleKey) is not int timeout)
+        {
+            return;
+        }
+
+        var target = new WindowTarget(chosen.ProcessName, chosen.Title, chosen.ClassName, chosen.Bounds);
+        InsertStep(new WaitForStep { Condition = condition, Target = target, TimeoutMs = timeout });
+    }
+
+    /// <returns>Milliseconds; null when cancelled or not a valid time (the user was told).</returns>
+    private static int? AskWaitTimeout(string titleKey)
+    {
+        string? text = InputDialog.AskText(Localizer.Instance[titleKey], Localizer.Instance["Insert_WaitTimeoutPrompt"], "30 sn");
+        if (text is null)
+        {
+            return null;
+        }
+
+        if (DelayParser.Parse(text) is int timeout and > 0)
+        {
+            return timeout;
+        }
+
+        MessageBox.Show(Localizer.Instance["Editor_InvalidDelay"], "Macro Studio", MessageBoxButton.OK, MessageBoxImage.Warning);
+        return null;
     }
 
     /// <summary>Counts down while the user points at the spot, then adds a left click there.</summary>
@@ -488,8 +807,13 @@ public sealed partial class EditorViewModel : ObservableObject
         _isShowingMacro = true;
         MacroName = macro.Name;
         MacroDescription = macro.Description;
+        MacroShortcut = macro.Shortcut;
+        ShortcutMessage = "";
         SelectedLoop = PlaybackChoices.LoopFor(macro.Loop, PlaybackChoices.Loops[0]);
         SelectedSpeed = PlaybackChoices.SpeedFor(macro.SpeedMultiplier, 1);
+        SelectedErrorPolicy = PlaybackChoices.ErrorPolicyFor(macro.OnError);
+        ListPath = macro.DataList?.Path ?? "";
+        ListHasHeader = macro.DataList?.HasHeader ?? true;
         _isShowingMacro = false;
     }
 
@@ -497,8 +821,11 @@ public sealed partial class EditorViewModel : ObservableObject
     {
         Name = MacroName.Trim(),
         Description = MacroDescription.Trim(),
+        Shortcut = MacroShortcut,
         Loop = SelectedLoop.Value,
         SpeedMultiplier = SelectedSpeed,
+        OnError = SelectedErrorPolicy.Value,
+        DataList = HasList ? new DataList(ListPath, ListHasHeader) : null,
         Steps = _editor!.Steps,
     };
 
@@ -569,6 +896,7 @@ public sealed partial class EditorViewModel : ObservableObject
                 FocusWindowStep s => s.Target,
                 CopyStep s => s.Target,
                 PasteStep s => s.Target,
+                WaitForStep s => s.Target,
                 _ => null,
             };
             if (target is not null)

@@ -1,3 +1,4 @@
+using MacroStudio.Core.Input;
 using MacroStudio.Core.Settings;
 
 namespace MacroStudio.Core.Tests.Settings;
@@ -33,12 +34,27 @@ public sealed class SettingsStoreTests : IDisposable
             NotchBarPosition = NotchBarPosition.Right,
             NotchBarOpenDelayMs = 400,
             NotchBarPinned = true,
+            OpenMainWindowShortcut = new KeyShortcut(KeyModifiers.Control | KeyModifiers.Shift, 0x4D),
+            PlayPauseShortcut = new KeyShortcut(KeyModifiers.Windows, 0x77),
         };
 
         store.Save(saved);
         AppSettings loaded = store.Load(() => new AppSettings());
 
         Assert.Equal(saved, loaded);
+    }
+
+    [Fact]
+    public void Load_ABrokenFileThatCannotBeKept_StillStartsWithDefaults()
+    {
+        Directory.CreateDirectory(_folder);
+        File.WriteAllText(FilePath, "{ not json");
+
+        // A folder where the backup copy should go makes the copy fail.
+        Directory.CreateDirectory(FilePath + ".broken");
+        AppSettings settings = new SettingsStore(FilePath).Load(() => AppSettings.CreateDefault("tr"));
+
+        Assert.Equal(AppLanguage.Turkish, settings.Language);
     }
 
     [Fact]

@@ -51,6 +51,8 @@ Kurulum dosyası imzalı değilse Windows SmartScreen "tanınmayan yayımcı" uy
   - "Buradan oynat" ve "Bu adımı dene".
   - Önceki sürüme dönme.
 - **Makrolarım:** arama, çoğaltma, yeniden adlandırma, içe/dışa aktarma (`.msmacro`), 30 günlük çöp kutusu.
+- **Akıllı adımlar:** butonu adıyla bulma (UI Automation), görüntüyü bulup tıklama, pencere açılana/kapanana veya nokta bir renge dönene kadar bekleme, koşul (eğer … ise adım atla / turu bitir), program/dosya/site açma.
+- **Hata olursa:** 2 kez daha dene, sonra dur / adımı atla / turu atla.
 - Türkçe ve İngilizce; Windows'a uyan açık ve koyu tema.
 
 ### Kısayollar
@@ -61,6 +63,18 @@ Kurulum dosyası imzalı değilse Windows SmartScreen "tanınmayan yayımcı" uy
 | `Ctrl+Alt+P` | Oynat / duraklat / devam |
 | `Esc` veya `Ctrl+Alt+End` | Oynatmayı durdur (yalnızca oynatma sırasında) |
 | `Ctrl+Alt+M` | Ana pencereyi aç |
+
+Kısayollar Ayarlar > Kısayollar'dan değiştirilebilir. Her makroya düzenleyicide kendi kısayolu da verilebilir (örneğin Ctrl+Shift+1).
+
+### Liste dosyası ve değişkenler
+
+- Düzenleyicide **Liste dosyası** ile bir CSV veya metin dosyası seçin (Excel: Farklı Kaydet > CSV). Makro her turda bir satırı işler, liste bitince durur.
+- Metin adımlarında `{1}`, `{2}` veya başlık adı (`{Müşteri}`) o turun satırındaki değeri; `{tur}`, `{tarih}`, `{saat}` tur numarasını, tarihi ve saati yazar.
+
+### Komut satırı ve zamanlama
+
+- `MacroStudio.exe --play "Makro adı"` makroyu oynatır; program açıksa istek ona iletilir.
+- Makrolarım'da bir makronun menüsündeki **Zamanla…** onu Windows Görev Zamanlayıcı ile bir kez, her gün veya hafta içi belirlenen saatte oynatır. O sırada oturumunuz açık olmalıdır.
 
 ### İpuçları
 
@@ -147,6 +161,8 @@ When the installer is not signed, Windows SmartScreen warns about an "unknown pu
   - "Play from here" and "Try this step".
   - Go back to the previous version.
 - **My macros:** search, duplicate, rename, import and export (`.msmacro`), 30-day trash.
+- **Smart steps:** find buttons by name (UI Automation), find a picture and click it, wait until a window opens/closes or a spot has a color, conditions (if … skip steps / end the round), open a program, file or website.
+- **If a step fails:** try 2 more times, then stop / skip the step / skip the round.
 - Turkish and English; light and dark themes that follow Windows.
 
 ### Shortcuts
@@ -157,6 +173,18 @@ When the installer is not signed, Windows SmartScreen warns about an "unknown pu
 | `Ctrl+Alt+P` | Play / pause / resume |
 | `Esc` or `Ctrl+Alt+End` | Stop playback (only while playing) |
 | `Ctrl+Alt+M` | Open the main window |
+
+Shortcuts can be changed in Settings > Shortcuts. Each macro can also get its own shortcut in the editor (for example Ctrl+Shift+1).
+
+### List file and variables
+
+- Choose a CSV or text file under **List file** in the editor (Excel: Save as > CSV). The macro works one row per round and stops when the list ends.
+- In text steps, `{1}`, `{2}` or a header name (`{Customer}`) types the value of the round's row; `{tur}`, `{tarih}`, `{saat}` (or `{round}`, `{date}`, `{time}`) type the round number, the date and the time.
+
+### Command line and schedule
+
+- `MacroStudio.exe --play "Macro name"` plays the macro; if the program is already running, the request goes to it.
+- **Schedule…** in a macro's menu in My macros has the Windows Task Scheduler play it once, every day or on weekdays at a set time. You must be signed in then.
 
 ### Tips
 

@@ -8,7 +8,7 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
     <Deterministic>true</Deterministic>
-    <Version>1.0.1</Version>
+    <Version>1.1.2</Version>
     <Product>Macro Studio</Product>
     <Authors>Ahmet Şahin</Authors>
     <Copyright>Copyright (c) 2026 Ahmet Şahin</Copyright>

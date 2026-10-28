@@ -18,6 +18,10 @@ namespace MacroStudio.Core.Macros.Steps;
 [JsonDerivedType(typeof(CopyStep), "copy")]
 [JsonDerivedType(typeof(PasteStep), "paste")]
 [JsonDerivedType(typeof(WaitStep), "wait")]
+[JsonDerivedType(typeof(OpenStep), "open")]
+[JsonDerivedType(typeof(WaitForStep), "waitFor")]
+[JsonDerivedType(typeof(IfStep), "if")]
+[JsonDerivedType(typeof(ImageClickStep), "imageClick")]
 public abstract record MacroStep
 {
     public Guid Id { get; set; } = Guid.NewGuid();

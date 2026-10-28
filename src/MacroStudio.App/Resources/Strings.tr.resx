@@ -34,13 +34,13 @@
     <value>Bir işi bir kez kaydedin, Macro Studio sizin için tekrarlasın.</value>
   </data>
   <data name="Home_NoMacros" xml:space="preserve">
-    <value>Henüz makro yok. Ekranın üstündeki bardaki ● butonuyla veya Ctrl+Alt+R ile bir kayıt başlatın.</value>
+    <value>Henüz makro yok. Ekranın üstündeki bardaki ● butonuyla veya %ToggleRecording% ile bir kayıt başlatın.</value>
   </data>
   <data name="Macros_Empty" xml:space="preserve">
-    <value>Henüz makro yok. Ana Sayfa&apos;daki &quot;Yeni kayıt&quot; veya Ctrl+Alt+R ile bir kayıt yapın ya da bir .msmacro dosyasını içe aktarın.</value>
+    <value>Henüz makro yok. Ana Sayfa&apos;daki &quot;Yeni kayıt&quot; veya %ToggleRecording% ile bir kayıt yapın ya da bir .msmacro dosyasını içe aktarın.</value>
   </data>
   <data name="Editor_Empty" xml:space="preserve">
-    <value>Düzenlenecek makro yok. Önce bardaki ● butonuyla veya Ctrl+Alt+R ile bir kayıt yapın.</value>
+    <value>Düzenlenecek makro yok. Önce bardaki ● butonuyla veya %ToggleRecording% ile bir kayıt yapın.</value>
   </data>
   <data name="Settings_General" xml:space="preserve">
     <value>Genel</value>
@@ -112,7 +112,7 @@
     <value>Çentik barı göster</value>
   </data>
   <data name="Settings_ShowNotchBarDescription" xml:space="preserve">
-    <value>Kapalıyken Macro Studio'yu sistem tepsisindeki simgeden veya Ctrl+Alt+M ile açın.</value>
+    <value>Kapalıyken Macro Studio'yu sistem tepsisindeki simgeden veya %OpenMainWindow% ile açın.</value>
   </data>
   <data name="Settings_Monitor" xml:space="preserve">
     <value>Monitör</value>
@@ -163,13 +163,13 @@
     <value>Log klasörünü aç</value>
   </data>
   <data name="Bar_Home" xml:space="preserve">
-    <value>Ana menü (Ctrl+Alt+M)</value>
+    <value>Ana menü (%OpenMainWindow%)</value>
   </data>
   <data name="Bar_Record" xml:space="preserve">
-    <value>Kaydet (Ctrl+Alt+R)</value>
+    <value>Kaydet (%ToggleRecording%)</value>
   </data>
   <data name="Bar_Play" xml:space="preserve">
-    <value>Oynat (Ctrl+Alt+P)</value>
+    <value>Oynat (%PlayPause%)</value>
   </data>
   <data name="Bar_Stop" xml:space="preserve">
     <value>Durdur</value>
@@ -222,7 +222,7 @@
     <value>Kayıt başlıyor</value>
   </data>
   <data name="Recording_CountdownHint" xml:space="preserve">
-    <value>Başlayacağınız pencereye geçin. Ctrl+Alt+R iptal eder.</value>
+    <value>Başlayacağınız pencereye geçin. %ToggleRecording% iptal eder.</value>
   </data>
   <data name="Recording_HooksFailed" xml:space="preserve">
     <value>Kayıt başlatılamadı: Windows klavyeyi ve fareyi dinlemeye izin vermedi.
@@ -392,10 +392,10 @@
 {0}</value>
   </data>
   <data name="Bar_Pause" xml:space="preserve">
-    <value>Duraklat (Ctrl+Alt+P)</value>
+    <value>Duraklat (%PlayPause%)</value>
   </data>
   <data name="Bar_Resume" xml:space="preserve">
-    <value>Devam et (Ctrl+Alt+P)</value>
+    <value>Devam et (%PlayPause%)</value>
   </data>
   <data name="Bar_StatusPlaying" xml:space="preserve">
     <value>Tur {0}/{1} · Adım {2}/{3}</value>
@@ -419,10 +419,10 @@
     <value>Durduruldu: {0} – {1} tur tamamlandı</value>
   </data>
   <data name="Playback_PausedByUser" xml:space="preserve">
-    <value>Fareye veya klavyeye dokunduğunuz için duraklatıldı. Ctrl+Alt+P ile veya bardan devam edin; Esc durdurur.</value>
+    <value>Fareye veya klavyeye dokunduğunuz için duraklatıldı. %PlayPause% ile veya bardan devam edin; Esc durdurur.</value>
   </data>
   <data name="Playback_PasswordNeeded" xml:space="preserve">
-    <value>Adım {0}: parolayı kendiniz yazın, sonra Ctrl+Alt+P ile devam edin.</value>
+    <value>Adım {0}: parolayı kendiniz yazın, sonra %PlayPause% ile devam edin.</value>
   </data>
   <data name="Playback_Failed" xml:space="preserve">
     <value>“{0}” şu adımda durdu: {1}.
@@ -733,5 +733,299 @@ Yine de oynatılsın mı?</value>
   </data>
   <data name="Window_ToggleMenu" xml:space="preserve">
     <value>Menüyü daralt veya genişlet</value>
+  </data>
+  <data name="Settings_Shortcuts" xml:space="preserve">
+    <value>Kısayollar</value>
+  </data>
+  <data name="Settings_ShortcutsDescription" xml:space="preserve">
+    <value>Kutuya tıklayıp yeni tuşlara basın. Ctrl, Alt veya Win ile birlikte bir tuş olmalı.</value>
+  </data>
+  <data name="Shortcut_OpenMainWindow" xml:space="preserve">
+    <value>Ana pencereyi aç</value>
+  </data>
+  <data name="Shortcut_ToggleRecording" xml:space="preserve">
+    <value>Kaydı başlat / durdur</value>
+  </data>
+  <data name="Shortcut_PlayPause" xml:space="preserve">
+    <value>Oynat / duraklat / devam</value>
+  </data>
+  <data name="Shortcut_EmergencyStop" xml:space="preserve">
+    <value>Oynatmayı durdur</value>
+  </data>
+  <data name="Shortcut_PressKeys" xml:space="preserve">
+    <value>Tuşlara basın…</value>
+  </data>
+  <data name="Shortcut_None" xml:space="preserve">
+    <value>Yok</value>
+  </data>
+  <data name="Shortcut_Invalid" xml:space="preserve">
+    <value>Ctrl, Alt veya Win ile birlikte bir tuş seçin.</value>
+  </data>
+  <data name="Shortcut_Taken" xml:space="preserve">
+    <value>Bu kısayolu zaten &quot;{0}&quot; kullanıyor.</value>
+  </data>
+  <data name="Shortcut_HeldByOther" xml:space="preserve">
+    <value>Başka bir program bu kısayolu kullanıyor; çalışmaz. Başka tuşlar seçin.</value>
+  </data>
+  <data name="Shortcut_Reset" xml:space="preserve">
+    <value>Varsayılanlara dön</value>
+  </data>
+  <data name="Shortcut_Clear" xml:space="preserve">
+    <value>Kısayolu kaldır</value>
+  </data>
+  <data name="Editor_Shortcut" xml:space="preserve">
+    <value>Kısayol</value>
+  </data>
+  <data name="Editor_ShortcutDescription" xml:space="preserve">
+    <value>Bu makroyu her yerden tek tuşla oynatır.</value>
+  </data>
+  <data name="Settings_FindElements" xml:space="preserve">
+    <value>Butonları adıyla bul</value>
+  </data>
+  <data name="Settings_FindElementsDescription" xml:space="preserve">
+    <value>Tıklanan butonun adı da kaydedilir; oynatırken buton yer değiştirmişse adından bulunup tıklanır. Bulunamazsa kaydedilen yere tıklanır.</value>
+  </data>
+  <data name="Step_ClickOn" xml:space="preserve">
+    <value>{0} “{1}”</value>
+  </data>
+  <data name="Insert_Open" xml:space="preserve">
+    <value>Program, dosya veya site aç</value>
+  </data>
+  <data name="Insert_OpenPrompt" xml:space="preserve">
+    <value>Ne açılsın? Örnek: excel, C:\Raporlar\Liste.xlsx veya https://portal.ornek.com</value>
+  </data>
+  <data name="Step_Open" xml:space="preserve">
+    <value>Aç: {0}</value>
+  </data>
+  <data name="Failure_OpenFailed" xml:space="preserve">
+    <value>Program, dosya veya site açılamadı. Düzenleyicide yolu veya adresi kontrol edin.</value>
+  </data>
+  <data name="Macros_Schedule" xml:space="preserve">
+    <value>Zamanla…</value>
+  </data>
+  <data name="Schedule_Title" xml:space="preserve">
+    <value>Zamanla: {0}</value>
+  </data>
+  <data name="Schedule_Hint" xml:space="preserve">
+    <value>Windows bu makroyu belirlenen zamanda kendiliğinden oynatır. O sırada oturumunuz açık olmalı; ekran kilitliyse makro durur.</value>
+  </data>
+  <data name="Schedule_Frequency" xml:space="preserve">
+    <value>Ne sıklıkla</value>
+  </data>
+  <data name="Schedule_Date" xml:space="preserve">
+    <value>Tarih (bir kez için; diğerlerinde başlangıç günü)</value>
+  </data>
+  <data name="Schedule_Time" xml:space="preserve">
+    <value>Saat (ör. 09:00)</value>
+  </data>
+  <data name="Schedule_Remove" xml:space="preserve">
+    <value>Zamanlamayı kaldır</value>
+  </data>
+  <data name="Schedule_Daily" xml:space="preserve">
+    <value>Her gün</value>
+  </data>
+  <data name="Schedule_Weekdays" xml:space="preserve">
+    <value>Hafta içi her gün</value>
+  </data>
+  <data name="Schedule_Once" xml:space="preserve">
+    <value>Bir kez</value>
+  </data>
+  <data name="Schedule_InvalidTime" xml:space="preserve">
+    <value>Saati 09:00 gibi yazın.</value>
+  </data>
+  <data name="Schedule_InThePast" xml:space="preserve">
+    <value>Bu zaman geçti; ileri bir zaman seçin.</value>
+  </data>
+  <data name="Schedule_Failed" xml:space="preserve">
+    <value>Zamanlama Windows Görev Zamanlayıcı&apos;ya kaydedilemedi: {0}</value>
+  </data>
+  <data name="Schedule_Summary_Daily" xml:space="preserve">
+    <value>Her gün {0}</value>
+  </data>
+  <data name="Schedule_Summary_Weekdays" xml:space="preserve">
+    <value>Hafta içi {0}</value>
+  </data>
+  <data name="Schedule_Summary_Once" xml:space="preserve">
+    <value>{1} {0}</value>
+  </data>
+  <data name="Launch_MacroNotFound" xml:space="preserve">
+    <value>Oynatılacak makro bulunamadı: {0}</value>
+  </data>
+  <data name="Editor_OnError" xml:space="preserve">
+    <value>Hata olursa</value>
+  </data>
+  <data name="Editor_OnErrorDescription" xml:space="preserve">
+    <value>Pencere gelmezse veya pano değişmezse ne yapılsın. Yönetici programı veya kilitli ekranda makro her zaman durur.</value>
+  </data>
+  <data name="OnError_Stop" xml:space="preserve">
+    <value>Dur</value>
+  </data>
+  <data name="OnError_RetryThenStop" xml:space="preserve">
+    <value>2 kez daha dene, sonra dur</value>
+  </data>
+  <data name="OnError_RetryThenSkipStep" xml:space="preserve">
+    <value>2 kez daha dene, sonra adımı atla</value>
+  </data>
+  <data name="OnError_RetryThenSkipRound" xml:space="preserve">
+    <value>2 kez daha dene, sonra bu turu atla</value>
+  </data>
+  <data name="Playback_Skipped" xml:space="preserve">
+    <value>({0} adım, {1} tur atlandı)</value>
+  </data>
+  <data name="Insert_WaitForWindow" xml:space="preserve">
+    <value>Bekle: pencere açılana kadar</value>
+  </data>
+  <data name="Insert_WaitForWindowClose" xml:space="preserve">
+    <value>Bekle: pencere kapanana kadar</value>
+  </data>
+  <data name="Insert_WaitForColor" xml:space="preserve">
+    <value>Bekle: nokta bu renge dönene kadar</value>
+  </data>
+  <data name="Insert_WaitForWindowPrompt" xml:space="preserve">
+    <value>Hangi pencere? Şu an açık olanlardan seçin.</value>
+  </data>
+  <data name="Insert_WaitTimeoutPrompt" xml:space="preserve">
+    <value>En fazla ne kadar beklensin? Örnek: 30 sn</value>
+  </data>
+  <data name="Insert_ColorTitle" xml:space="preserve">
+    <value>Noktayı gösterin</value>
+  </data>
+  <data name="Insert_ColorHint" xml:space="preserve">
+    <value>Fareyi beklenecek renkteki noktanın üstüne getirin ve bırakın.</value>
+  </data>
+  <data name="Step_WaitForWindow" xml:space="preserve">
+    <value>Pencere açılana kadar bekle (en fazla {0})</value>
+  </data>
+  <data name="Step_WaitForWindowClose" xml:space="preserve">
+    <value>Pencere kapanana kadar bekle (en fazla {0})</value>
+  </data>
+  <data name="Step_WaitForColor" xml:space="preserve">
+    <value>Nokta {0} olana kadar bekle (en fazla {1})</value>
+  </data>
+  <data name="Failure_WaitTimedOut" xml:space="preserve">
+    <value>Beklenen pencere veya renk zamanında gelmedi. {0}</value>
+  </data>
+  <data name="Editor_List" xml:space="preserve">
+    <value>Liste dosyası (her tur bir satır)</value>
+  </data>
+  <data name="Editor_NoList" xml:space="preserve">
+    <value>Liste yok</value>
+  </data>
+  <data name="Editor_ChooseList" xml:space="preserve">
+    <value>Liste dosyası seç (CSV veya metin)</value>
+  </data>
+  <data name="Editor_ClearList" xml:space="preserve">
+    <value>Listeyi kaldır</value>
+  </data>
+  <data name="Editor_ListHeader" xml:space="preserve">
+    <value>İlk satır başlık</value>
+  </data>
+  <data name="Editor_ListFilter" xml:space="preserve">
+    <value>Liste dosyaları (CSV, metin)</value>
+  </data>
+  <data name="Editor_ListFirst" xml:space="preserve">
+    <value>Önce makroya bir liste dosyası seçin (düzenleyicide &quot;Liste dosyası&quot;). Excel listesi için: Farklı Kaydet &gt; CSV.</value>
+  </data>
+  <data name="Editor_ListColumn" xml:space="preserve">
+    <value>{0} – örnek: {1}</value>
+  </data>
+  <data name="Insert_ListValue" xml:space="preserve">
+    <value>Listeden değer yaz</value>
+  </data>
+  <data name="Insert_ListValuePrompt" xml:space="preserve">
+    <value>Hangi sütun yazılsın? Her turda o turun satırındaki değer yazılır.</value>
+  </data>
+  <data name="Playback_ListUnreadable" xml:space="preserve">
+    <value>Liste dosyası okunamadı: {0}. {1}</value>
+  </data>
+  <data name="Insert_Variable" xml:space="preserve">
+    <value>Değişken yaz (tur no, tarih, saat)</value>
+  </data>
+  <data name="Insert_VariablePrompt" xml:space="preserve">
+    <value>Ne yazılsın? Metin adımlarında {tur}, {tarih}, {saat} ve liste sütunları ({1}, {2}…) elle de yazılabilir.</value>
+  </data>
+  <data name="Variable_Round" xml:space="preserve">
+    <value>Tur numarası: 1, 2, 3…</value>
+  </data>
+  <data name="Variable_Date" xml:space="preserve">
+    <value>Bugünün tarihi</value>
+  </data>
+  <data name="Variable_Time" xml:space="preserve">
+    <value>Şimdiki saat</value>
+  </data>
+  <data name="Insert_Condition" xml:space="preserve">
+    <value>Koşul ekle (eğer … ise)</value>
+  </data>
+  <data name="Insert_ConditionPrompt" xml:space="preserve">
+    <value>Neye bakılsın? Makro bu adıma gelince bir kez bakar.</value>
+  </data>
+  <data name="Insert_ConditionActionPrompt" xml:space="preserve">
+    <value>Koşul doğruysa ne yapılsın? Doğru değilse makro olduğu gibi devam eder.</value>
+  </data>
+  <data name="Insert_ConditionColorHint" xml:space="preserve">
+    <value>Fareyi bakılacak noktanın üstüne getirin; şu anki rengi kaydedilir.</value>
+  </data>
+  <data name="If_WindowOpen" xml:space="preserve">
+    <value>Eğer bir pencere açıksa</value>
+  </data>
+  <data name="If_WindowNotOpen" xml:space="preserve">
+    <value>Eğer bir pencere açık değilse</value>
+  </data>
+  <data name="If_ColorIs" xml:space="preserve">
+    <value>Eğer bir nokta bu renkteyse</value>
+  </data>
+  <data name="If_ColorIsNot" xml:space="preserve">
+    <value>Eğer bir nokta bu renkte değilse</value>
+  </data>
+  <data name="If_SkipSteps" xml:space="preserve">
+    <value>sonraki {0} adımı atla</value>
+  </data>
+  <data name="If_EndRound" xml:space="preserve">
+    <value>bu turu bitir, sonraki tura geç</value>
+  </data>
+  <data name="If_StopMacro" xml:space="preserve">
+    <value>makroyu bitir</value>
+  </data>
+  <data name="If_Short_WindowOpen" xml:space="preserve">
+    <value>pencere açıksa</value>
+  </data>
+  <data name="If_Short_WindowNotOpen" xml:space="preserve">
+    <value>pencere açık değilse</value>
+  </data>
+  <data name="If_Short_ColorIs" xml:space="preserve">
+    <value>nokta {0} ise</value>
+  </data>
+  <data name="If_Short_ColorIsNot" xml:space="preserve">
+    <value>nokta {0} değilse</value>
+  </data>
+  <data name="Step_If" xml:space="preserve">
+    <value>Eğer {0}: {1}</value>
+  </data>
+  <data name="Insert_ImageClick" xml:space="preserve">
+    <value>Görüntüyü bul ve tıkla</value>
+  </data>
+  <data name="Insert_ImageClickPrompt" xml:space="preserve">
+    <value>Ne kadarlık bir alan? Butonun tamamını içeren en küçük boyutu seçin. Ekran ölçeği veya tema değişirse görüntü bulunamayabilir.</value>
+  </data>
+  <data name="Insert_ImageClickHint" xml:space="preserve">
+    <value>Fareyi butonun tam ortasına getirin ve bırakın; etrafındaki alanın resmi alınır.</value>
+  </data>
+  <data name="Image_Size" xml:space="preserve">
+    <value>{0} ({1}×{2})</value>
+  </data>
+  <data name="Image_Small" xml:space="preserve">
+    <value>Küçük</value>
+  </data>
+  <data name="Image_Medium" xml:space="preserve">
+    <value>Orta</value>
+  </data>
+  <data name="Image_Large" xml:space="preserve">
+    <value>Büyük</value>
+  </data>
+  <data name="Step_ImageClick" xml:space="preserve">
+    <value>Görüntüyü bul ve tıkla ({0}×{1})</value>
+  </data>
+  <data name="Failure_ImageNotFound" xml:space="preserve">
+    <value>Aranan görüntü ekranda bulunamadı. {0}</value>
   </data>
 </root>

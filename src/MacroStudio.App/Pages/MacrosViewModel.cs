@@ -28,19 +28,22 @@ public sealed partial class MacrosViewModel : ObservableObject
     private readonly PlaybackController _playback;
     private readonly EditorViewModel _editor;
     private readonly MainWindowService _mainWindow;
+    private readonly ScheduleService _schedules;
 
     public MacrosViewModel(
         MacroLibraryService library,
         RunHistoryService runs,
         PlaybackController playback,
         EditorViewModel editor,
-        MainWindowService mainWindow)
+        MainWindowService mainWindow,
+        ScheduleService schedules)
     {
         _library = library;
         _runs = runs;
         _playback = playback;
         _editor = editor;
         _mainWindow = mainWindow;
+        _schedules = schedules;
         library.Refreshed += (_, _) => Show();
         runs.Changed += (_, _) => Show();
         Localizer.Instance.PropertyChanged += (_, _) => Show();
@@ -154,12 +157,38 @@ public sealed partial class MacrosViewModel : ObservableObject
             MessageBoxResult.No);
         if (answer == MessageBoxResult.Yes)
         {
-            TryChange(() => _library.MoveToTrash(item.File));
+            TryChange(() =>
+            {
+                _schedules.RemoveTask(item.File);
+                _library.MoveToTrash(item.File);
+            });
         }
     }
 
     [RelayCommand]
-    private void Restore(TrashItem item) => TryChange(() => _library.Restore(item.Entry));
+    private void Restore(TrashItem item) => TryChange(() =>
+    {
+        _library.Restore(item.Entry);
+        _ = _schedules.Sync();
+    });
+
+    /// <summary>Lets Windows play the macro by itself: once, every day or on weekdays.</summary>
+    [RelayCommand]
+    private void Schedule(MacroItem item)
+    {
+        (bool changed, MacroSchedule? schedule) = ScheduleWindow.Ask(item.Name, item.File.Macro.Schedule);
+        if (!changed)
+        {
+            return;
+        }
+
+        string? error = null;
+        TryChange(() => error = _schedules.SetSchedule(item.File, schedule));
+        if (error is not null)
+        {
+            ShowWarning(Localizer.Instance.Format("Schedule_Failed", error));
+        }
+    }
 
     /// <summary>Each chosen file is checked and its steps are shown before it is added.</summary>
     [RelayCommand]
@@ -211,7 +240,8 @@ public sealed partial class MacrosViewModel : ObservableObject
         MacroDefinition macro;
         try
         {
-            macro = MacroLibrary.Load(path);
+            // A schedule belongs to the computer it was made on; here it would have no task behind it.
+            macro = MacroLibrary.Load(path) with { Schedule = null };
         }
         catch (Exception ex) when (ex is InvalidMacroFileException or IOException or UnauthorizedAccessException)
         {

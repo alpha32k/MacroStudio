@@ -25,7 +25,7 @@ public sealed class SingleInstance : IDisposable
         _ = ListenAsync(_stop.Token);
     }
 
-    /// <summary>Raised on a thread-pool thread. Carries the file to open, or null to show the main window.</summary>
+    /// <summary>Raised on a thread-pool thread. Carries the request line (see LaunchRequest.ToMessage); empty shows the main window.</summary>
     public event EventHandler<string?>? RequestReceived;
 
     /// <returns>Null when another copy is already running.</returns>
@@ -41,8 +41,8 @@ public sealed class SingleInstance : IDisposable
         return null;
     }
 
-    /// <param name="filePath">The file to open; null shows the main window.</param>
-    public static void SendToRunningInstance(string? filePath)
+    /// <param name="message">What the running copy should do, as LaunchRequest.ToMessage writes it.</param>
+    public static void SendToRunningInstance(string message)
     {
         try
         {
@@ -52,7 +52,7 @@ public sealed class SingleInstance : IDisposable
             // The running copy may then bring its window in front of this one.
             WindowInterop.AllowOtherProcessToComeToFront();
             using var writer = new StreamWriter(client);
-            writer.WriteLine(filePath ?? "");
+            writer.WriteLine(message);
         }
         catch (Exception ex) when (ex is TimeoutException or IOException)
         {
@@ -77,8 +77,8 @@ public sealed class SingleInstance : IDisposable
                     PipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
                 await server.WaitForConnectionAsync(stop);
                 using var reader = new StreamReader(server);
-                string? filePath = await reader.ReadLineAsync(stop);
-                RequestReceived?.Invoke(this, string.IsNullOrWhiteSpace(filePath) ? null : filePath);
+                string? message = await reader.ReadLineAsync(stop);
+                RequestReceived?.Invoke(this, message);
             }
             catch (OperationCanceledException)
             {

@@ -21,12 +21,24 @@ public static class StepDescriber
         Localizer text = Localizer.Instance;
         return step switch
         {
+            MouseClickStep { Element.Name.Length: > 0 } click =>
+                WithWindow(text.Format("Step_ClickOn", ClickName(click), Shorten(click.Element.Name)), click.Target, click.ScreenPosition),
             MouseClickStep click => WithWindow(ClickName(click), click.Target, click.ScreenPosition),
             MouseDragStep drag => WithWindow(text["Step_Drag"], drag.Target, drag.ScreenPath[0]),
             MouseWheelStep wheel => WithWindow(text.Format(WheelKey(wheel), Notches(wheel)), wheel.Target, wheel.ScreenPosition),
             KeyPressStep key => WithWindow(Repeated("Step_Key", KeyNames.Of(key.VirtualKey), key.PressCount), key.Target),
             HotkeyStep hotkey => WithWindow(Repeated("Step_Hotkey", KeyNames.WithModifiers(hotkey.Modifiers, hotkey.VirtualKey), hotkey.PressCount), hotkey.Target),
             TypeTextStep typed => WithWindow(text.Format("Step_Type", Shorten(typed.Text)), typed.Target),
+            OpenStep open => text.Format("Step_Open", Shorten(open.Path)),
+            ImageClickStep image => WithWindow(text.Format("Step_ImageClick", image.ImageWidth, image.ImageHeight), image.Target),
+            IfStep condition => WithWindow(
+                text.Format("Step_If", text.Format("If_Short_" + condition.Check, $"#{condition.Color:X6}"), condition.Action == IfAction.SkipSteps ? text.Format("If_SkipSteps", condition.SkipCount) : text["If_" + condition.Action]),
+                condition.Target,
+                condition.Check is IfCheck.ColorIs or IfCheck.ColorIsNot ? condition.ScreenPosition : null),
+            WaitForStep { Condition: WaitCondition.ColorAppears } waitFor => WithWindow(
+                text.Format("Step_WaitForColor", $"#{waitFor.Color:X6}", Seconds(waitFor.TimeoutMs)), waitFor.Target, waitFor.ScreenPosition),
+            WaitForStep waitFor => WithWindow(
+                text.Format(waitFor.Condition == WaitCondition.WindowCloses ? "Step_WaitForWindowClose" : "Step_WaitForWindow", Seconds(waitFor.TimeoutMs)), waitFor.Target),
             FocusWindowStep focus => WithWindow(text["Step_Focus"], focus.Target),
             CopyStep copy => WithWindow(text["Step_Copy"], copy.Target),
             PasteStep paste => WithWindow(text["Step_Paste"], paste.Target),
@@ -43,6 +55,10 @@ public static class StepDescriber
         MouseWheelStep => SymbolRegular.ArrowSort24,
         KeyPressStep or HotkeyStep => SymbolRegular.Keyboard24,
         TypeTextStep => SymbolRegular.TextT24,
+        OpenStep => SymbolRegular.Open24,
+        IfStep => SymbolRegular.BranchFork24,
+        ImageClickStep => SymbolRegular.ImageSearch24,
+        WaitForStep => SymbolRegular.HourglassHalf24,
         FocusWindowStep => SymbolRegular.Window24,
         CopyStep => SymbolRegular.Copy24,
         PasteStep => SymbolRegular.ClipboardPaste24,
@@ -93,6 +109,10 @@ public static class StepDescriber
             ? text.Format("Step_WithWindow", action, text.Format("Window_ScreenPosition", point.X, point.Y))
             : action;
     }
+
+    /// <summary>"30 sn" from milliseconds, rounded to whole seconds (at least 1).</summary>
+    private static string Seconds(int milliseconds) =>
+        Localizer.Instance.Format("Duration_Seconds", Math.Max(1, (int)Math.Round(milliseconds / 1000.0)));
 
     private static string Shorten(string value) =>
         value.Length <= MaxShownLength ? value : value[..(MaxShownLength - 1)] + "…";

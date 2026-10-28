@@ -1,5 +1,5 @@
-using System.Windows.Input;
 using System.Windows.Interop;
+using MacroStudio.Core.Input;
 using MacroStudio.Native.Input;
 
 namespace MacroStudio.App.Services;
@@ -21,11 +21,11 @@ public sealed class HotkeyService : IDisposable
     }
 
     /// <returns>An id for <see cref="Unregister"/>; null when another program already uses the shortcut.</returns>
-    public int? TryRegister(AppShortcut shortcut, Action action)
+    public int? TryRegister(KeyShortcut shortcut, Action action)
     {
         int id = _nextId++;
         HotkeyModifiers nativeModifiers = ToNative(shortcut.Modifiers) | HotkeyModifiers.NoRepeat;
-        if (!HotkeyInterop.Register(_messageWindow.Handle, id, nativeModifiers, KeyInterop.VirtualKeyFromKey(shortcut.Key)))
+        if (!HotkeyInterop.Register(_messageWindow.Handle, id, nativeModifiers, shortcut.VirtualKey))
         {
             return null;
         }
@@ -52,25 +52,25 @@ public sealed class HotkeyService : IDisposable
         _messageWindow.Dispose();
     }
 
-    private static HotkeyModifiers ToNative(ModifierKeys modifiers)
+    private static HotkeyModifiers ToNative(KeyModifiers modifiers)
     {
         HotkeyModifiers result = HotkeyModifiers.None;
-        if (modifiers.HasFlag(ModifierKeys.Alt))
+        if (modifiers.HasFlag(KeyModifiers.Alt))
         {
             result |= HotkeyModifiers.Alt;
         }
 
-        if (modifiers.HasFlag(ModifierKeys.Control))
+        if (modifiers.HasFlag(KeyModifiers.Control))
         {
             result |= HotkeyModifiers.Control;
         }
 
-        if (modifiers.HasFlag(ModifierKeys.Shift))
+        if (modifiers.HasFlag(KeyModifiers.Shift))
         {
             result |= HotkeyModifiers.Shift;
         }
 
-        if (modifiers.HasFlag(ModifierKeys.Windows))
+        if (modifiers.HasFlag(KeyModifiers.Windows))
         {
             result |= HotkeyModifiers.Windows;
         }

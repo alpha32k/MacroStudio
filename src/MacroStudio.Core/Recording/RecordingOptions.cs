@@ -10,6 +10,9 @@ public sealed record RecordingOptions
     /// <summary>Alt+Tab and taskbar clicks become "bring window to front" steps.</summary>
     public bool ConvertWindowSwitches { get; init; } = true;
 
+    /// <summary>Clicks also note the control's name, so playback can find a button that moved.</summary>
+    public bool FindElements { get; init; } = true;
+
     /// <summary>Letters typed one after another become one text step.</summary>
     public bool MergeTyping { get; init; } = true;
 

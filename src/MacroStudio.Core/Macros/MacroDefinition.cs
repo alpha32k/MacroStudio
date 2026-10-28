@@ -1,4 +1,6 @@
+using MacroStudio.Core.Input;
 using MacroStudio.Core.Macros.Steps;
+using MacroStudio.Core.Playback;
 
 namespace MacroStudio.Core.Macros;
 
@@ -26,6 +28,18 @@ public sealed record MacroDefinition
     public LoopSettings Loop { get; set; } = LoopSettings.UntilClipboardEmpty;
 
     public double SpeedMultiplier { get; set; } = 1;
+
+    /// <summary>A system-wide shortcut that plays this macro; null when it has none.</summary>
+    public KeyShortcut? Shortcut { get; set; }
+
+    /// <summary>When Windows plays this macro by itself; null when it is not scheduled.</summary>
+    public MacroSchedule? Schedule { get; set; }
+
+    /// <summary>What playback does when a step fails.</summary>
+    public ErrorPolicy OnError { get; set; } = ErrorPolicy.StopAtOnce;
+
+    /// <summary>A list file worked through one row per round; null when the macro has none.</summary>
+    public DataList? DataList { get; set; }
 
     public required IReadOnlyList<MacroStep> Steps { get; set; }
 }

@@ -3,7 +3,8 @@
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                    xmlns:l="clr-namespace:MacroStudio.App.Localization"
-                   xmlns:pages="clr-namespace:MacroStudio.App.Pages">
+                   xmlns:pages="clr-namespace:MacroStudio.App.Pages"
+                   xmlns:controls="clr-namespace:MacroStudio.App.Controls">
 
   <pages:ContentPage.Resources>
     <Style x:Key="SettingCardStyle" TargetType="ui:CardControl" BasedOn="{StaticResource {x:Type ui:CardControl}}">
@@ -185,6 +186,16 @@
       <ui:ToggleSwitch AutomationProperties.Name="{l:Loc Settings_MergeTyping}" IsChecked="{Binding MergeTyping}" />
     </ui:CardControl>
 
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon CursorClick24}">
+      <ui:CardControl.Header>
+        <StackPanel>
+          <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Settings_FindElements}" />
+          <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_FindElementsDescription}" />
+        </StackPanel>
+      </ui:CardControl.Header>
+      <ui:ToggleSwitch AutomationProperties.Name="{l:Loc Settings_FindElements}" IsChecked="{Binding FindElements}" />
+    </ui:CardControl>
+
     <!-- Playback -->
     <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{l:Loc Settings_Playback}" />
 
@@ -217,5 +228,44 @@
       </ui:CardControl.Header>
       <ComboBox AutomationProperties.Name="{l:Loc Settings_WindowWait}" Style="{StaticResource SettingComboBoxStyle}" ItemsSource="{Binding WindowWaits}" SelectedItem="{Binding SelectedWindowWait}" />
     </ui:CardControl>
+
+    <!-- Shortcuts -->
+    <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{l:Loc Settings_Shortcuts}" />
+    <TextBlock Margin="0,0,0,8" Style="{StaticResource DescriptionTextStyle}" Text="{l:Loc Settings_ShortcutsDescription}" />
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Window24}">
+      <ui:CardControl.Header>
+        <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Shortcut_OpenMainWindow}" />
+      </ui:CardControl.Header>
+      <controls:ShortcutBox AutomationProperties.Name="{l:Loc Shortcut_OpenMainWindow}" Shortcut="{Binding OpenMainWindowShortcut}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Record24}">
+      <ui:CardControl.Header>
+        <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Shortcut_ToggleRecording}" />
+      </ui:CardControl.Header>
+      <controls:ShortcutBox AutomationProperties.Name="{l:Loc Shortcut_ToggleRecording}" Shortcut="{Binding ToggleRecordingShortcut}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Play24}">
+      <ui:CardControl.Header>
+        <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Shortcut_PlayPause}" />
+      </ui:CardControl.Header>
+      <controls:ShortcutBox AutomationProperties.Name="{l:Loc Shortcut_PlayPause}" Shortcut="{Binding PlayPauseShortcut}" />
+    </ui:CardControl>
+
+    <ui:CardControl Style="{StaticResource SettingCardStyle}" Icon="{ui:SymbolIcon Stop24}">
+      <ui:CardControl.Header>
+        <TextBlock Style="{StaticResource BodyTextStyle}" Text="{l:Loc Shortcut_EmergencyStop}" />
+      </ui:CardControl.Header>
+      <controls:ShortcutBox AutomationProperties.Name="{l:Loc Shortcut_EmergencyStop}" Shortcut="{Binding EmergencyStopShortcut}" />
+    </ui:CardControl>
+
+    <TextBlock Margin="0,4,0,0"
+               Style="{StaticResource CollapsedWhenEmptyTextStyle}"
+               FontSize="14"
+               Foreground="{DynamicResource SystemFillColorCautionBrush}"
+               Text="{Binding ShortcutMessage}" />
+    <ui:Button Margin="0,8,0,0" Content="{l:Loc Shortcut_Reset}" Command="{Binding ResetShortcutsCommand}" />
   </StackPanel>
 </pages:ContentPage>

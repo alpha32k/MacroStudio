@@ -1,3 +1,4 @@
+using MacroStudio.Core.Input;
 using MacroStudio.Core.Settings;
 
 namespace MacroStudio.Core.Tests.Settings;
@@ -37,6 +38,35 @@ public sealed class AppSettingsTests
         var settings = new AppSettings { RecordingCountdownSeconds = seconds };
 
         Assert.Equal(expected, settings.Normalize().RecordingCountdownSeconds);
+    }
+
+    [Theory]
+    [InlineData(KeyModifiers.Control | KeyModifiers.Alt, 0x52, true)]
+    [InlineData(KeyModifiers.Windows, 0x77, true)]
+    [InlineData(KeyModifiers.Control | KeyModifiers.Shift, 0x31, true)]
+    [InlineData(KeyModifiers.Shift, 0x41, false)]
+    [InlineData(KeyModifiers.None, 0x41, false)]
+    [InlineData(KeyModifiers.Control, 0xA2, false)]
+    [InlineData(KeyModifiers.Control | KeyModifiers.Alt, 0x14, false)]
+    [InlineData(KeyModifiers.Control, 0, false)]
+    public void KeyShortcut_IsUsableOnlyWithCtrlAltOrWinAndARealKey(KeyModifiers modifiers, int virtualKey, bool expected)
+    {
+        Assert.Equal(expected, new KeyShortcut(modifiers, virtualKey).IsUsable);
+    }
+
+    [Fact]
+    public void Normalize_PutsBackTheDefaultForAnUnusableShortcut()
+    {
+        var settings = new AppSettings
+        {
+            ToggleRecordingShortcut = new KeyShortcut(KeyModifiers.Shift, 0x41),
+            PlayPauseShortcut = new KeyShortcut(KeyModifiers.Control | KeyModifiers.Shift, 0x50),
+        };
+
+        AppSettings normalized = settings.Normalize();
+
+        Assert.Equal(AppSettings.DefaultToggleRecordingShortcut, normalized.ToggleRecordingShortcut);
+        Assert.Equal(settings.PlayPauseShortcut, normalized.PlayPauseShortcut);
     }
 
     [Theory]

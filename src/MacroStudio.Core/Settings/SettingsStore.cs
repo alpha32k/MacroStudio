@@ -26,7 +26,15 @@ public sealed class SettingsStore(string filePath)
         }
         catch (JsonException)
         {
-            File.Copy(FilePath, FilePath + ".broken", overwrite: true);
+            // Kept for a look later; when even that copy fails, the program still starts with defaults.
+            try
+            {
+                File.Copy(FilePath, FilePath + ".broken", overwrite: true);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+            }
+
             return createDefault();
         }
         catch (IOException)

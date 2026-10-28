@@ -24,8 +24,40 @@ public sealed class Localizer : INotifyPropertyChanged
 
     public CultureInfo Culture { get; private set; } = CultureInfo.GetCultureInfo("en-US");
 
-    /// <summary>A missing key is shown as !Key! so it is easy to spot instead of crashing.</summary>
-    public string this[string key] => Strings.GetString(key, Culture) ?? $"!{key}!";
+    /// <summary>
+    /// A missing key is shown as !Key! so it is easy to spot instead of crashing.
+    /// %Name% in a text is replaced with a token, for example %PlayPause% with the current shortcut "Ctrl+Alt+P".
+    /// </summary>
+    public string this[string key] => ReplaceTokens(Strings.GetString(key, Culture) ?? $"!{key}!");
+
+    private IReadOnlyDictionary<string, string> _tokens = new Dictionary<string, string>();
+
+    /// <summary>Sets the %Name% values and refreshes every text on screen.</summary>
+    public void SetTokens(IReadOnlyDictionary<string, string> tokens)
+    {
+        if (tokens.Count == _tokens.Count && tokens.All(t => _tokens.TryGetValue(t.Key, out string? old) && old == t.Value))
+        {
+            return;
+        }
+
+        _tokens = tokens;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
+    }
+
+    private string ReplaceTokens(string text)
+    {
+        if (!text.Contains('%', StringComparison.Ordinal))
+        {
+            return text;
+        }
+
+        foreach ((string name, string value) in _tokens)
+        {
+            text = text.Replace($"%{name}%", value, StringComparison.Ordinal);
+        }
+
+        return text;
+    }
 
     public string Format(string key, params object[] arguments) =>
         string.Format(Culture, this[key], arguments);

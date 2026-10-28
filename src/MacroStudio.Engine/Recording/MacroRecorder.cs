@@ -1,5 +1,7 @@
 using System.Threading.Channels;
+using MacroStudio.Core.Macros;
 using MacroStudio.Core.Macros.Steps;
+using MacroStudio.Core.Playback;
 using MacroStudio.Core.Recording;
 
 namespace MacroStudio.Engine.Recording;
@@ -8,7 +10,7 @@ namespace MacroStudio.Engine.Recording;
 /// Runs one recording. The hooks only put events into a queue and return at once (Windows silently removes a
 /// slow hook); this class reads the queue on a background thread and builds the steps.
 /// </summary>
-public sealed class MacroRecorder(IInputCapture capture, IWindowInspector windows, IFocusInspector focus)
+public sealed class MacroRecorder(IInputCapture capture, IWindowInspector windows, IFocusInspector focus, IUiElements? elements = null)
 {
     private Channel<CapturedInput>? _events;
     private Task<IReadOnlyList<MacroStep>>? _builder;
@@ -22,10 +24,12 @@ public sealed class MacroRecorder(IInputCapture capture, IWindowInspector window
             throw new InvalidOperationException("A recording is already running.");
         }
 
-        _events = Channel.CreateUnbounded<CapturedInput>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = true });
-        ChannelReader<CapturedInput> reader = _events.Reader;
-        _builder = Task.Run(() => BuildStepsAsync(reader, new StepBuilder(options)));
-        capture.Start(_events.Writer);
+        // The hooks first: when Windows refuses them, nothing is left half started and the next try works.
+        // Events that come before the builder runs wait in the queue.
+        Channel<CapturedInput> events = Channel.CreateUnbounded<CapturedInput>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = true });
+        capture.Start(events.Writer);
+        _events = events;
+        _builder = Task.Run(() => BuildStepsAsync(events.Reader, new StepBuilder(options), options.FindElements));
     }
 
     /// <returns>The recorded steps, in order.</returns>
@@ -49,7 +53,7 @@ public sealed class MacroRecorder(IInputCapture capture, IWindowInspector window
         }
     }
 
-    private async Task<IReadOnlyList<MacroStep>> BuildStepsAsync(ChannelReader<CapturedInput> reader, StepBuilder builder)
+    private async Task<IReadOnlyList<MacroStep>> BuildStepsAsync(ChannelReader<CapturedInput> reader, StepBuilder builder, bool findElements)
     {
         await foreach (CapturedInput input in reader.ReadAllAsync().ConfigureAwait(false))
         {
@@ -60,7 +64,13 @@ public sealed class MacroRecorder(IInputCapture capture, IWindowInspector window
                     break;
 
                 case CapturedMouse mouse:
-                    builder.AddMouse(mouse, windows.Describe(mouse.Window));
+                    WindowInfo clicked = windows.Describe(mouse.Window);
+
+                    // Asked at the press, before the program reacts to it and perhaps opens something over the control.
+                    UiElement? element = findElements && mouse.Action == MouseAction.Down && clicked.Role == WindowRole.Application
+                        ? elements?.Describe(mouse.Position, clicked.Target.Bounds)
+                        : null;
+                    builder.AddMouse(mouse, clicked, element);
                     break;
 
                 case CapturedKey key:
