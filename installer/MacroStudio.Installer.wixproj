@@ -3,8 +3,12 @@
   <PropertyGroup>
     <OutputName>MacroStudio</OutputName>
     <InstallerPlatform>x64</InstallerPlatform>
-    <!-- One .msi per language: Turkish and English installer screens. -->
-    <Cultures>tr-TR;en-US</Cultures>
+    <!--
+      One .msi for everyone. The program inside has both languages and follows Windows' language (changeable in its
+      settings); only the few installer screens are in Turkish, because Windows Installer shows one language per
+      package and the multi-language transform trick is not supported by Microsoft.
+    -->
+    <Cultures>tr-TR</Cultures>
     <DefineConstants>Version=$(Version);AppPublishDir=$(AppPublishDir)</DefineConstants>
     <!--
       ICE38, ICE64, ICE91 expect a per-machine install. A per-user install under %LocalAppData% keeps its files

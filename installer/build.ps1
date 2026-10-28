@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
-Builds the Macro Studio installers: one .msi with Turkish screens and one with English screens.
+Builds the Macro Studio installer: one .msi. The program inside speaks Turkish and English and follows Windows'
+language; the installer screens are in Turkish.
 
 .DESCRIPTION
 1. Publishes the app as a self-contained win-x64 build (no .NET needed on the target computer).
@@ -66,10 +67,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Building the installers failed.' }
 [xml]$props = Get-Content "$root\Directory.Build.props"
 $version = $props.Project.PropertyGroup.Version
 New-Item -ItemType Directory -Force $out | Out-Null
-foreach ($culture in 'tr-TR', 'en-US') {
-    $msi = Get-ChildItem "$PSScriptRoot\bin" -Recurse -Filter MacroStudio.msi | Where-Object { $_.Directory.Name -eq $culture } | Select-Object -First 1
-    $target = Join-Path $out "MacroStudio-$version-$culture.msi"
-    Copy-Item $msi.FullName $target -Force
-    if ($CertificateThumbprint) { Sign $target }
-    Write-Host "Ready: $target"
-}
+$msi = Get-ChildItem "$PSScriptRoot\bin" -Recurse -Filter MacroStudio.msi | Where-Object { $_.Directory.Name -eq 'tr-TR' } | Select-Object -First 1
+$target = Join-Path $out "MacroStudio-$version.msi"
+Copy-Item $msi.FullName $target -Force
+if ($CertificateThumbprint) { Sign $target }
+Write-Host "Ready: $target"
