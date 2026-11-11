@@ -34,6 +34,10 @@ internal sealed class FakeDesktop : IInputSimulator, IWindowSystem, IClipboard, 
     }
 
     public List<WindowCandidate> Windows { get; } = [];
+    public Dictionary<nint, string[]> BrowserTabs { get; } = [];
+    public Dictionary<nint, string> BrowserHosts { get; } = [];
+    public List<(nint Window, string Title)> TabSelections { get; } = [];
+    public bool BrowserSelectionChangesTitle { get; set; } = true;
 
     public List<string> Pasted { get; } = [];
 
@@ -79,6 +83,29 @@ internal sealed class FakeDesktop : IInputSimulator, IWindowSystem, IClipboard, 
     }
 
     public IReadOnlyList<WindowCandidate> ListWindows() => Windows;
+
+    public IReadOnlyList<string> ListBrowserTabs(nint window) => BrowserTabs.GetValueOrDefault(window) ?? [];
+
+    public string? GetActiveBrowserHost(nint window) => BrowserHosts.GetValueOrDefault(window);
+
+    public bool TrySelectBrowserTab(nint window, string title)
+    {
+        if (!ListBrowserTabs(window).Contains(title, StringComparer.Ordinal))
+        {
+            return false;
+        }
+
+        TabSelections.Add((window, title));
+        if (BrowserSelectionChangesTitle)
+        {
+            int index = Windows.FindIndex(candidate => candidate.Handle == window);
+            WindowCandidate candidate = Windows[index];
+            string activeTab = ListBrowserTabs(window).First(tab => candidate.Title.StartsWith(tab, StringComparison.Ordinal));
+            Windows[index] = candidate with { Title = title + candidate.Title[activeTab.Length..] };
+        }
+
+        return true;
+    }
 
     public bool TryActivate(nint window)
     {

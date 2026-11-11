@@ -14,8 +14,8 @@ public enum ErrorAction
 
 /// <summary>
 /// What playback does when a step fails because a window did not come or the clipboard did not change: try again a
-/// few times, a second apart, and then stop or skip. A program running as administrator or a locked screen always
-/// stops the macro: trying again cannot help there.
+/// few times, a second apart, and then stop or skip. A missing or ambiguous browser tab, an elevated target,
+/// or blocked input always stops the macro.
 /// </summary>
 public sealed record ErrorPolicy(ErrorAction Action, int Retries)
 {
@@ -24,5 +24,6 @@ public sealed record ErrorPolicy(ErrorAction Action, int Retries)
     public static ErrorPolicy StopAtOnce { get; } = new(ErrorAction.Stop, 0);
 
     public static bool CanRetry(PlaybackFailure failure) =>
-        failure is not (PlaybackFailure.TargetIsElevated or PlaybackFailure.InputBlocked);
+        failure is not (PlaybackFailure.TargetIsElevated or PlaybackFailure.InputBlocked
+            or PlaybackFailure.BrowserTabNotFound or PlaybackFailure.BrowserHostNotVerified);
 }

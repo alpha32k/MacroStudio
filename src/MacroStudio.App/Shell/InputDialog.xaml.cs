@@ -20,14 +20,14 @@ public partial class InputDialog : FluentWindow
         AutomationProperties.SetName(AnswerBox, prompt);
         AutomationProperties.SetName(ChoiceBox, prompt);
         TemplateButtonNames.NameWhenLoaded(this);
-        Owner = Application.Current.MainWindow is { IsVisible: true } main ? main : null;
+        Owner = Application.Current.MainWindow is { IsVisible: true, WindowState: not WindowState.Minimized } main ? main : null;
         WindowStartupLocation = Owner is null ? WindowStartupLocation.CenterScreen : WindowStartupLocation.CenterOwner;
     }
 
     /// <returns>The typed text, or null when cancelled.</returns>
-    public static string? AskText(string title, string prompt, string initialText = "")
+    public static string? AskText(string title, string prompt, string initialText = "", bool topmost = false)
     {
-        var dialog = new InputDialog(title, prompt);
+        var dialog = new InputDialog(title, prompt) { Topmost = topmost };
         dialog.ChoiceBox.Visibility = Visibility.Collapsed;
         dialog.AnswerBox.Text = initialText;
         dialog.Loaded += (_, _) =>

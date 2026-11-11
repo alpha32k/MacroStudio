@@ -1,4 +1,5 @@
 using MacroStudio.Core.Geometry;
+using System.Text.Json.Serialization;
 
 namespace MacroStudio.Core.Macros;
 
@@ -8,4 +9,9 @@ namespace MacroStudio.Core.Macros;
 /// </summary>
 /// <param name="ProcessName">Program name without ".exe", for example "EXCEL".</param>
 /// <param name="Bounds">Window position and size at recording time, in physical pixels.</param>
-public sealed record WindowTarget(string ProcessName, string Title, string ClassName, ScreenRect Bounds);
+public sealed record WindowTarget(string ProcessName, string Title, string ClassName, ScreenRect Bounds)
+{
+    /// <summary>The recorded HTTP(S) host for a browser target. Older macros may only have a title.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? BrowserHost { get; init; }
+}

@@ -28,4 +28,10 @@ public enum PlaybackFailure
 
     /// <summary>The picture of an image-click step was not on the screen.</summary>
     ImageNotFound,
+
+    /// <summary>No single open browser tab could be verified as the recorded target.</summary>
+    BrowserTabNotFound,
+
+    /// <summary>The selected browser tab's site address could not be verified.</summary>
+    BrowserHostNotVerified,
 }

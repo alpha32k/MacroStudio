@@ -14,4 +14,6 @@ public sealed record PlaybackResult(
     PlaybackFailure? Failure = null,
     WindowTarget? Window = null,
     int SkippedSteps = 0,
-    int SkippedRounds = 0);
+    int SkippedRounds = 0,
+    int? FailedRound = null,
+    Guid? FailedStepId = null);

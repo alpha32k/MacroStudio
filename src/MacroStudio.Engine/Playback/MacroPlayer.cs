@@ -69,6 +69,67 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
 
     public void Resume() => _running.Set();
 
+    /// <summary>Checks currently open targets without selecting tabs or sending input.</summary>
+    public IReadOnlyList<WindowTarget> FindUnavailableTargets(MacroDefinition macro, int firstStep, int? lastStep, CancellationToken cancellation)
+    {
+        WindowTarget[] targets = macro.Steps.Take(lastStep ?? macro.Steps.Count).Skip(firstStep - 1)
+            .Where(step => step.IsEnabled)
+            .Select(RequiredTargetOf)
+            .OfType<WindowTarget>()
+            .Where(target => !ShellPanels.IsShellPanel(target))
+            .DistinctBy(target => (target.ProcessName, target.ClassName, target.Title, target.BrowserHost))
+            .ToArray();
+        if (targets.Length == 0)
+        {
+            return [];
+        }
+
+        IReadOnlyList<WindowCandidate> open = windows.ListWindows();
+        var tabLists = new Dictionary<nint, IReadOnlyList<string>>();
+        IReadOnlyList<string> TabsOf(nint handle)
+        {
+            cancellation.ThrowIfCancellationRequested();
+            if (!tabLists.TryGetValue(handle, out IReadOnlyList<string>? tabs))
+            {
+                tabLists[handle] = tabs = windows.ListBrowserTabs(handle);
+            }
+
+            return tabs;
+        }
+
+        var unavailable = new List<WindowTarget>();
+        foreach (WindowTarget target in targets)
+        {
+            cancellation.ThrowIfCancellationRequested();
+            bool available = BrowserWindow.IsSupported(target.ProcessName, target.ClassName)
+                ? FindBrowserTab(target, BrowserTabTitle.FromWindow(target.ProcessName, target.Title), open, TabsOf) is not null
+                : WindowMatcher.FindBest(target, open) is not null;
+            if (!available)
+            {
+                unavailable.Add(target);
+            }
+        }
+
+        return unavailable;
+    }
+
+    private static WindowTarget? RequiredTargetOf(MacroStep? step) => step switch
+    {
+        MouseClickStep click => click.Target,
+        MouseDragStep drag => drag.Target,
+        MouseWheelStep wheel => wheel.Target,
+        KeyPressStep key => key.Target,
+        HotkeyStep hotkey => hotkey.Target,
+        TypeTextStep text => text.Target,
+        FocusWindowStep focus => focus.Target,
+        CopyStep copy => copy.Target,
+        PasteStep paste => paste.Target,
+        ImageClickStep image => image.Target,
+        IfStep { Check: IfCheck.ColorIs or IfCheck.ColorIsNot } condition => condition.Target,
+        WaitForStep { Condition: WaitCondition.ColorAppears } wait => wait.Target,
+        _ => null,
+    };
+
     public PlaybackResult Play(MacroDefinition macro, PlaybackOptions options, CancellationToken cancellation)
     {
         _running.Set();
@@ -87,10 +148,17 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
             _ => endsOnEmptyCopy ? int.MaxValue : 1,
         };
         // A list file ends the macro with its last row, whatever the repeat says.
-        bool isListShorter = options.ListRows is { } listRows && listRows.Count < rounds;
+        bool isListShorter = false;
         if (options.ListRows is { } list)
         {
-            rounds = Math.Min(options.Loop.Mode == LoopMode.UntilClipboardEmpty ? list.Count : rounds, list.Count);
+            if (options.ListStartRow < 1 || options.ListStartRow > Math.Max(1, list.Count))
+            {
+                throw new ArgumentOutOfRangeException(nameof(options), "The starting row is outside the list.");
+            }
+
+            int remaining = Math.Max(0, list.Count - options.ListStartRow + 1);
+            isListShorter = remaining < rounds;
+            rounds = options.Loop.Mode == LoopMode.UntilClipboardEmpty ? remaining : Math.Min(rounds, remaining);
         }
 
         int? totalRounds = options.Loop.Mode == LoopMode.Count || options.ListRows is not null ? rounds : null;
@@ -98,8 +166,15 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
         var run = new PlaybackRun(options, cancellation, endsOnEmptyCopy);
         int completedRounds = 0;
         int currentStep = 0;
+        MacroStep? activeStep = null;
         try
         {
+            cancellation.ThrowIfCancellationRequested();
+            if (rounds > 0 && options.ListRows is not null && steps.Count > 0)
+            {
+                options.ReportNextListRow?.Invoke(options.ListStartRow);
+            }
+
             for (int round = 1; round <= rounds; round++)
             {
                 run.IsFirstCopyOfRound = true;
@@ -121,6 +196,7 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
                     }
 
                     currentStep = number;
+                    activeStep = step;
                     ProgressChanged?.Invoke(this, new PlaybackProgress(round, totalRounds, number, macro.Steps.Count));
                     Wait(TimeSpan.FromMilliseconds(step.DelayBeforeMs / options.Speed), run);
                     StepOutcome outcome = PlayWithRetries(step, number, run);
@@ -153,6 +229,11 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
                     run.HasCompletedRound = true;
                     run.RoundsSkippedInARow = 0;
                 }
+
+                if (options.ListRows is not null && steps.Count > 0)
+                {
+                    options.ReportNextListRow?.Invoke(options.ListStartRow + round);
+                }
             }
 
             return Result(isListShorter || options.ListRows is not null && options.Loop.Mode == LoopMode.UntilClipboardEmpty ? PlaybackOutcome.ListEnded : PlaybackOutcome.Completed, completedRounds, run);
@@ -163,16 +244,20 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
         }
         catch (StepFailedException ex)
         {
-            return new PlaybackResult(PlaybackOutcome.Failed, completedRounds, currentStep, ex.Failure, ex.Window, run.SkippedSteps, run.SkippedRounds);
+            return Failed(ex.Failure, ex.Window);
         }
         catch (InputBlockedException)
         {
-            return new PlaybackResult(PlaybackOutcome.Failed, completedRounds, currentStep, PlaybackFailure.InputBlocked, null, run.SkippedSteps, run.SkippedRounds);
+            return Failed(PlaybackFailure.InputBlocked, null);
         }
         finally
         {
             input.ReleaseAll();
         }
+
+        PlaybackResult Failed(PlaybackFailure reason, WindowTarget? target) => new(
+            PlaybackOutcome.Failed, completedRounds, currentStep, reason, target ?? RequiredTargetOf(activeStep),
+            run.SkippedSteps, run.SkippedRounds, run.Round, activeStep?.Id);
     }
 
     private static PlaybackResult Result(PlaybackOutcome outcome, int completedRounds, PlaybackRun run) =>
@@ -290,7 +375,18 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
             return null;
         }
 
+        if (BrowserWindow.IsSupported(target.ProcessName, target.ClassName))
+        {
+            return ActivateBrowserTab(target, run);
+        }
+
         WindowCandidate window = WaitForWindow(target, run);
+        ActivateWindow(window, target);
+        return window;
+    }
+
+    private void ActivateWindow(WindowCandidate window, WindowTarget target)
+    {
         if (windows.IsElevatedAboveUs(window.Handle))
         {
             throw new StepFailedException(PlaybackFailure.TargetIsElevated, target);
@@ -300,9 +396,58 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
         {
             throw new StepFailedException(PlaybackFailure.WindowNotActivated, target);
         }
-
-        return window;
     }
+
+    private WindowCandidate ActivateBrowserTab(WindowTarget target, PlaybackRun run)
+    {
+        string expected = BrowserTabTitle.FromWindow(target.ProcessName, target.Title);
+        string? expectedHost = BrowserTabTitle.ExpectedHost(target, expected);
+        bool hostNotVerified = false;
+        long deadline = clock.NowMs + (long)run.Options.WindowWait.TotalMilliseconds;
+        while (true)
+        {
+            run.Cancellation.ThrowIfCancellationRequested();
+            if (FindBrowserTab(target, expected, windows.ListWindows(), windows.ListBrowserTabs) is { } match)
+            {
+                ActivateWindow(match.Window, target);
+                bool selected = BrowserTabTitle.Matches(expected, BrowserTabTitle.FromWindow(match.Window.ProcessName, match.Window.Title))
+                    || windows.TrySelectBrowserTab(match.Window.Handle, match.Tab);
+
+                Wait(TimeSpan.Zero, run);
+                if (selected && windows.ForegroundWindow == match.Window.Handle
+                    && windows.ListWindows().FirstOrDefault(window => window.Handle == match.Window.Handle) is { } current
+                    && BrowserTabTitle.Matches(expected, BrowserTabTitle.FromWindow(current.ProcessName, current.Title)))
+                {
+                    if (expectedHost is null
+                        || string.Equals(expectedHost, windows.GetActiveBrowserHost(current.Handle), StringComparison.OrdinalIgnoreCase)
+                        && windows.ForegroundWindow == current.Handle)
+                    {
+                        return current;
+                    }
+
+                    hostNotVerified = true;
+                }
+            }
+
+            if (clock.NowMs >= deadline)
+            {
+                throw new StepFailedException(hostNotVerified ? PlaybackFailure.BrowserHostNotVerified : PlaybackFailure.BrowserTabNotFound,
+                    hostNotVerified ? target with { BrowserHost = expectedHost } : target);
+            }
+
+            Wait(WindowPoll, run);
+        }
+    }
+
+    private static (WindowCandidate Window, string Tab)? FindBrowserTab(WindowTarget target, string title,
+        IReadOnlyList<WindowCandidate> open, Func<nint, IReadOnlyList<string>> tabsOf) => open
+        .Where(window => window.ClassName == target.ClassName
+            && string.Equals(window.ProcessName, target.ProcessName, StringComparison.OrdinalIgnoreCase))
+        .SelectMany(window => tabsOf(window.Handle)
+            .Where(tab => BrowserTabTitle.Matches(title, tab))
+            .Select(tab => (Window: window, Tab: tab)))
+        .Take(2)
+        .ToArray() is [var match] ? match : null;
 
     /// <summary>
     /// For steps that point at a spot. A window that now has another size than at recording gets its recorded place
@@ -495,7 +640,8 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
         }
 
         PlaybackOptions options = run.Options;
-        IReadOnlyList<string>? row = options.ListRows is { } rows && run.Round <= rows.Count ? rows[run.Round - 1] : null;
+        int rowIndex = options.ListStartRow + run.Round - 2;
+        IReadOnlyList<string>? row = options.ListRows is { } rows ? rows[rowIndex] : null;
         return TextTemplate.Fill(text, new TemplateValues(row, options.ListColumns, run.Round, DateTime.Now, options.Culture));
     }
 
@@ -631,8 +777,8 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
         WindowCandidate? window = isColorCheck ? ActivateForPointing(step.Target, run) : null;
         bool isTrue = step.Check switch
         {
-            IfCheck.WindowOpen => WindowMatcher.FindBest(step.Target!, windows.ListWindows()) is not null,
-            IfCheck.WindowNotOpen => WindowMatcher.FindBest(step.Target!, windows.ListWindows()) is null,
+            IfCheck.WindowOpen => WindowMatcher.IsOpen(step.Target!, windows.ListWindows()),
+            IfCheck.WindowNotOpen => !WindowMatcher.IsOpen(step.Target!, windows.ListWindows()),
             _ => windows.PixelAt(PositionMapper.Map(step.ScreenPosition, step.Target, window?.Bounds)) is int color
                 && IsSameColor(color, step.Color) == (step.Check == IfCheck.ColorIs),
         };
@@ -653,8 +799,8 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
 
     private bool IsMet(WaitForStep step, ScreenPoint spot) => step.Condition switch
     {
-        WaitCondition.WindowAppears => WindowMatcher.FindBest(step.Target!, windows.ListWindows()) is not null,
-        WaitCondition.WindowCloses => WindowMatcher.FindBest(step.Target!, windows.ListWindows()) is null,
+        WaitCondition.WindowAppears => WindowMatcher.IsOpen(step.Target!, windows.ListWindows()),
+        WaitCondition.WindowCloses => !WindowMatcher.IsOpen(step.Target!, windows.ListWindows()),
         _ => windows.PixelAt(spot) is int color && IsSameColor(color, step.Color),
     };
 

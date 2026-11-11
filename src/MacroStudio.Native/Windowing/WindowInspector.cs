@@ -1,5 +1,6 @@
 using MacroStudio.Core.Macros;
 using MacroStudio.Core.Recording;
+using MacroStudio.Native.Accessibility;
 using static MacroStudio.Native.Interop.NativeMethods;
 
 namespace MacroStudio.Native.Windowing;
@@ -18,8 +19,17 @@ public sealed unsafe class WindowInspector : IWindowInspector
         GetWindowThreadProcessId(window.Handle, out uint processId);
         string className = WindowText.ClassNameOf(window.Handle);
         string processName = ProcessNames.Of(processId);
-        var target = new WindowTarget(processName, WindowText.TitleOf(window.Handle), className, window.Bounds);
-        return new WindowInfo(RoleOf(window.Handle, processId, processName, className), target);
+        string title = WindowText.TitleOf(window.Handle);
+        WindowRole role = RoleOf(window.Handle, processId, processName, className);
+        var target = new WindowTarget(processName, title, className, window.Bounds);
+        if (role == WindowRole.Application && BrowserWindow.IsSupported(processName, className)
+            && BrowserTabs.ActiveHost(window.Handle, TimeSpan.FromMilliseconds(150)) is { } host
+            && WindowText.TitleOf(window.Handle) == title)
+        {
+            target = target with { BrowserHost = host };
+        }
+
+        return new WindowInfo(role, target);
     }
 
     private WindowRole RoleOf(nint handle, uint processId, string processName, string className)

@@ -162,7 +162,9 @@ public sealed partial class NotchBarViewModel : ObservableObject
     /// A macro's own shortcut: selects that macro on the bar and plays it with its saved repeat and speed.
     /// Ignored while something records or plays, so a second press cannot start a second macro.
     /// </summary>
-    public void PlayMacro(Guid macroId)
+    public void PlayMacro(Guid macroId) => PlayMacro(macroId, interactive: true);
+
+    private void PlayMacro(Guid macroId, bool interactive)
     {
         if (_playback.State != PlaybackState.Idle || _recording.State != RecordingState.Idle
             || Macros.FirstOrDefault(m => m.Macro.Id == macroId) is not { } file)
@@ -173,7 +175,14 @@ public sealed partial class NotchBarViewModel : ObservableObject
         SelectedMacro = file;
         if (PlayPauseCommand.CanExecute(null))
         {
-            PlayPauseCommand.Execute(null);
+            if (interactive)
+            {
+                PlayPauseCommand.Execute(null);
+            }
+            else
+            {
+                _ = _playback.PlayAsync(file.Macro, SelectedLoop.Value, SelectedSpeed, interactive: false);
+            }
         }
     }
 
@@ -190,7 +199,7 @@ public sealed partial class NotchBarViewModel : ObservableObject
             return false;
         }
 
-        PlayMacro(file.Macro.Id);
+        PlayMacro(file.Macro.Id, interactive: false);
         return true;
     }
 

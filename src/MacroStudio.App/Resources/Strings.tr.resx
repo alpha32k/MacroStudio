@@ -432,6 +432,43 @@
   <data name="Failure_WindowNotFound" xml:space="preserve">
     <value>Şu pencere bulunamadı: {0}. Program açık mı?</value>
   </data>
+  <data name="Failure_BrowserTabNotFound" xml:space="preserve">
+    <value>Şu hedef için tek bir açık tarayıcı sekmesi doğrulanamadı: {0}. Kayıttaki sekmeyi açın ve aynı başlıktaki diğer sekmeleri kapatın.</value>
+  </data>
+  <data name="Failure_BrowserHostNotVerified" xml:space="preserve">
+    <value>{0} sekmesinin site adresi doğrulanamadı. Kayıttaki sekmede {1} adresini açın.</value>
+  </data>
+  <data name="Playback_TargetCheckQuestion" xml:space="preserve">
+    <value>Oynatmadan önce şu hedefler bulunamadı.
+
+{0}
+
+Hedefleri açıp yeniden deneyebilirsiniz. Makro bunları ilerleyen adımlarda açacaksa devam edebilirsiniz. Devam edilsin mi?</value>
+  </data>
+  <data name="Playback_MoreMissingTargets" xml:space="preserve">
+    <value>… ve {0} hedef daha</value>
+  </data>
+  <data name="Playback_ListStartTitle" xml:space="preserve">
+    <value>Başlangıç satırı</value>
+  </data>
+  <data name="Playback_ListStartPrompt" xml:space="preserve">
+    <value>1 ile {0} arasında bir başlangıç satırı seçin. Başlık satırı sayılmaz.</value>
+  </data>
+  <data name="Playback_ListStartResume" xml:space="preserve">
+    <value>Kayıtlı ilerlemeye göre {0}. veri satırı önerildi. Bu satır kısmen işlenmiş olabilir.</value>
+  </data>
+  <data name="Playback_ListStartInvalid" xml:space="preserve">
+    <value>1 ile {0} arasında bir tam sayı yazın.</value>
+  </data>
+  <data name="Macro_LastFailure" xml:space="preserve">
+    <value>Son hata · {0} · {1}. tur, {2}. adım · {3}</value>
+  </data>
+  <data name="Macros_OpenFailedStep" xml:space="preserve">
+    <value>Bu adımı düzenleyicide aç</value>
+  </data>
+  <data name="Macros_FailedStepRemoved" xml:space="preserve">
+    <value>Hatanın oluştuğu adım makrodan kaldırılmış.</value>
+  </data>
   <data name="Failure_WindowNotActivated" xml:space="preserve">
     <value>Windows şu pencerenin öne gelmesine izin vermedi: {0}.</value>
   </data>
@@ -709,6 +746,12 @@ Yine de oynatılsın mı?</value>
   </data>
   <data name="Macros_ImportFailed" xml:space="preserve">
     <value>&quot;{0}&quot; içe aktarılamadı: {1}</value>
+  </data>
+  <data name="Macros_ImportInvalidStep" xml:space="preserve">
+    <value>Dosyanın {0}. adımında eksik veya geçersiz bir alan var.</value>
+  </data>
+  <data name="Macros_ImportInvalidFile" xml:space="preserve">
+    <value>Dosyanın içeriği geçerli bir Macro Studio makrosu biçiminde değil.</value>
   </data>
   <data name="Macros_ActionFailed" xml:space="preserve">
     <value>İşlem yapılamadı: {0}</value>

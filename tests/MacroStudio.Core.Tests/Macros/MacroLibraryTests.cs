@@ -38,6 +38,18 @@ public sealed class MacroLibraryTests : IDisposable
         Assert.Contains("\"processName\": \"EXCEL\"", json, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void SaveNew_ThenLoad_KeepsTheBrowserHost()
+    {
+        var target = new WindowTarget("chrome", "WhatsApp - Google Chrome", "Chrome_WidgetWin_1", Excel.Bounds)
+        {
+            BrowserHost = "web.whatsapp.com",
+        };
+        string path = new MacroLibrary(_folder).SaveNew(CreateMacro("Browser", [new FocusWindowStep { Target = target }]));
+
+        Assert.Equal(target, Assert.IsType<FocusWindowStep>(Assert.Single(MacroLibrary.Load(path).Steps)).Target);
+    }
+
     [Theory]
     [InlineData("Rapor: Ocak/Şubat", "Rapor Ocak Şubat.msmacro")]
     [InlineData("CON", "CON_.msmacro")]

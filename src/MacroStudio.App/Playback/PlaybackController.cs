@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
@@ -7,6 +8,7 @@ using MacroStudio.App.Localization;
 using MacroStudio.App.Macros;
 using MacroStudio.App.Recording;
 using MacroStudio.App.Services;
+using MacroStudio.App.Shell;
 using MacroStudio.Core.Macros;
 using MacroStudio.Core.Playback;
 using MacroStudio.Engine.Playback;
@@ -29,18 +31,21 @@ public sealed partial class PlaybackController : ObservableObject
     private readonly SettingsService _settings;
     private readonly HotkeyService _hotkeys;
     private readonly ShortcutService _shortcuts;
+    private readonly ListResumeStore _listResume;
     private readonly Dispatcher _dispatcher = Application.Current.Dispatcher;
     private readonly HashSet<Guid> _screenAccepted = [];
     private CancellationTokenSource? _cancellation;
     private long _ignoreUserInputUntilMs;
 
-    public PlaybackController(MacroPlayer player, IUserActivityMonitor activity, SettingsService settings, HotkeyService hotkeys, ShortcutService shortcuts)
+    public PlaybackController(MacroPlayer player, IUserActivityMonitor activity, SettingsService settings, HotkeyService hotkeys,
+        ShortcutService shortcuts, ListResumeStore listResume)
     {
         _player = player;
         _activity = activity;
         _settings = settings;
         _hotkeys = hotkeys;
         _shortcuts = shortcuts;
+        _listResume = listResume;
 
         // The player and the hooks report on their own threads; the user interface changes on its thread.
         _player.ProgressChanged += (_, progress) => _dispatcher.BeginInvoke(() => Progress = progress);
@@ -69,7 +74,7 @@ public sealed partial class PlaybackController : ObservableObject
 
     /// <param name="firstStep">"Play from here": the first round starts at this 1-based step.</param>
     /// <param name="lastStep">"Try this step": nothing after this 1-based step is played.</param>
-    public async Task PlayAsync(MacroDefinition macro, LoopSettings loop, double speed, int firstStep = 1, int? lastStep = null)
+    public async Task PlayAsync(MacroDefinition macro, LoopSettings loop, double speed, int firstStep = 1, int? lastStep = null, bool interactive = true)
     {
         if (State != PlaybackState.Idle)
         {
@@ -84,9 +89,33 @@ public sealed partial class PlaybackController : ObservableObject
         using var cancellation = new CancellationTokenSource();
         _cancellation = cancellation;
         Progress = null;
+        bool isPartial = firstStep > 1 || lastStep is not null;
         try
         {
             State = PlaybackState.CountingDown;
+            if (interactive)
+            {
+                IReadOnlyList<WindowTarget> unavailable = await Task.Run(
+                    () => _player.FindUnavailableTargets(macro, firstStep, lastStep, cancellation.Token), cancellation.Token);
+                cancellation.Token.ThrowIfCancellationRequested();
+                if (!ConfirmTargets(unavailable))
+                {
+                    return;
+                }
+            }
+
+            int startRow = 1;
+            if (interactive && !isPartial && list is { Rows.Count: > 1 })
+            {
+                int? chosen = ChooseListStartRow(macro.Id, list, cancellation.Token);
+                if (chosen is not int row)
+                {
+                    return;
+                }
+
+                startRow = row;
+            }
+
             await CountdownWindow.RunAsync(
                 _settings.Current.PlaybackCountdownSeconds, "Playback_CountdownTitle", "Playback_CountdownHint", cancellation.Token);
 
@@ -99,13 +128,15 @@ public sealed partial class PlaybackController : ObservableObject
                 LastStep = lastStep,
                 OnError = macro.OnError,
                 ListRows = list?.Rows,
+                ListStartRow = startRow,
+                ReportNextListRow = !isPartial && list is not null ? SaveListProgress(macro.Id, list.Source) : null,
                 ListColumns = list?.Columns ?? [],
                 Culture = Localizer.Instance.Culture,
             };
             PlaybackResult? result = await RunAsync(macro, options, cancellation.Token);
             if (result is not null)
             {
-                Finished?.Invoke(this, new PlaybackFinishedEventArgs(macro, result, isPartial: firstStep > 1 || lastStep is not null));
+                Finished?.Invoke(this, new PlaybackFinishedEventArgs(macro, result, isPartial));
             }
         }
         catch (OperationCanceledException)
@@ -118,6 +149,78 @@ public sealed partial class PlaybackController : ObservableObject
             Progress = null;
             State = PlaybackState.Idle;
         }
+    }
+
+    private int? ChooseListStartRow(Guid macroId, PlaybackList list, CancellationToken cancellation)
+    {
+        Localizer text = Localizer.Instance;
+        int suggested = _listResume.SuggestedRow(macroId, list);
+        string prompt = text.Format("Playback_ListStartPrompt", list.Rows.Count);
+        if (suggested > 1)
+        {
+            prompt += Environment.NewLine + text.Format("Playback_ListStartResume", suggested);
+        }
+
+        string message = prompt;
+        string initial = suggested.ToString(text.Culture);
+        while (true)
+        {
+            cancellation.ThrowIfCancellationRequested();
+            string? answer = InputDialog.AskText(text["Playback_ListStartTitle"], message, initial, topmost: true);
+            if (answer is null)
+            {
+                return null;
+            }
+
+            if (int.TryParse(answer, NumberStyles.Integer, text.Culture, out int row) && row >= 1 && row <= list.Rows.Count)
+            {
+                return row;
+            }
+
+            message = prompt + Environment.NewLine + text.Format("Playback_ListStartInvalid", list.Rows.Count);
+            initial = answer;
+        }
+    }
+
+    private Action<int> SaveListProgress(Guid macroId, ListSource source)
+    {
+        bool warned = false;
+        return nextRow =>
+        {
+            try
+            {
+                _listResume.Save(macroId, source, nextRow);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                if (!warned)
+                {
+                    Log.Warning(ex, "List playback position could not be saved");
+                    warned = true;
+                }
+            }
+        };
+    }
+
+    private static bool ConfirmTargets(IReadOnlyList<WindowTarget> unavailable)
+    {
+        if (unavailable.Count == 0)
+        {
+            return true;
+        }
+
+        const int MaxShownTargets = 12;
+        Localizer text = Localizer.Instance;
+        string list = string.Join(Environment.NewLine, unavailable.Take(MaxShownTargets).Select(target =>
+            "• " + text.Format("Window_Name", target.Title.Length > 0 ? target.Title : target.ProcessName, target.ProcessName)
+            + (target.BrowserHost is { Length: > 0 } host ? $" · {host}" : "")));
+        if (unavailable.Count > MaxShownTargets)
+        {
+            list += Environment.NewLine + text.Format("Playback_MoreMissingTargets", unavailable.Count - MaxShownTargets);
+        }
+
+        return MessageBox.Show(text.Format("Playback_TargetCheckQuestion", list), "Macro Studio",
+            MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No, MessageBoxOptions.DefaultDesktopOnly) == MessageBoxResult.Yes;
     }
 
     public void TogglePause()
@@ -149,7 +252,7 @@ public sealed partial class PlaybackController : ObservableObject
     }
 
     /// <summary>The list file is read before the countdown, so a missing file is told before anything is played.</summary>
-    private static bool TryReadList(MacroDefinition macro, out (IReadOnlyList<IReadOnlyList<string>> Rows, IReadOnlyList<string> Columns)? list)
+    private static bool TryReadList(MacroDefinition macro, out PlaybackList? list)
     {
         list = null;
         if (macro.DataList is not { } dataList)
@@ -159,10 +262,10 @@ public sealed partial class PlaybackController : ObservableObject
 
         try
         {
-            list = DataListReader.Read(dataList);
+            list = DataListReader.ReadForPlayback(dataList);
             return true;
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or ArgumentException or NotSupportedException)
         {
             Log.Warning(ex, "List file could not be read");
             MessageBox.Show(Localizer.Instance.Format("Playback_ListUnreadable", dataList.Path, ex.Message), "Macro Studio", MessageBoxButton.OK, MessageBoxImage.Warning);

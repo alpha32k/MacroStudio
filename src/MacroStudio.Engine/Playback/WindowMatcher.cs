@@ -4,9 +4,8 @@ using MacroStudio.Core.Playback;
 namespace MacroStudio.Engine.Playback;
 
 /// <summary>
-/// Finds the open window that a recorded step belongs to. Titles change while people work (Notepad adds "*",
-/// Excel shows the file name), so the program and the window kind decide; the title only picks between
-/// several windows of the same kind.
+/// Finds the open window that a recorded step belongs to. Excel workbook windows require an exact title
+/// to avoid sending input to another workbook. Other titles can change while people work.
 /// </summary>
 public static class WindowMatcher
 {
@@ -14,15 +13,19 @@ public static class WindowMatcher
     private const string DialogClassName = "#32770";
     private const double MinDialogTitleSimilarity = 0.6;
 
-    /// <param name="windows">Open windows, front to back; when two match equally well the front one wins.</param>
+    /// <param name="windows">Open windows, front to back; Excel workbooks must have a unique match.</param>
     public static WindowCandidate? FindBest(WindowTarget target, IReadOnlyList<WindowCandidate> windows)
     {
+        if (IsExcelWorkbook(target))
+        {
+            return ExcelWorkbookMatches(target, windows).Take(2).ToArray() is [var match] ? match : null;
+        }
+
         WindowCandidate? best = null;
         double bestSimilarity = -1;
         foreach (WindowCandidate window in windows)
         {
-            if (!string.Equals(window.ProcessName, target.ProcessName, StringComparison.OrdinalIgnoreCase)
-                || !string.Equals(window.ClassName, target.ClassName, StringComparison.Ordinal))
+            if (!MatchesWindowKind(target, window))
             {
                 continue;
             }
@@ -38,6 +41,21 @@ public static class WindowMatcher
         bool isWrongDialog = target.ClassName == DialogClassName && bestSimilarity < MinDialogTitleSimilarity;
         return isWrongDialog ? null : best;
     }
+
+    /// <summary>Checks whether a target is open, including Excel workbooks with indistinguishable titles.</summary>
+    public static bool IsOpen(WindowTarget target, IReadOnlyList<WindowCandidate> windows) =>
+        IsExcelWorkbook(target) ? ExcelWorkbookMatches(target, windows).Any() : FindBest(target, windows) is not null;
+
+    private static bool IsExcelWorkbook(WindowTarget target) =>
+        string.Equals(target.ProcessName, "EXCEL", StringComparison.OrdinalIgnoreCase) && target.ClassName == "XLMAIN";
+
+    private static IEnumerable<WindowCandidate> ExcelWorkbookMatches(WindowTarget target, IReadOnlyList<WindowCandidate> windows) =>
+        string.IsNullOrWhiteSpace(target.Title) ? [] : windows.Where(window => MatchesWindowKind(target, window)
+            && string.Equals(window.Title, target.Title, StringComparison.OrdinalIgnoreCase));
+
+    private static bool MatchesWindowKind(WindowTarget target, WindowCandidate window) =>
+        string.Equals(window.ProcessName, target.ProcessName, StringComparison.OrdinalIgnoreCase)
+        && string.Equals(window.ClassName, target.ClassName, StringComparison.Ordinal);
 
     /// <summary>1 for the same title, 0 for nothing in common (based on the number of characters to change).</summary>
     public static double TitleSimilarity(string a, string b)

@@ -28,6 +28,12 @@ public sealed record PlaybackOptions
     /// <summary>The rows of the macro's list file, one per round; null when it has none. The list ending ends the macro.</summary>
     public IReadOnlyList<IReadOnlyList<string>>? ListRows { get; init; }
 
+    /// <summary>The first data row to process, starting at one and excluding the header.</summary>
+    public int ListStartRow { get; init; } = 1;
+
+    /// <summary>Called with the next data row when list playback starts and after each row is consumed.</summary>
+    public Action<int>? ReportNextListRow { get; init; }
+
     /// <summary>The list's column names, for {Müşteri}-style fields in text steps.</summary>
     public IReadOnlyList<string> ListColumns { get; init; } = [];
 

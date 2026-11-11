@@ -10,6 +10,7 @@ namespace MacroStudio.Engine.Tests.Playback;
 public sealed class MacroPlayerTests
 {
     private static readonly WindowTarget ExcelTarget = new("EXCEL", "Liste.xlsx - Excel", "XLMAIN", new ScreenRect(0, 0, 1000, 800));
+    private static readonly WindowTarget ChromeTarget = new("chrome", "(1) WhatsApp - Google Chrome", "Chrome_WidgetWin_1", new ScreenRect(0, 0, 1000, 800));
     private static readonly WindowTarget SapTarget = new("saplogon", "SAP Easy Access", "SAP_FRONTEND_SESSION", new ScreenRect(0, 0, 1000, 800));
 
     private static readonly WindowCandidate ExcelWindow = new(1, "EXCEL", "XLMAIN", "Liste.xlsx - Excel", new ScreenRect(0, 0, 1000, 800));
@@ -36,6 +37,20 @@ public sealed class MacroPlayerTests
         Assert.Equal(PlaybackOutcome.ListEnded, result.Outcome);
         Assert.Equal(3, result.CompletedRounds);
         Assert.Equal(["Kod001", "Kod002", "Kod003"], desktop.Pasted);
+    }
+
+    [Theory]
+    [InlineData(1.0)]
+    [InlineData(2.0)]
+    public void ExcelDemo_PastesFiftyRowsInOrderAndStopsAtTheEmptyCell(double speed)
+    {
+        string[] values = Enumerable.Range(1, 50).Select(row => $"DEMO-{row:000}").ToArray();
+        var desktop = Desktop(values.Select(value => value + "\r\n").ToArray());
+
+        PlaybackResult result = Play(desktop, CopyPasteNextRow, new PlaybackOptions { Speed = speed });
+
+        Assert.Equal((PlaybackOutcome.ListEnded, 50), (result.Outcome, result.CompletedRounds));
+        Assert.Equal(values, desktop.Pasted);
     }
 
     [Fact]
@@ -303,6 +318,52 @@ public sealed class MacroPlayerTests
     }
 
     [Fact]
+    public void ListRows_StartAtTheChosenRow_AndSaveTheNextRowAfterEachRound()
+    {
+        var desktop = Desktop();
+        var progress = new List<int>();
+        var options = new PlaybackOptions
+        {
+            ListRows = [["a"], ["b"], ["c"], ["d"]],
+            ListStartRow = 3,
+            ReportNextListRow = progress.Add,
+        };
+
+        PlaybackResult result = Play(desktop, [new TypeTextStep { Text = "{1}" }], options);
+
+        Assert.Equal((PlaybackOutcome.ListEnded, 2), (result.Outcome, result.CompletedRounds));
+        Assert.Equal(["c", "d"], desktop.Typed);
+        Assert.Equal([3, 4, 5], progress);
+    }
+
+    [Fact]
+    public void StoppingDuringAListRow_LeavesThatRowAsTheNextRow()
+    {
+        var desktop = Desktop();
+        var player = new MacroPlayer(desktop, desktop, desktop, desktop);
+        using var cancel = new CancellationTokenSource();
+        var progress = new List<int>();
+        player.ProgressChanged += (_, step) =>
+        {
+            if (step.Round == 2)
+            {
+                cancel.Cancel();
+            }
+        };
+
+        PlaybackResult result = player.Play(Macro([new TypeTextStep { Text = "{1}" }]), new PlaybackOptions
+        {
+            ListRows = [["a"], ["b"], ["c"], ["d"]],
+            ListStartRow = 2,
+            ReportNextListRow = progress.Add,
+        }, cancel.Token);
+
+        Assert.Equal((PlaybackOutcome.Stopped, 1), (result.Outcome, result.CompletedRounds));
+        Assert.Equal(["b"], desktop.Typed);
+        Assert.Equal([2, 3], progress);
+    }
+
+    [Fact]
     public void If_WindowNotOpen_SkipsTheStepThatNeedsIt_OnlyInTheRoundsWhereItIsMissing()
     {
         var desktop = Desktop();
@@ -462,6 +523,198 @@ public sealed class MacroPlayerTests
         Assert.Equal(2, result.FailedStepNumber);
         Assert.Equal("SAP Easy Access", result.Window?.Title);
         Assert.InRange(desktop.NowMs, 3000, 3400);
+    }
+
+    [Theory]
+    [InlineData("Liste2.xlsx - Excel")]
+    [InlineData("Liste.xlsx - Excel")]
+    public void ExcelTargetMustBeUnique_BeforeSendingInput(string otherTitle)
+    {
+        var desktop = Desktop();
+        desktop.Windows.Add(ExcelWindow with { Handle = 3, Title = otherTitle });
+        if (otherTitle != ExcelWindow.Title)
+        {
+            desktop.Windows.Remove(ExcelWindow);
+        }
+
+        PlaybackResult result = Play(desktop, [new TypeTextStep { Text = "değer", Target = ExcelTarget }],
+            new PlaybackOptions { WindowWait = TimeSpan.Zero });
+
+        Assert.Equal((PlaybackOutcome.Failed, PlaybackFailure.WindowNotFound), (result.Outcome, result.Failure));
+        Assert.Equal(ExcelTarget, result.Window);
+        Assert.Empty(desktop.Activations);
+        Assert.Empty(desktop.Typed);
+    }
+
+    [Fact]
+    public void WaitForExcelWorkbookToClose_WaitsWhileMatchingWindowsAreOpen()
+    {
+        var desktop = Desktop();
+        WindowCandidate secondWindow = ExcelWindow with { Handle = 3 };
+        desktop.Windows.Add(secondWindow);
+        desktop.OnWait = now =>
+        {
+            if (now >= 200)
+            {
+                desktop.Windows.Remove(ExcelWindow);
+                desktop.Windows.Remove(secondWindow);
+            }
+        };
+        MacroStep[] steps = [new WaitForStep { Condition = WaitCondition.WindowCloses, Target = ExcelTarget, TimeoutMs = 1000 }];
+
+        PlaybackResult result = Play(desktop, steps, new PlaybackOptions());
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.InRange(desktop.NowMs, 200, 400);
+    }
+
+    [Theory]
+    [InlineData("chrome", " - Google Chrome")]
+    [InlineData("msedge", " - Microsoft Edge")]
+    [InlineData("msedge", " ve diğer 1 sayfa - Profil 1 - Microsoft\u200B Edge")]
+    [InlineData("msedge", " and 1 more page - Profile 1 - Microsoft\u200B Edge")]
+    public void BrowserPlayback_SwitchesToTheRecordedTabBeforeTyping(string processName, string windowSuffix)
+    {
+        var desktop = Desktop();
+        WindowTarget target = ChromeTarget with { ProcessName = processName, Title = "(1) WhatsApp" + windowSuffix };
+        desktop.Windows.Add(new WindowCandidate(3, processName, target.ClassName, "YouTube" + windowSuffix, target.Bounds));
+        desktop.BrowserTabs[3] = ["YouTube", "(7) WhatsApp"];
+        desktop.BrowserHosts[3] = "web.whatsapp.com";
+        desktop.TryActivate(3);
+
+        PlaybackResult result = Play(desktop, [new TypeTextStep { Text = "a", Target = target }],
+            new PlaybackOptions { WindowWait = TimeSpan.Zero });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Equal((3, "(7) WhatsApp"), Assert.Single(desktop.TabSelections));
+        Assert.Equal(["a"], desktop.Typed);
+    }
+
+    [Fact]
+    public void EdgePlayback_FindsTheRecordedTabAfterOtherTabsAreClosed()
+    {
+        var desktop = Desktop();
+        var target = ChromeTarget with { ProcessName = "msedge", Title = "(1) WhatsApp ve diğer 1 sayfa - Profil 1 - Microsoft\u200B Edge" };
+        desktop.Windows.Add(new WindowCandidate(3, "msedge", target.ClassName, "WhatsApp - Profil 1 - Microsoft\u200B Edge", target.Bounds));
+        desktop.BrowserTabs[3] = ["WhatsApp"];
+        desktop.BrowserHosts[3] = "web.whatsapp.com";
+
+        PlaybackResult result = Play(desktop, [new TypeTextStep { Text = "a", Target = target }],
+            new PlaybackOptions { WindowWait = TimeSpan.Zero });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Empty(desktop.TabSelections);
+        Assert.Equal(["a"], desktop.Typed);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void MissingOrAmbiguousBrowserTab_ReportsFailureWithoutSendingInput(bool duplicate)
+    {
+        var desktop = Desktop();
+        desktop.Windows.Add(new WindowCandidate(3, "chrome", ChromeTarget.ClassName, "YouTube - Google Chrome", ChromeTarget.Bounds));
+        desktop.BrowserTabs[3] = duplicate ? ["YouTube", "WhatsApp", "(7) WhatsApp"] : ["YouTube", "WhatsApp help"];
+        var options = new PlaybackOptions { WindowWait = TimeSpan.Zero, OnError = new ErrorPolicy(ErrorAction.SkipStep, 0) };
+
+        PlaybackResult result = Play(desktop, [new TypeTextStep { Text = "a", Target = ChromeTarget }], options);
+
+        Assert.Equal((PlaybackOutcome.Failed, PlaybackFailure.BrowserTabNotFound), (result.Outcome, result.Failure));
+        Assert.Equal(ChromeTarget, result.Window);
+        Assert.Empty(desktop.Activations);
+        Assert.Empty(desktop.TabSelections);
+        Assert.Empty(desktop.Typed);
+    }
+
+    [Fact]
+    public void BrowserPlayback_WaitsForTheSelectedTabTitleBeforeSendingInput()
+    {
+        var desktop = Desktop();
+        desktop.Windows.Add(new WindowCandidate(3, "chrome", ChromeTarget.ClassName, "YouTube - Google Chrome", ChromeTarget.Bounds));
+        desktop.BrowserTabs[3] = ["YouTube", "WhatsApp"];
+        desktop.BrowserSelectionChangesTitle = false;
+
+        PlaybackResult result = Play(desktop, [new TypeTextStep { Text = "a", Target = ChromeTarget }],
+            new PlaybackOptions { WindowWait = TimeSpan.Zero });
+
+        Assert.Equal(PlaybackFailure.BrowserTabNotFound, result.Failure);
+        Assert.Single(desktop.TabSelections);
+        Assert.Empty(desktop.Typed);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("youtube.com")]
+    [InlineData("web.whatsapp.com.example")]
+    public void BrowserPlayback_DoesNotTypeWhenTheAddressCannotBeVerified(string? activeHost)
+    {
+        var desktop = Desktop();
+        var target = ChromeTarget with { BrowserHost = "web.whatsapp.com" };
+        desktop.Windows.Add(new WindowCandidate(3, "chrome", target.ClassName, "YouTube - Google Chrome", target.Bounds));
+        desktop.BrowserTabs[3] = ["YouTube", "WhatsApp"];
+        if (activeHost is not null)
+        {
+            desktop.BrowserHosts[3] = activeHost;
+        }
+
+        PlaybackResult result = Play(desktop, [new TypeTextStep { Text = "a", Target = target }],
+            new PlaybackOptions { WindowWait = TimeSpan.Zero, OnError = new ErrorPolicy(ErrorAction.SkipStep, 0) });
+
+        Assert.Equal(PlaybackFailure.BrowserHostNotVerified, result.Failure);
+        Assert.Empty(desktop.Typed);
+    }
+
+    [Fact]
+    public void BeforePlayback_OnlyReportsMissingTargetsInTheSelectedRangeWithoutActivatingWindows()
+    {
+        var desktop = Desktop();
+        desktop.Windows.Remove(ExcelWindow);
+        var macro = Macro([
+            new TypeTextStep { Text = "a", Target = ExcelTarget },
+            new TypeTextStep { Text = "b", Target = ChromeTarget },
+            new FocusWindowStep { Target = ChromeTarget with { Bounds = new ScreenRect(10, 20, 1000, 800) } },
+            new FocusWindowStep { Target = ExcelTarget, IsEnabled = false },
+            new WaitForStep { Condition = WaitCondition.WindowAppears, Target = ExcelTarget },
+        ]);
+        var player = new MacroPlayer(desktop, desktop, desktop, desktop);
+
+        Assert.Equal([ChromeTarget], player.FindUnavailableTargets(macro, 2, null, CancellationToken.None));
+        Assert.Empty(desktop.Activations);
+        Assert.Empty(desktop.TabSelections);
+        Assert.Empty(desktop.Typed);
+    }
+
+    [Fact]
+    public void BeforePlayback_RecognizesAnOpenBackgroundTabWithoutSelectingIt()
+    {
+        var desktop = Desktop();
+        desktop.Windows.Add(new WindowCandidate(3, "chrome", ChromeTarget.ClassName, "YouTube - Google Chrome", ChromeTarget.Bounds));
+        desktop.BrowserTabs[3] = ["YouTube", "WhatsApp"];
+        var player = new MacroPlayer(desktop, desktop, desktop, desktop);
+
+        Assert.Empty(player.FindUnavailableTargets(Macro([new FocusWindowStep { Target = ChromeTarget }]), 1, null, CancellationToken.None));
+        Assert.Empty(desktop.Activations);
+        Assert.Empty(desktop.TabSelections);
+    }
+
+    [Fact]
+    public void FailedPlayback_IdentifiesTheRoundAndTheStepById()
+    {
+        var desktop = Desktop();
+        var first = new TypeTextStep { Text = "a", Target = ExcelTarget };
+        var player = new MacroPlayer(desktop, desktop, desktop, desktop);
+        player.ProgressChanged += (_, progress) =>
+        {
+            if (progress.Round == 2)
+            {
+                desktop.Windows.Remove(ExcelWindow);
+            }
+        };
+
+        PlaybackResult result = player.Play(Macro([first]),
+            new PlaybackOptions { Loop = LoopSettings.Times(2), WindowWait = TimeSpan.Zero }, CancellationToken.None);
+
+        Assert.Equal((PlaybackOutcome.Failed, 2, 1, first.Id), (result.Outcome, result.FailedRound, result.FailedStepNumber, result.FailedStepId));
     }
 
     [Fact]

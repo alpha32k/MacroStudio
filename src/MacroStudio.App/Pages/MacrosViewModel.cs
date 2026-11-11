@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -9,12 +10,18 @@ using MacroStudio.App.Playback;
 using MacroStudio.App.Services;
 using MacroStudio.App.Shell;
 using MacroStudio.Core.Macros;
+using MacroStudio.Core.Playback;
 using Microsoft.Win32;
 using Serilog;
 
 namespace MacroStudio.App.Pages;
 
-public sealed record MacroItem(MacroFile File, string Name, string Description, string Summary, string? LastRun);
+public sealed record MacroItem(MacroFile File, string Name, string Description, string Summary, LastRun? Run)
+{
+    public string? LastRun => MacroSummary.LastRunOf(Run);
+    public string? LastFailure => MacroSummary.LastFailureOf(Run?.LastFailure);
+    public bool HasLastFailure => Run?.LastFailure is not null;
+}
 
 public sealed record TrashItem(TrashEntry Entry, string Name, string Deleted);
 
@@ -98,6 +105,15 @@ public sealed partial class MacrosViewModel : ObservableObject
     {
         _editor.Open(item.File.Path);
         _mainWindow.ShowPage(typeof(EditorPage));
+    }
+
+    [RelayCommand]
+    private void OpenFailedStep(MacroItem item)
+    {
+        if (item.Run?.LastFailure is { } failure && _editor.OpenAtStep(item.File.Path, failure.StepId))
+        {
+            _mainWindow.ShowPage(typeof(EditorPage));
+        }
     }
 
     [RelayCommand]
@@ -246,7 +262,14 @@ public sealed partial class MacrosViewModel : ObservableObject
         catch (Exception ex) when (ex is InvalidMacroFileException or IOException or UnauthorizedAccessException)
         {
             Log.Warning(ex, "Macro file could not be imported: {Path}", path);
-            ShowWarning(Localizer.Instance.Format("Macros_ImportFailed", Path.GetFileName(path), ex.Message));
+            Localizer text = Localizer.Instance;
+            string reason = ex switch
+            {
+                InvalidMacroFileException { StepNumber: int step } => text.Format("Macros_ImportInvalidStep", step),
+                InvalidMacroFileException { InnerException: JsonException } => text["Macros_ImportInvalidFile"],
+                _ => ex.Message,
+            };
+            ShowWarning(text.Format("Macros_ImportFailed", Path.GetFileName(path), reason));
             return;
         }
 
@@ -283,7 +306,7 @@ public sealed partial class MacrosViewModel : ObservableObject
                 file.Macro.Name,
                 file.Macro.Description,
                 MacroSummary.Of(file),
-                MacroSummary.LastRunOf(_runs.Of(file.Macro.Id))))
+                _runs.Of(file.Macro.Id)))
             .ToList();
 
         Localizer text = Localizer.Instance;

@@ -1,6 +1,7 @@
 using System.Windows;
 using MacroStudio.App.Localization;
 using MacroStudio.App.Services;
+using MacroStudio.Core.Macros;
 using MacroStudio.Core.Playback;
 
 namespace MacroStudio.App.Playback;
@@ -21,13 +22,13 @@ public sealed class PlaybackNotifier
         playback.PasswordNeeded += (_, step) => _tray.ShowInfo(Localizer.Instance.Format("Playback_PasswordNeeded", step));
     }
 
-    private static string DescribeFailure(PlaybackResult result)
+    internal static string DescribeFailure(PlaybackFailure reason, WindowTarget? target)
     {
         Localizer text = Localizer.Instance;
-        string window = result.Window is { } target
+        string window = target is not null
             ? text.Format("Window_Name", target.Title.Length > 0 ? target.Title : target.ProcessName, target.ProcessName)
             : "";
-        return text.Format("Failure_" + result.Failure, window);
+        return text.Format("Failure_" + reason, window, target?.BrowserHost ?? "");
     }
 
     /// <summary>" (2 adım, 1 tur atlandı)"; empty when nothing was skipped.</summary>
@@ -53,7 +54,8 @@ public sealed class PlaybackNotifier
             case PlaybackOutcome.Failed:
                 // The user is usually in another program; the message must come on top of it.
                 MessageBox.Show(
-                    text.Format("Playback_Failed", macroName, result.FailedStepNumber ?? 0, DescribeFailure(result)),
+                    text.Format("Playback_Failed", macroName, result.FailedStepNumber ?? 0,
+                        result.Failure is { } reason ? DescribeFailure(reason, result.Window) : ""),
                     "Macro Studio",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning,

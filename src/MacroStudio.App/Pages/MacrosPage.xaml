@@ -129,6 +129,13 @@
                   <TextBlock Style="{StaticResource CollapsedWhenEmptyTextStyle}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="{Binding Description}" />
                   <TextBlock Style="{StaticResource DescriptionTextStyle}" Text="{Binding Summary}" />
                   <TextBlock Style="{StaticResource CollapsedWhenEmptyTextStyle}" Text="{Binding LastRun}" />
+                  <ui:Button HorizontalAlignment="Left" Margin="0,4,0,0"
+                             Visibility="{Binding HasLastFailure, Converter={StaticResource BooleanToVisibility}}"
+                             ToolTip="{l:Loc Macros_OpenFailedStep}"
+                             Command="{Binding DataContext.OpenFailedStepCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                             CommandParameter="{Binding}">
+                    <TextBlock Text="{Binding LastFailure}" TextWrapping="Wrap" />
+                  </ui:Button>
                 </StackPanel>
               </DockPanel>
             </ui:Card>

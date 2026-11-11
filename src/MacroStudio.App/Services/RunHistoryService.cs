@@ -20,7 +20,7 @@ public sealed class RunHistoryService
             // Trying a single step says nothing about how the whole macro runs.
             if (!e.IsPartial)
             {
-                Record(e.Macro.Id, new LastRun(DateTimeOffset.Now, e.Result.Outcome, e.Result.CompletedRounds));
+                Record(e.Macro.Id, LastRun.FromResult(DateTimeOffset.Now, e.Result, Of(e.Macro.Id)));
             }
         };
     }

@@ -29,6 +29,39 @@ public sealed class MissingFieldsTests : IDisposable
         Assert.Equal(1, macro.SpeedMultiplier);
     }
 
+    [Theory]
+    [InlineData("null")]
+    [InlineData("{\"type\":\"text\",\"text\":null}")]
+    [InlineData("{\"type\":\"text\"}")]
+    [InlineData("{\"type\":\"text\",\"text\":5}")]
+    [InlineData("{\"type\":\"focusWindow\",\"target\":null}")]
+    [InlineData("{\"type\":\"focusWindow\",\"target\":{\"processName\":\"EXCEL\",\"className\":\"XLMAIN\",\"bounds\":{}}}")]
+    [InlineData("{\"type\":\"drag\",\"button\":\"Left\",\"screenPath\":null}")]
+    [InlineData("{\"type\":\"waitFor\",\"condition\":999}")]
+    public void MacroFile_WithAnInvalidStep_IdentifiesItsNumber(string step)
+    {
+        string path = WriteFile("InvalidStep.msmacro", $$"""
+            { "name": "Invalid", "steps": [ { "type": "wait" }, {{step}} ] }
+            """);
+
+        InvalidMacroFileException error = Assert.Throws<InvalidMacroFileException>(() => MacroLibrary.Load(path));
+
+        Assert.Equal(2, error.StepNumber);
+        Assert.Contains("Step 2", error.Message, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("{\"name\":\"Invalid\",\"description\":null,\"steps\":[]}")]
+    [InlineData("{\"name\":\"Invalid\",\"loop\":null,\"steps\":[]}")]
+    [InlineData("{\"name\":\"Invalid\",\"steps\":null}")]
+    public void MacroFile_WithNullRequiredData_IsReportedAsInvalid(string content)
+    {
+        string path = WriteFile("Invalid.msmacro", content);
+
+        Assert.Throws<InvalidMacroFileException>(() => MacroLibrary.Load(path));
+        Assert.Equal(path, Assert.Single(new MacroLibrary(_folder).LoadAll().UnreadableFiles));
+    }
+
     [Fact]
     public void SettingsFile_WithOnlySomeFields_KeepsTheOtherDefaults()
     {

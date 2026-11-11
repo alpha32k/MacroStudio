@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using MacroStudio.Core.Geometry;
 using MacroStudio.Core.Playback;
+using MacroStudio.Native.Accessibility;
 using static MacroStudio.Native.Interop.NativeMethods;
 
 namespace MacroStudio.Native.Windowing;
@@ -19,6 +20,12 @@ public sealed unsafe class WindowSystem : IWindowSystem
     private readonly bool _isOurProcessElevated = Environment.IsPrivilegedProcess;
 
     public nint ForegroundWindow => GetForegroundWindow();
+
+    public IReadOnlyList<string> ListBrowserTabs(nint window) => BrowserTabs.List(window);
+
+    public string? GetActiveBrowserHost(nint window) => BrowserTabs.ActiveHost(window);
+
+    public bool TrySelectBrowserTab(nint window, string title) => BrowserTabs.TrySelect(window, title);
 
     public IReadOnlyList<WindowCandidate> ListWindows()
     {

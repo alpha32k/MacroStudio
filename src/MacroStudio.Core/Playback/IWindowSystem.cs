@@ -23,6 +23,15 @@ public interface IWindowSystem
     /// <summary>True when the window's program runs with more rights than Macro Studio, so input to it is blocked.</summary>
     bool IsElevatedAboveUs(nint window);
 
+    /// <summary>Tab titles exposed by the browser window's own tab strip.</summary>
+    IReadOnlyList<string> ListBrowserTabs(nint window) => [];
+
+    /// <summary>The host of the browser window's active HTTP(S) page, when it can be read.</summary>
+    string? GetActiveBrowserHost(nint window) => null;
+
+    /// <summary>Selects the one tab with this title. False when the tab is absent or ambiguous.</summary>
+    bool TrySelectBrowserTab(nint window, string title) => false;
+
     /// <summary>Opens a program, file or web address as Explorer would; false when Windows could not open it.</summary>
     bool TryOpen(string path, string arguments);
 

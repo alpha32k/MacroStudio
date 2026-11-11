@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 
 namespace MacroStudio.Core.Macros;
@@ -9,15 +10,31 @@ namespace MacroStudio.Core.Macros;
 /// <param name="HasHeader">The first row holds column names and is not worked through.</param>
 public sealed record DataList(string Path, bool HasHeader);
 
+/// <summary>Identifies the exact file contents and header setting used for a playback.</summary>
+public sealed record ListSource(string Path, bool HasHeader, string ContentHash);
+
+public sealed record PlaybackList(IReadOnlyList<IReadOnlyList<string>> Rows, IReadOnlyList<string> Columns, ListSource Source);
+
 /// <summary>Reads a list file into rows of values.</summary>
 public static class DataListReader
 {
     public const int MaxRows = 100_000;
 
     /// <returns>The rows to work through (without the header) and the column names (the header, or "1", "2"...).</returns>
-    public static (IReadOnlyList<IReadOnlyList<string>> Rows, IReadOnlyList<string> Columns) Read(DataList list)
+    public static (IReadOnlyList<IReadOnlyList<string>> Rows, IReadOnlyList<string> Columns) Read(DataList list) =>
+        ReadRows(list, ReadText(list.Path));
+
+    public static PlaybackList ReadForPlayback(DataList list)
     {
-        IReadOnlyList<IReadOnlyList<string>> all = Parse(ReadText(list.Path));
+        string path = Path.GetFullPath(list.Path);
+        byte[] bytes = File.ReadAllBytes(path);
+        var (rows, columns) = ReadRows(list, Decode(bytes));
+        return new PlaybackList(rows, columns, new ListSource(path, list.HasHeader, Convert.ToHexString(SHA256.HashData(bytes))));
+    }
+
+    private static (IReadOnlyList<IReadOnlyList<string>> Rows, IReadOnlyList<string> Columns) ReadRows(DataList list, string text)
+    {
+        IReadOnlyList<IReadOnlyList<string>> all = Parse(text);
         if (all.Count > MaxRows + 1)
         {
             throw new InvalidDataException($"A list can have at most {MaxRows} rows.");
@@ -34,9 +51,10 @@ public static class DataListReader
     /// Excel saves CSV in UTF-8 (with a mark) or in the Windows code page of the computer: 1254 in Turkey.
     /// Text that is not valid UTF-8 is read in that code page, so "ğ" and "ş" survive both.
     /// </summary>
-    public static string ReadText(string path)
+    public static string ReadText(string path) => Decode(File.ReadAllBytes(path));
+
+    private static string Decode(byte[] bytes)
     {
-        byte[] bytes = File.ReadAllBytes(path);
         try
         {
             return new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true).GetString(bytes).TrimStart('﻿');

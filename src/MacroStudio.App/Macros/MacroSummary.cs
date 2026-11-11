@@ -1,4 +1,5 @@
 using MacroStudio.App.Localization;
+using MacroStudio.App.Playback;
 using MacroStudio.Core.Macros;
 using MacroStudio.Core.Playback;
 
@@ -34,6 +35,14 @@ public static class MacroSummary
         return run is null
             ? null
             : text.Format("Macro_LastRun", run.EndedAt.LocalDateTime.ToString("g", text.Culture), text["Outcome_" + run.Outcome], run.CompletedRounds);
+    }
+
+    public static string? LastFailureOf(RunFailure? failure)
+    {
+        Localizer text = Localizer.Instance;
+        return failure is null ? null : text.Format("Macro_LastFailure",
+            failure.EndedAt.LocalDateTime.ToString("g", text.Culture), failure.Round, failure.StepNumber,
+            PlaybackNotifier.DescribeFailure(failure.Reason, failure.Window));
     }
 
     private static string Duration(TimeSpan duration) =>

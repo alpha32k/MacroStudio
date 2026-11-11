@@ -14,4 +14,5 @@ public static class AppDataPaths
     public static string MacrosDirectory => Path.Combine(Root, "macros");
 
     public static string RunHistoryFile => Path.Combine(Root, "runs.json");
+    public static string ListResumeDirectory => Path.Combine(Root, "list-resume");
 }

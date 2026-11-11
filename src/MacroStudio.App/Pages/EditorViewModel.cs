@@ -83,6 +83,7 @@ public sealed partial class EditorViewModel : ObservableObject
     public ObservableCollection<MacroFile> Macros { get; }
 
     public ObservableCollection<EditorRow> Rows { get; } = [];
+    internal IReadOnlyList<int> SelectedIndexes => _selection;
 
     public IReadOnlyList<LocalizedOption<LoopSettings>> LoopChoices => PlaybackChoices.Loops;
 
@@ -333,6 +334,25 @@ public sealed partial class EditorViewModel : ObservableObject
     /// <summary>Opens a macro from another page (the home page's "Edit" button).</summary>
     public void Open(string path) =>
         SelectedMacro = Macros.FirstOrDefault(m => SamePath(m.Path, path)) ?? SelectedMacro;
+
+    internal bool OpenAtStep(string path, Guid stepId)
+    {
+        Open(path);
+        if (!SamePath(_openFile?.Path, path))
+        {
+            return false;
+        }
+
+        EditorRow? row = Rows.FirstOrDefault(item => item.Step.Id == stepId);
+        SetSelection(row is null ? [] : [row.Index]);
+        SelectionRequested?.Invoke(this, _selection);
+        if (row is null)
+        {
+            MessageBox.Show(Localizer.Instance["Macros_FailedStepRemoved"], "Macro Studio", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        return true;
+    }
 
     /// <summary>The page reports which lines are selected.</summary>
     public void SetSelection(IEnumerable<int> indexes)
@@ -632,7 +652,17 @@ public sealed partial class EditorViewModel : ObservableObject
         WindowCandidate? chosen = InputDialog.AskChoice(Localizer.Instance["Insert_FocusWindow"], Localizer.Instance["Insert_FocusWindowPrompt"], choices);
         if (chosen is not null)
         {
-            InsertStep(new FocusWindowStep { Target = new WindowTarget(chosen.ProcessName, chosen.Title, chosen.ClassName, chosen.Bounds) });
+            var target = new WindowTarget(chosen.ProcessName, chosen.Title, chosen.ClassName, chosen.Bounds);
+            if (BrowserWindow.IsSupported(chosen.ProcessName, chosen.ClassName))
+            {
+                WindowTarget inspected = _inspector.Describe(new CapturedWindow(chosen.Handle, chosen.Bounds)).Target;
+                if (inspected.Title == chosen.Title)
+                {
+                    target = target with { BrowserHost = inspected.BrowserHost };
+                }
+            }
+
+            InsertStep(new FocusWindowStep { Target = target });
         }
     }
 

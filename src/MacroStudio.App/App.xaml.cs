@@ -71,8 +71,8 @@ public partial class App : Application
         RecordingController recording = _services.GetRequiredService<RecordingController>();
         recording.MacroSaved += (_, macro) => tray.ShowInfo(Localizer.Instance.Format("Recording_Saved", macro.Macro.Name));
         recording.NothingRecorded += (_, _) => tray.ShowInfo(Localizer.Instance["Recording_Nothing"]);
-        _services.GetRequiredService<PlaybackNotifier>();
         _services.GetRequiredService<RunHistoryService>();
+        _services.GetRequiredService<PlaybackNotifier>();
         RegisterHotkeys(tray, recording, _services.GetRequiredService<NotchBarViewModel>());
 
         MainWindowService mainWindow = _services.GetRequiredService<MainWindowService>();
@@ -134,6 +134,7 @@ public partial class App : Application
         services.AddSingleton(new MacroLibrary(AppDataPaths.MacrosDirectory));
         services.AddSingleton<MacroLibraryService>();
         services.AddSingleton(new RunHistoryStore(AppDataPaths.RunHistoryFile));
+        services.AddSingleton(new ListResumeStore(AppDataPaths.ListResumeDirectory));
         services.AddSingleton<RunHistoryService>();
         services.AddSingleton<IInputCapture, InputCapture>();
         services.AddSingleton<IWindowInspector, WindowInspector>();

@@ -432,6 +432,43 @@
   <data name="Failure_WindowNotFound" xml:space="preserve">
     <value>This window was not found: {0}. Is the program open?</value>
   </data>
+  <data name="Failure_BrowserTabNotFound" xml:space="preserve">
+    <value>Could not verify a single open browser tab for {0}. Open the recorded tab and close any duplicate tabs with the same title.</value>
+  </data>
+  <data name="Failure_BrowserHostNotVerified" xml:space="preserve">
+    <value>The site address for {0} could not be verified. Open {1} in the recorded tab.</value>
+  </data>
+  <data name="Playback_TargetCheckQuestion" xml:space="preserve">
+    <value>These targets could not be found before playback.
+
+{0}
+
+Open them and try again, or continue if the macro opens them later. Continue?</value>
+  </data>
+  <data name="Playback_MoreMissingTargets" xml:space="preserve">
+    <value>… and {0} more targets</value>
+  </data>
+  <data name="Playback_ListStartTitle" xml:space="preserve">
+    <value>Starting row</value>
+  </data>
+  <data name="Playback_ListStartPrompt" xml:space="preserve">
+    <value>Choose a starting data row from 1 to {0}. The header is excluded.</value>
+  </data>
+  <data name="Playback_ListStartResume" xml:space="preserve">
+    <value>Saved progress suggests row {0}. It may have been partly processed.</value>
+  </data>
+  <data name="Playback_ListStartInvalid" xml:space="preserve">
+    <value>Enter a whole number from 1 to {0}.</value>
+  </data>
+  <data name="Macro_LastFailure" xml:space="preserve">
+    <value>Last error · {0} · Round {1}, step {2} · {3}</value>
+  </data>
+  <data name="Macros_OpenFailedStep" xml:space="preserve">
+    <value>Open this step in the editor</value>
+  </data>
+  <data name="Macros_FailedStepRemoved" xml:space="preserve">
+    <value>The failed step is no longer in this macro.</value>
+  </data>
   <data name="Failure_WindowNotActivated" xml:space="preserve">
     <value>Windows did not let this window come to the front: {0}.</value>
   </data>
@@ -709,6 +746,12 @@ Play it anyway?</value>
   </data>
   <data name="Macros_ImportFailed" xml:space="preserve">
     <value>&quot;{0}&quot; could not be imported: {1}</value>
+  </data>
+  <data name="Macros_ImportInvalidStep" xml:space="preserve">
+    <value>Step {0} is missing a required field or contains an invalid value.</value>
+  </data>
+  <data name="Macros_ImportInvalidFile" xml:space="preserve">
+    <value>The file is not a valid Macro Studio macro.</value>
   </data>
   <data name="Macros_ActionFailed" xml:space="preserve">
     <value>That did not work: {0}</value>

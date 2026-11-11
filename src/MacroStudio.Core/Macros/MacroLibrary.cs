@@ -64,7 +64,11 @@ public sealed class MacroLibrary(string folder)
         }
         catch (JsonException ex)
         {
-            throw new InvalidMacroFileException("File is not a valid macro.", ex);
+            int? stepNumber = StepNumberFromJsonPath(ex.Path);
+            string message = stepNumber is int number
+                ? $"Step {number} is missing a required field or contains an invalid value."
+                : "File is not a valid macro.";
+            throw new InvalidMacroFileException(message, stepNumber, ex);
         }
 
         return Checked(macro);
@@ -77,8 +81,22 @@ public sealed class MacroLibrary(string folder)
             throw new InvalidMacroFileException("File is empty.");
         }
 
-        IReadOnlyList<string> problems = MacroValidator.Validate(macro);
-        return problems.Count == 0 ? macro : throw new InvalidMacroFileException(string.Join(" ", problems));
+        IReadOnlyList<string> problems = MacroValidator.Validate(macro, out int? stepNumber);
+        return problems.Count == 0 ? macro : throw new InvalidMacroFileException(string.Join(" ", problems), stepNumber);
+    }
+
+    private static int? StepNumberFromJsonPath(string? path)
+    {
+        const string Prefix = "$.steps[";
+        if (path is null || !path.StartsWith(Prefix, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        int end = path.IndexOf(']', Prefix.Length);
+        return end > Prefix.Length
+            && int.TryParse(path.AsSpan(Prefix.Length, end - Prefix.Length), NumberStyles.None, CultureInfo.InvariantCulture, out int index)
+            && index < int.MaxValue ? index + 1 : null;
     }
 
     /// <summary>Saves a new macro under a file name made from its name; returns the path.</summary>

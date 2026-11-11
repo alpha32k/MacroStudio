@@ -26,6 +26,8 @@ public partial class EditorPage : ContentPage
             {
                 viewModel.Open(newest.Path);
             }
+
+            ShowSelection(viewModel.SelectedIndexes);
         };
     }
 
