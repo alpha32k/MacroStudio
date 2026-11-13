@@ -1071,4 +1071,28 @@ Play it anyway?</value>
   <data name="Failure_ImageNotFound" xml:space="preserve">
     <value>The picture was not found on the screen. {0}</value>
   </data>
+  <data name="Insert_ExcelMacro" xml:space="preserve">
+    <value>Run Excel macro</value>
+  </data>
+  <data name="Insert_ExcelMacroFilter" xml:space="preserve">
+    <value>Macro-enabled Excel workbooks (*.xlsm, *.xlsb)</value>
+  </data>
+  <data name="Insert_ExcelMacroPrompt" xml:space="preserve">
+    <value>Enter the macro name shown in Excel under Alt+F8 for {0}. Example Module1.UpdateReport. Keep the workbook open during playback.</value>
+  </data>
+  <data name="Insert_ExcelMacroInvalidWorkbook" xml:space="preserve">
+    <value>Select an Excel .xlsm or .xlsb workbook.</value>
+  </data>
+  <data name="Insert_ExcelMacroInvalidName" xml:space="preserve">
+    <value>Enter a macro name such as UpdateReport or Module1.UpdateReport.</value>
+  </data>
+  <data name="Step_ExcelMacro" xml:space="preserve">
+    <value>Run Excel macro {0} in {1}</value>
+  </data>
+  <data name="Failure_ExcelWorkbookNotOpen" xml:space="preserve">
+    <value>Open the workbook selected in this step in desktop Excel. Macro Studio could not access it.</value>
+  </data>
+  <data name="Failure_ExcelMacroFailed" xml:space="preserve">
+    <value>Excel could not complete this VBA macro. Check its name, Excel's macro settings and any VBA error before retrying.</value>
+  </data>
 </root>

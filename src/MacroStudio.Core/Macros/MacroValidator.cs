@@ -129,6 +129,10 @@ public static class MacroValidator
             ImageClickStep { TimeoutMs: < 0 or > MaxDelayMs } => $"looking can last at most {MaxDelayMs} ms.",
             OpenStep open when string.IsNullOrWhiteSpace(open.Path) || open.Path.Length > MaxOpenPathLength || open.Arguments is null or { Length: > MaxOpenPathLength }
                 => $"what to open must have 1 to {MaxOpenPathLength} characters.",
+            ExcelMacroStep excel when !ExcelMacroStep.IsWorkbookPath(excel.WorkbookPath)
+                => "an Excel macro step requires the full path of an .xlsm or .xlsb workbook.",
+            ExcelMacroStep excel when !ExcelMacroStep.IsProcedureName(excel.Procedure)
+                => "an Excel macro step requires a VBA procedure name such as Module1.UpdateCells.",
             _ => null,
         };
     }

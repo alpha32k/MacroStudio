@@ -352,6 +352,16 @@ public sealed class MacroPlayer(IInputSimulator input, IWindowSystem windows, IC
                 }
 
                 break;
+            case ExcelMacroStep excel:
+                run.Cancellation.ThrowIfCancellationRequested();
+                PlaybackFailure? failure = windows.RunOpenExcelMacro(excel.WorkbookPath, excel.Procedure, run.Cancellation);
+                run.Cancellation.ThrowIfCancellationRequested();
+                if (failure is { } reason)
+                {
+                    throw new StepFailedException(reason, null);
+                }
+
+                break;
             case WaitStep { IsPasswordEntry: true }:
                 Pause();
                 PasswordNeeded?.Invoke(this, number);

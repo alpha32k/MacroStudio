@@ -163,6 +163,7 @@
               <MenuItem Header="{l:Loc Insert_Condition}" Icon="{ui:SymbolIcon BranchFork20}" Command="{Binding InsertConditionCommand}" />
               <MenuItem Header="{l:Loc Insert_Variable}" Icon="{ui:SymbolIcon NumberSymbol20}" Command="{Binding InsertVariableCommand}" />
               <MenuItem Header="{l:Loc Insert_Open}" Icon="{ui:SymbolIcon Open20}" Command="{Binding InsertOpenCommand}" />
+              <MenuItem Header="{l:Loc Insert_ExcelMacro}" Icon="{ui:SymbolIcon Play20}" Command="{Binding InsertExcelMacroCommand}" />
               <MenuItem Header="{l:Loc Insert_WaitForWindow}" Icon="{ui:SymbolIcon WindowNew20}" Command="{Binding InsertWaitForWindowCommand}" />
               <MenuItem Header="{l:Loc Insert_WaitForWindowClose}" Icon="{ui:SymbolIcon WindowDevTools20}" Command="{Binding InsertWaitForWindowCloseCommand}" />
               <MenuItem Header="{l:Loc Insert_WaitForColor}" Icon="{ui:SymbolIcon ColorBackground20}" Command="{Binding InsertWaitForColorCommand}" />

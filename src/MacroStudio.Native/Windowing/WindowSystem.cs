@@ -27,6 +27,9 @@ public sealed unsafe class WindowSystem : IWindowSystem
 
     public bool TrySelectBrowserTab(nint window, string title) => BrowserTabs.TrySelect(window, title);
 
+    public PlaybackFailure? RunOpenExcelMacro(string path, string procedure, CancellationToken cancellation) =>
+        ExcelMacros.Run(this, path, procedure, cancellation);
+
     public IReadOnlyList<WindowCandidate> ListWindows()
     {
         var handles = new List<nint>();

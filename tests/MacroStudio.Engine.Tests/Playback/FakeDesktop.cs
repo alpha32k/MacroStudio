@@ -45,6 +45,11 @@ internal sealed class FakeDesktop : IInputSimulator, IWindowSystem, IClipboard, 
 
     public List<string> Typed { get; } = [];
 
+    public Func<string, string, PlaybackFailure?>? ExcelMacro { get; set; }
+
+    public PlaybackFailure? RunOpenExcelMacro(string path, string procedure, CancellationToken cancellation) =>
+        ExcelMacro is { } run ? run(path, procedure) : PlaybackFailure.ExcelWorkbookNotOpen;
+
     public List<nint> Activations { get; } = [];
 
     public HashSet<nint> ElevatedWindows { get; } = [];

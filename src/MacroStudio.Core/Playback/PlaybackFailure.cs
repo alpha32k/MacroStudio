@@ -34,4 +34,10 @@ public enum PlaybackFailure
 
     /// <summary>The selected browser tab's site address could not be verified.</summary>
     BrowserHostNotVerified,
+
+    /// <summary>The specified Excel workbook is not open or could not be accessed.</summary>
+    ExcelWorkbookNotOpen,
+
+    /// <summary>Excel could not finish the requested VBA macro successfully.</summary>
+    ExcelMacroFailed,
 }

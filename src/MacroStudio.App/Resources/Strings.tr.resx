@@ -1071,4 +1071,28 @@ Yine de oynatılsın mı?</value>
   <data name="Failure_ImageNotFound" xml:space="preserve">
     <value>Aranan görüntü ekranda bulunamadı. {0}</value>
   </data>
+  <data name="Insert_ExcelMacro" xml:space="preserve">
+    <value>Excel makrosu çalıştır</value>
+  </data>
+  <data name="Insert_ExcelMacroFilter" xml:space="preserve">
+    <value>Makro destekli Excel kitapları (*.xlsm, *.xlsb)</value>
+  </data>
+  <data name="Insert_ExcelMacroPrompt" xml:space="preserve">
+    <value>{0} için Excel'de Alt+F8 ile gördüğünüz makro adını yazın. Örnek Module1.RaporuDuzenle. Oynatırken kitabı açık tutun.</value>
+  </data>
+  <data name="Insert_ExcelMacroInvalidWorkbook" xml:space="preserve">
+    <value>.xlsm veya .xlsb uzantılı bir Excel kitabı seçin.</value>
+  </data>
+  <data name="Insert_ExcelMacroInvalidName" xml:space="preserve">
+    <value>RaporuDuzenle veya Module1.RaporuDuzenle gibi bir makro adı yazın.</value>
+  </data>
+  <data name="Step_ExcelMacro" xml:space="preserve">
+    <value>Excel makrosunu çalıştır: {0} ({1})</value>
+  </data>
+  <data name="Failure_ExcelWorkbookNotOpen" xml:space="preserve">
+    <value>Bu adımda seçilen kitabı masaüstü Excel'de açın. Macro Studio kitaba erişemedi.</value>
+  </data>
+  <data name="Failure_ExcelMacroFailed" xml:space="preserve">
+    <value>Excel bu VBA makrosunu tamamlayamadı. Tekrar denemeden önce makro adını, Excel'in makro ayarlarını ve varsa VBA hatasını kontrol edin.</value>
+  </data>
 </root>

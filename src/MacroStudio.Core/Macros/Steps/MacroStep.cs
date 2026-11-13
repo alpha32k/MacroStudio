@@ -19,6 +19,7 @@ namespace MacroStudio.Core.Macros.Steps;
 [JsonDerivedType(typeof(PasteStep), "paste")]
 [JsonDerivedType(typeof(WaitStep), "wait")]
 [JsonDerivedType(typeof(OpenStep), "open")]
+[JsonDerivedType(typeof(ExcelMacroStep), "excelMacro")]
 [JsonDerivedType(typeof(WaitForStep), "waitFor")]
 [JsonDerivedType(typeof(IfStep), "if")]
 [JsonDerivedType(typeof(ImageClickStep), "imageClick")]

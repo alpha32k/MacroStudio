@@ -30,6 +30,7 @@ public static class StepDescriber
             HotkeyStep hotkey => WithWindow(Repeated("Step_Hotkey", KeyNames.WithModifiers(hotkey.Modifiers, hotkey.VirtualKey), hotkey.PressCount), hotkey.Target),
             TypeTextStep typed => WithWindow(text.Format("Step_Type", Shorten(typed.Text)), typed.Target),
             OpenStep open => text.Format("Step_Open", Shorten(open.Path)),
+            ExcelMacroStep excel => text.Format("Step_ExcelMacro", excel.Procedure, Shorten(System.IO.Path.GetFileName(excel.WorkbookPath))),
             ImageClickStep image => WithWindow(text.Format("Step_ImageClick", image.ImageWidth, image.ImageHeight), image.Target),
             IfStep condition => WithWindow(
                 text.Format("Step_If", text.Format("If_Short_" + condition.Check, $"#{condition.Color:X6}"), condition.Action == IfAction.SkipSteps ? text.Format("If_SkipSteps", condition.SkipCount) : text["If_" + condition.Action]),
@@ -56,6 +57,7 @@ public static class StepDescriber
         KeyPressStep or HotkeyStep => SymbolRegular.Keyboard24,
         TypeTextStep => SymbolRegular.TextT24,
         OpenStep => SymbolRegular.Open24,
+        ExcelMacroStep => SymbolRegular.Play24,
         IfStep => SymbolRegular.BranchFork24,
         ImageClickStep => SymbolRegular.ImageSearch24,
         WaitForStep => SymbolRegular.HourglassHalf24,

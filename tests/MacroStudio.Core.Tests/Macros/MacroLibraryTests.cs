@@ -241,5 +241,6 @@ public sealed class MacroLibraryTests : IDisposable
         new WaitStep { IsPasswordEntry = true, Note = "Parola" },
         new MouseClickStep { Button = MouseButton.Left, Target = Excel, ScreenPosition = new ScreenPoint(40, 60), Element = new UiElement("btnOk", "Tamam", "ControlType.Button", "Button", 0.25, 0.75) },
         new OpenStep { Path = @"%USERPROFILE%\Belgeler\Liste.xlsx", Arguments = "/r" },
+        new ExcelMacroStep { WorkbookPath = Path.Combine(Path.GetTempPath(), "Rapor.xlsm"), Procedure = "Module1.RaporuDuzenle" },
     ];
 }

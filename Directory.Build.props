@@ -8,7 +8,10 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
     <Deterministic>true</Deterministic>
-    <Version>1.1.3</Version>
+    <Version>1.0.5</Version>
+    <!-- Keep Windows upgrade and file versions above the previously released 1.1.3. -->
+    <WindowsInstallerVersion>1.1.4</WindowsInstallerVersion>
+    <FileVersion>$(WindowsInstallerVersion).0</FileVersion>
     <Product>Macro Studio</Product>
     <Authors>Ahmet Şahin</Authors>
     <Copyright>Copyright (c) 2026 Ahmet Şahin</Copyright>

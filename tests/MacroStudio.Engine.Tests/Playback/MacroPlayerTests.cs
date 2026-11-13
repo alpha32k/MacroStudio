@@ -482,6 +482,64 @@ public sealed class MacroPlayerTests
     }
 
     [Fact]
+    public void ExcelMacroStep_FinishesBeforeTheFollowingStep()
+    {
+        var desktop = new FakeDesktop();
+        const string path = @"C:\Reports\Book.xlsm";
+        desktop.ExcelMacro = (workbook, procedure) =>
+        {
+            Assert.Equal((path, "Module1.UpdateCells"), (workbook, procedure));
+            Assert.Equal("before", string.Concat(desktop.Typed));
+            desktop.Typed.Add("|Excel finished|");
+            return null;
+        };
+
+        PlaybackResult result = Play(desktop, [
+            new TypeTextStep { Text = "before" },
+            new ExcelMacroStep { WorkbookPath = path, Procedure = "Module1.UpdateCells" },
+            new TypeTextStep { Text = "after" },
+        ], new PlaybackOptions { Loop = LoopSettings.Times(1) });
+
+        Assert.Equal(PlaybackOutcome.Completed, result.Outcome);
+        Assert.Equal("before|Excel finished|after", string.Concat(desktop.Typed));
+    }
+
+    [Theory]
+    [InlineData(PlaybackFailure.ExcelWorkbookNotOpen, 2)]
+    [InlineData(PlaybackFailure.ExcelMacroFailed, 1)]
+    public void ExcelMacroStep_DoesNotRetryVbaThatMayAlreadyHaveChangedTheWorkbook(PlaybackFailure failure, int expectedCalls)
+    {
+        int calls = 0;
+        var desktop = new FakeDesktop { ExcelMacro = (_, _) => { calls++; return failure; } };
+        PlaybackResult result = Play(desktop, [
+            new ExcelMacroStep { WorkbookPath = @"C:\Reports\Book.xlsm", Procedure = "UpdateCells" },
+            new TypeTextStep { Text = "after" },
+        ], new PlaybackOptions { Loop = LoopSettings.Times(1), OnError = new ErrorPolicy(ErrorAction.Stop, 1) });
+
+        Assert.Equal((PlaybackOutcome.Failed, failure, 1), (result.Outcome, result.Failure, result.FailedStepNumber));
+        Assert.Equal(expectedCalls, calls);
+        Assert.Empty(desktop.Typed);
+    }
+
+    [Fact]
+    public void ExcelMacroStep_StopWhileExcelRunsDoesNotPlayTheNextStep()
+    {
+        using var cancellation = new CancellationTokenSource();
+        var desktop = new FakeDesktop { ExcelMacro = (_, _) => { cancellation.Cancel(); return null; } };
+        MacroStep[] steps = [
+            new ExcelMacroStep { WorkbookPath = @"C:\Reports\Book.xlsm", Procedure = "UpdateCells" },
+            new TypeTextStep { Text = "after" },
+        ];
+        var player = new MacroPlayer(desktop, desktop, desktop, desktop);
+
+        PlaybackResult result = player.Play(new MacroDefinition { Name = "Test", Steps = steps },
+            new PlaybackOptions { Loop = LoopSettings.Times(1) }, cancellation.Token);
+
+        Assert.Equal(PlaybackOutcome.Stopped, result.Outcome);
+        Assert.Empty(desktop.Typed);
+    }
+
+    [Fact]
     public void KeyStep_InAWindowOfAnotherSize_LeavesTheWindowAlone()
     {
         var desktop = new FakeDesktop();

@@ -9,7 +9,7 @@
       package and the multi-language transform trick is not supported by Microsoft.
     -->
     <Cultures>tr-TR</Cultures>
-    <DefineConstants>Version=$(Version);AppPublishDir=$(AppPublishDir)</DefineConstants>
+    <DefineConstants>Version=$(WindowsInstallerVersion);AppPublishDir=$(AppPublishDir)</DefineConstants>
     <!--
       ICE38, ICE64, ICE91 expect a per-machine install. A per-user install under %LocalAppData% keeps its files
       there by design, with file key paths and folders that Windows removes with the package.

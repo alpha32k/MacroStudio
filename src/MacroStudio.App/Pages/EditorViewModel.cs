@@ -632,6 +632,42 @@ public sealed partial class EditorViewModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(IsOpen))]
+    private void InsertExcelMacro()
+    {
+        Localizer text = Localizer.Instance;
+        string title = text["Insert_ExcelMacro"];
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = title,
+            Filter = text["Insert_ExcelMacroFilter"] + "|*.xlsm;*.xlsb",
+        };
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        if (!ExcelMacroStep.IsWorkbookPath(dialog.FileName))
+        {
+            MessageBox.Show(text["Insert_ExcelMacroInvalidWorkbook"], title, MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        string? procedure = InputDialog.AskText(title, text.Format("Insert_ExcelMacroPrompt", System.IO.Path.GetFileName(dialog.FileName)))?.Trim();
+        if (procedure is null)
+        {
+            return;
+        }
+
+        if (!ExcelMacroStep.IsProcedureName(procedure))
+        {
+            MessageBox.Show(text["Insert_ExcelMacroInvalidName"], title, MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        InsertStep(new ExcelMacroStep { WorkbookPath = dialog.FileName, Procedure = procedure });
+    }
+
+    [RelayCommand(CanExecute = nameof(IsOpen))]
     private void InsertCopy() => InsertStep(new CopyStep { Target = TargetBeforeInsertPoint() });
 
     [RelayCommand(CanExecute = nameof(IsOpen))]
@@ -959,7 +995,8 @@ public sealed partial class EditorViewModel : ObservableObject
             SaveCommand, UndoCommand, RedoCommand, DeleteSelectedCommand, DuplicateSelectedCommand, MoveUpCommand,
             MoveDownCommand, ToggleEnabledCommand, SetDelayOfSelectedCommand, ConvertExcelWheelCommand,
             RestorePreviousVersionCommand, PlayFromHereCommand, TryStepCommand, InsertWaitCommand, InsertKeyCommand,
-            InsertTextCommand, InsertCopyCommand, InsertPasteCommand, InsertFocusWindowCommand, InsertClickCommand])
+            InsertTextCommand, InsertCopyCommand, InsertPasteCommand, InsertFocusWindowCommand, InsertClickCommand,
+            InsertExcelMacroCommand])
         {
             command.NotifyCanExecuteChanged();
         }
